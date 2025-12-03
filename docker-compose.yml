@@ -1,0 +1,147 @@
+version: '3.8'
+
+services:
+  # front:
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/front/Dockerfile
+  #   restart: always
+  #   ports:
+  #     - 3000:3000
+  #   networks:
+  #     - app_network
+
+  # api:
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/api/Dockerfile
+  #   restart: always
+  #   ports:
+  #     - 3001:3001
+  #   networks:
+  #     - app_network
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=${PGUSER}
+      - POSTGRES_PASSWORD=${PGPASSWORD}
+      - POSTGRES_DB=${PGDATABASE}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${PGPORT}:5432"
+    networks:
+      - app_network
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    restart: always
+    environment:
+      - QDRANT__SERVICE__API_KEY=${QDRANT_API_KEY}
+    ports:
+      - "${QDRANT_PORT}:6333"
+      - "${QDRANT_MANAGEMENT_PORT}:6334"
+    expose:
+      - "${QDRANT_PORT}"
+      - "${QDRANT_MANAGEMENT_PORT}"
+      - "${QDRANT_API_PORT}"
+    configs:
+      - source: qdrant_config
+        target: /qdrant/config/production.yaml
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - app_network
+
+  redis:
+    image: redis/redis-stack-server:7.2.0-v17
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data/redis
+    command:
+      - redis-server
+      - --requirepass
+      - ${REDISPASSWORD}
+      - --user
+      - default
+      - off
+      - --user
+      - ${REDISUSER}
+      - on
+      - ">${REDISPASSWORD}"
+      - allcommands
+      - allkeys
+      - --appendonly
+      - yes
+      - --loadmodule
+      - /opt/redis-stack/lib/rejson.so
+    environment:
+      - REDIS_USER=${REDISUSER}
+      - REDIS_PASSWORD=${REDISPASSWORD}
+    healthcheck:
+      test: ["CMD", "redis-cli", "-u", "${REDISUSER}", "-a", "${REDISPASSWORD}", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    stop_grace_period: 60s
+    networks:
+      - app_network
+
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - app_network
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    restart: unless-stopped
+    networks:
+      - app_network
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3200:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    user: "472"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./packages/metrics/grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+      - loki
+    networks:
+      - app_network
+
+volumes:
+  postgres_data:
+  qdrant_data:
+  redis_data:
+  grafana-data:
+  prometheus-data:
+
+configs:
+  qdrant_config:
+    content: |
+      log_level: INFO
+
+networks:
+  app_network:
+    external: true

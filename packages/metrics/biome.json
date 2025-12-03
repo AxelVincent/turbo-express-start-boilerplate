@@ -1,0 +1,12 @@
+{
+  "extends": ["../../biome.json"],
+  "vcs": {
+    "enabled": false,
+    "clientKind": "git",
+    "useIgnoreFile": false
+  },
+  "files": {
+    "ignoreUnknown": false,
+    "ignore": ["./node_modules", "tsconfig.json", "./dist", "tsup.config.ts"]
+  }
+}

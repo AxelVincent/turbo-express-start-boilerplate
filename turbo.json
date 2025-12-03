@@ -1,0 +1,52 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "tasks": {
+    "build": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*"
+      ],
+      "outputs": [
+        "dist/**",
+        "public/dist/**"
+      ],
+      "dependsOn": [
+        "^build"
+      ],
+      "env": [
+        "VITE_API_WEB_BASE_URL",
+        "VITE_WS_BASE_URL",
+        "VITE_CLERK_PUBLISHABLE_KEY",
+        "CLERK_PUBLISHABLE_KEY",
+        "CLERK_SECRET_KEY",
+        "SENTRY_AUTH_TOKEN",
+        "VITE_POSTHOG_KEY",
+        "VITE_POSTHOG_HOST",
+        "LOG_LEVEL"
+      ]
+    },
+    "test": {
+      "outputs": [
+        "coverage/**"
+      ],
+      "dependsOn": []
+    },
+    "lint": {
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "clean": {
+      "cache": false
+    },
+    "db:migrate": {
+      "dependsOn": [
+        "^build"
+      ]
+    }
+  }
+}

@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'boilerplate-monitor'
+
+scrape_configs:
+  # Application metrics (prom-client)
+  - job_name: 'boilerplate-api'
+    static_configs:
+      - targets: ['api.railway.internal']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    basic_auth:
+      username: 'metrics'
+      password: 'secure_password'
