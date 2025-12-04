@@ -1,21 +1,24 @@
-# Full-Stack Monorepo Boilerplate
+# Turbo Express Start
 
-A production-ready monorepo boilerplate for rapidly starting modern web applications. Built with Turborepo, this template includes a complete backend API, frontend application, and comprehensive infrastructure setup.
+A production-ready, full-stack monorepo boilerplate for building modern web applications. Features React 19, Express, PostgreSQL, Clerk authentication, and a complete observability stack.
 
-## Architecture Overview
+## Features
 
-This is a fully-featured monorepo that provides:
-- Type-safe API with auto-generated contracts
-- Modern React frontend with TanStack Router
-- Database migrations and type generation
-- Observability stack (metrics, logging, monitoring)
-- Docker Compose infrastructure setup
+- **Turborepo Monorepo** - Organized workspace with shared packages
+- **React 19 + TanStack** - File-based routing and server state management
+- **Express API** - Type-safe REST API with Zod validation
+- **PostgreSQL + Kysely** - Type-safe SQL with auto-generated types
+- **Clerk Authentication** - Complete auth with protected routes and webhooks
+- **Full Observability** - Prometheus, Grafana, Loki, structured logging
+- **Docker Infrastructure** - PostgreSQL, Redis, Qdrant, monitoring stack
+- **Shadcn/ui + Tailwind** - Beautiful UI with dark/light theme support
 
 ## Quick Start
 
 ### Prerequisites
-- Node.js >= 14.0.0
-- pnpm 9.7.1
+
+- Node.js >= 18.0.0
+- pnpm 9.7.1+
 - Docker and Docker Compose
 
 ### Installation
@@ -26,6 +29,9 @@ pnpm install
 
 # Copy environment variables
 cp .env.example .env
+
+# Configure Clerk (see Authentication section)
+# Add your Clerk keys to .env
 
 # Start infrastructure services
 docker network create app_network
@@ -38,129 +44,350 @@ pnpm db:migrate
 pnpm dev
 ```
 
-The frontend will be available at http://localhost:3000 and the API at http://localhost:3001.
+### Access Points
+
+| Service | URL | Credentials |
+|---------|-----|-------------|
+| Frontend | http://localhost:3000 | - |
+| API | http://localhost:3001 | - |
+| Grafana | http://localhost:3201 | admin/admin |
+| Prometheus | http://localhost:9091 | - |
 
 ## Project Structure
 
-### Apps
-
-- **`apps/front`** - React frontend application
-  - Built with Vite and TanStack Router
-  - React 19 with TanStack Query for data fetching
-  - Shadcn UI components with Tailwind CSS
-  - Type-safe API client integration
-
-- **`apps/api`** - Express backend API
-  - RESTful API with Zod validation
-  - Kysely for type-safe SQL queries
-  - PostgreSQL database with migrations
-  - Auto-generated TypeScript types from database schema
-  - Structured route organization with contracts
-
-### Packages
-
-- **`@repo/logger`** - Pino-based structured logging
-  - Loki integration for centralized logging
-  - Configurable log levels
-
-- **`@repo/metrics`** - Prometheus metrics collection
-  - Custom metrics and instrumentation
-  - Pre-configured Grafana dashboards
-
-- **`@repo/eslint-config`** - Shared ESLint configuration
-- **`@repo/typescript-config`** - Shared TypeScript configurations
-- **`@repo/jest-presets`** - Jest test configurations
-
-All packages and apps are 100% TypeScript.
-
-## Infrastructure Services
-
-The Docker Compose setup includes:
-
-- **PostgreSQL 15** - Primary database (port 5432)
-- **Redis Stack** - Caching and session storage with JSON support (port 6379)
-- **Qdrant** - Vector database for embeddings (ports 6333-6335)
-- **Prometheus** - Metrics collection and storage (port 9090)
-- **Grafana** - Metrics visualization and dashboards (port 3200)
-- **Loki** - Log aggregation (port 3100)
-
-### Accessing Services
-
-- Grafana: http://localhost:3200 (admin/admin)
-- Prometheus: http://localhost:9090
-- PostgreSQL: localhost:5432
-- Redis: localhost:6379
-
-## Development
-
-### Available Scripts
-
-```bash
-# Development
-pnpm dev              # Start all apps in development mode
-pnpm build            # Build all apps and packages
-pnpm test             # Run all tests
-pnpm lint             # Lint all packages
-
-# Database
-pnpm db:migrate       # Run database migrations
-pnpm db:types         # Generate TypeScript types from database
+```
+turbo-express-start-boilerplate/
+├── apps/
+│   ├── api/                     # Express backend (port 3001)
+│   │   └── src/
+│   │       ├── config/          # Environment & Clerk configuration
+│   │       ├── db/              # Database setup, migrations, types
+│   │       ├── middlewares/     # Auth, metrics, validation middleware
+│   │       ├── routes_web/      # API routes with contracts
+│   │       ├── services/        # Business logic (user sync)
+│   │       ├── webhook/         # Clerk webhook handlers
+│   │       └── __tests__/       # Jest tests
+│   │
+│   └── front/                   # React frontend (port 3000)
+│       └── src/
+│           ├── components/      # UI components, layout, sidebar
+│           │   ├── features/    # Feature-specific components
+│           │   ├── layout/      # Layout components (sidebar)
+│           │   └── ui/          # Shadcn/ui primitives
+│           ├── routes/          # TanStack Router pages
+│           │   ├── _auth/       # Protected routes
+│           │   ├── login.tsx    # Clerk sign-in
+│           │   └── signup.tsx   # Clerk sign-up
+│           ├── lib/             # API client, hooks, utils
+│           └── hooks/           # Custom React hooks
+│
+├── packages/
+│   ├── logger/                  # Pino logging with Loki integration
+│   ├── metrics/                 # Prometheus metrics framework
+│   ├── eslint-config/           # Shared ESLint configuration
+│   ├── typescript-config/       # Shared TypeScript configurations
+│   └── jest-presets/            # Jest test presets
+│
+├── docker-compose.yml           # Infrastructure services
+├── prometheus.yml               # Prometheus scrape configuration
+└── turbo.json                   # Turborepo configuration
 ```
 
-### API Development
+## Authentication
 
-The API uses a structured route pattern with auto-generated contracts:
+This boilerplate uses [Clerk](https://clerk.com) for authentication.
+
+### Getting Your Clerk Keys
+
+1. Go to [clerk.com](https://clerk.com) and sign up for a free account
+2. Create a new application (or use an existing one)
+3. In the Clerk Dashboard, navigate to **API Keys** in the left sidebar
+4. Copy your keys:
+   - **Publishable key** (starts with `pk_test_` or `pk_live_`)
+   - **Secret key** (starts with `sk_test_` or `sk_live_`)
+5. For webhooks, go to **Webhooks** → **Add Endpoint**:
+   - URL: `https://your-domain.com/webhook/clerk` (use ngrok for local dev)
+   - Events: Select `user.created`, `user.updated`, `user.deleted`
+   - Copy the **Signing Secret** (starts with `whsec_`)
+
+### Setup
+
+1. Create a Clerk application at https://dashboard.clerk.com
+2. Add your keys to `.env`:
+
+```env
+# Frontend
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
+
+# Backend
+CLERK_SECRET_KEY=sk_test_...
+CLERK_WEBHOOK_SECRET=whsec_...
+```
+
+3. Configure Clerk webhooks:
+   - Go to Clerk Dashboard → Webhooks
+   - Add endpoint: `https://your-domain.com/webhook/clerk`
+   - Select events: `user.created`, `user.updated`, `user.deleted`
+
+### Authentication Flow
 
 ```
-apps/api/src/routes_web/
-  └── users/
-      ├── add_user/
-      │   ├── contract.ts    # Route contract (validation, types)
-      │   └── add_user.ts    # Route handler
-      ├── get_users/
-      └── ...
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│   Frontend  │────▶│    Clerk    │────▶│   Backend   │
+│  (React)    │     │   (Auth)    │     │  (Express)  │
+└─────────────┘     └─────────────┘     └─────────────┘
+       │                   │                   │
+       │  1. Sign in       │                   │
+       │──────────────────▶│                   │
+       │                   │                   │
+       │  2. JWT Token     │                   │
+       │◀──────────────────│                   │
+       │                   │                   │
+       │  3. API Request (Bearer token)        │
+       │──────────────────────────────────────▶│
+       │                   │                   │
+       │                   │  4. Verify JWT    │
+       │                   │◀──────────────────│
+       │                   │                   │
+       │  5. Response                          │
+       │◀──────────────────────────────────────│
 ```
 
-Contract exports are automatically available to the frontend for type-safe API calls.
+### Protected Routes
 
-### Database Migrations
+Frontend routes under `/_auth/` require authentication:
+
+```typescript
+// routes/_auth.tsx - Layout for protected routes
+export const Route = createFileRoute('/_auth')({
+  beforeLoad: async ({ context }) => {
+    if (!context.auth?.userId) {
+      throw redirect({ to: '/login' })
+    }
+  },
+})
+```
+
+Backend routes under `/web/` require authentication:
+
+```typescript
+// middlewares/require_auth.ts
+router.use('/web', requireAuth, webRoutes)
+```
+
+### User Synchronization
+
+Clerk webhooks automatically sync users to PostgreSQL:
+
+- `user.created` → Creates user in database
+- `user.updated` → Updates user in database
+- `user.deleted` → Removes user from database
+
+## API Development
+
+### Route Organization
+
+Routes follow a contract-based pattern:
+
+```
+routes_web/users/
+├── add_user/
+│   ├── contract.ts      # Zod schemas & TypeScript types
+│   └── add_user.ts      # Route handler
+├── get_users/
+│   ├── contract.ts
+│   └── get_users.ts
+└── index.ts             # Route registration
+```
+
+### Contract Example
+
+```typescript
+// contract.ts
+import { z } from 'zod'
+
+export const AddUserBodySchema = z.object({
+  email: z.string().email(),
+  name: z.string().min(1),
+})
+
+export type AddUserBody = z.infer<typeof AddUserBodySchema>
+
+export const AddUserResponseSchema = z.object({
+  id: z.string().uuid(),
+  email: z.string(),
+  name: z.string(),
+})
+
+export type AddUserResponse = z.infer<typeof AddUserResponseSchema>
+```
+
+### Frontend Type Safety
+
+Contracts are exported to the frontend:
+
+```typescript
+// Frontend usage
+import type { AddUserBody } from '@repo/api/routes_web/users/add_user/contract'
+
+const createUser = async (data: AddUserBody) => {
+  const response = await apiClient.post('/web/users', data)
+  return response.data
+}
+```
+
+## Database
+
+### Migrations
 
 ```bash
 # Create a new migration
 cd apps/api
-pnpm db:migrate:create migration_name
+pnpm db:migrate:create add_new_table
 
-# Run migrations
+# Run all pending migrations
 pnpm db:migrate
 
 # Rollback last migration
 pnpm db:migrate:down
 
-# Generate types after schema changes
+# Generate TypeScript types from schema
 pnpm db:types
+```
+
+### Schema
+
+Current schema includes:
+
+```sql
+-- users table
+CREATE TABLE users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  clerk_id VARCHAR(255) UNIQUE,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  name VARCHAR(255),
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+### Kysely Usage
+
+```typescript
+import { getDatabase } from '../db'
+
+const db = getDatabase()
+
+// Type-safe queries
+const users = await db
+  .selectFrom('users')
+  .selectAll()
+  .where('email', 'like', '%@example.com')
+  .execute()
 ```
 
 ## Observability
 
 ### Metrics
-- Application metrics exposed at `/metrics` endpoint
-- Custom metrics using `@repo/metrics` package
-- Prometheus scrapes metrics every 10 seconds
-- Pre-configured Grafana dashboards
+
+Application metrics are exposed at `/metrics` (Prometheus format).
+
+**HTTP Metrics (automatic):**
+- `http_requests_total` - Request count by method/route/status
+- `http_request_duration_seconds` - Request latency histogram
+- `http_request_size_bytes` - Request payload size
+- `http_response_size_bytes` - Response payload size
+
+**Custom Metrics:**
+- `active_users` - Gauge of concurrent users
+- `user_operations_total` - Counter of CRUD operations
+- `database_queries_total` - Database query count
+- `database_query_duration_seconds` - Query latency
 
 ### Logging
-- Structured JSON logging with Pino
-- Logs aggregated in Loki
-- Query logs in Grafana
 
-### Monitoring
-- Grafana dashboards for application metrics
-- Database connection pooling metrics
-- HTTP request/response metrics
+Structured JSON logging with Pino:
+
+```typescript
+import { logger } from '@repo/logger'
+
+logger.info({ userId, action: 'login' }, 'User logged in')
+logger.error({ err, requestId }, 'Request failed')
+```
+
+Logs are aggregated in Loki and queryable via Grafana.
+
+### Grafana Dashboards
+
+Pre-configured dashboards available at http://localhost:3201:
+
+- Application Overview
+- HTTP Request Metrics
+- Database Performance
+- Node.js Runtime Metrics
+
+## Infrastructure Services
+
+| Service | Port | Description |
+|---------|------|-------------|
+| PostgreSQL | 5432 | Primary database |
+| Redis Stack | 6379 | Caching, sessions, JSON support |
+| Qdrant | 6333-6335 | Vector database for embeddings |
+| Prometheus | 9091 | Metrics collection |
+| Grafana | 3201 | Dashboards and visualization |
+| Loki | 3101 | Log aggregation |
+
+### Docker Commands
+
+```bash
+# Start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f [service]
+
+# Stop all services
+docker-compose down
+
+# Reset all data
+docker-compose down -v
+```
+
+## Development Scripts
+
+### Root Level
+
+```bash
+pnpm dev              # Start all apps in dev mode
+pnpm build            # Build all apps and packages
+pnpm test             # Run all tests
+pnpm lint             # Lint all code
+pnpm format           # Format with Prettier
+pnpm clean            # Clean build artifacts
+pnpm db:migrate       # Run database migrations
+```
+
+### Frontend (`apps/front`)
+
+```bash
+pnpm dev              # Vite dev server (port 3000)
+pnpm build            # Production build
+pnpm test             # Run Vitest tests
+pnpm ui:add           # Add shadcn/ui components
+```
+
+### Backend (`apps/api`)
+
+```bash
+pnpm dev              # Nodemon dev server (port 3001)
+pnpm build            # TypeScript compilation
+pnpm test             # Run Jest tests
+pnpm db:migrate       # Run migrations
+pnpm db:types         # Generate database types
+pnpm webhook:listen   # Local Clerk webhook testing
+```
 
 ## Environment Variables
-
-Required environment variables (see [.env.example](.env.example)):
 
 ```env
 # Database
@@ -177,83 +404,60 @@ REDISPASSWORD=redis_password
 # Qdrant
 QDRANT_API_KEY=your_api_key
 QDRANT_PORT=6333
+
+# Clerk Authentication
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+CLERK_WEBHOOK_SECRET=whsec_...
+
+# API
+API_PORT=3001
+NODE_ENV=development
 ```
-
-## Docker Support
-
-The monorepo is configured for Docker deployment:
-
-```bash
-# Start all infrastructure services
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop all services
-docker-compose down
-
-# Stop and remove volumes
-docker-compose down -v
-```
-
-Note: The app services (front/api) are commented out in docker-compose.yml for local development. Uncomment them for production deployment.
 
 ## Tech Stack
 
 ### Frontend
-- React 19
-- TanStack Router (file-based routing)
-- TanStack Query (data fetching)
-- Vite (build tool)
-- Tailwind CSS 4
-- Shadcn UI components
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| React | 19.2.0 | UI framework |
+| TanStack Router | 1.132.0 | File-based routing |
+| TanStack Query | 5.90.11 | Server state management |
+| Vite | 7.1.7 | Build tool |
+| Tailwind CSS | 4.1.17 | Styling |
+| Shadcn/ui | Latest | UI components |
+| Clerk React | 5.57.1 | Authentication |
 
 ### Backend
-- Express.js
-- Kysely (SQL query builder)
-- Zod (validation)
-- PostgreSQL
-- Pino (logging)
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| Express | 4.18.3 | Web framework |
+| Kysely | 0.28.8 | SQL query builder |
+| Zod | 3.23.8 | Validation |
+| Pino | 10.1.0 | Logging |
+| Clerk Express | 1.7.54 | Authentication |
+| PostgreSQL | 15 | Database |
 
 ### Infrastructure
-- Turborepo (monorepo orchestration)
-- Docker Compose
-- Prometheus + Grafana (monitoring)
-- Loki (logging)
-- Redis Stack
-- Qdrant
-
-### Development
-- TypeScript 5
-- ESLint
-- Prettier
-- Jest/Vitest
-- pnpm workspaces
-
-## Features
-
-- Type-safe API contracts shared between frontend and backend
-- Auto-generated database types
-- Hot module replacement in development
-- Structured logging with query capabilities
-- Metrics collection and visualization
-- Database migration system
-- Docker-based infrastructure
-- Monorepo with shared packages
-- Code formatting and linting
-- Test setup for both frontend and backend
+| Technology | Purpose |
+|------------|---------|
+| Turborepo | Monorepo orchestration |
+| Docker Compose | Service orchestration |
+| Prometheus | Metrics collection |
+| Grafana | Visualization |
+| Loki | Log aggregation |
+| Redis Stack | Caching |
+| Qdrant | Vector database |
 
 ## Customization
 
-This boilerplate is designed to be forked and customized:
-
-1. Update package names in `package.json` files
-2. Configure your database schema in `apps/api/src/db/migrations`
-3. Add your API routes in `apps/api/src/routes_web`
-4. Build your frontend in `apps/front/src/routes`
-5. Customize Grafana dashboards in `packages/metrics/grafana`
+1. **Update package names** in all `package.json` files
+2. **Configure Clerk** with your application keys
+3. **Add database migrations** in `apps/api/src/db/migrations`
+4. **Create API routes** in `apps/api/src/routes_web`
+5. **Build frontend pages** in `apps/front/src/routes`
+6. **Customize Grafana dashboards** in `packages/metrics/grafana`
 
 ## License
 
-This boilerplate is provided as-is for rapid project initialization.
+MIT

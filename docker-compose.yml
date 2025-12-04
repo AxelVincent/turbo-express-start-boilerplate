@@ -27,10 +27,11 @@ services:
       - POSTGRES_USER=${PGUSER}
       - POSTGRES_PASSWORD=${PGPASSWORD}
       - POSTGRES_DB=${PGDATABASE}
+    command: -p 5433
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "${PGPORT}:5432"
+      - "${PGPORT}:5433"
     networks:
       - app_network
 
@@ -93,7 +94,7 @@ services:
   loki:
     image: grafana/loki:latest
     ports:
-      - "3100:3100"
+      - "3101:3100"
     command: -config.file=/etc/loki/local-config.yaml
     networks:
       - app_network
@@ -101,7 +102,7 @@ services:
   prometheus:
     image: prom/prometheus:latest
     ports:
-      - "9090:9090"
+      - "9091:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
@@ -117,7 +118,7 @@ services:
   grafana:
     image: grafana/grafana:latest
     ports:
-      - "3200:3000"
+      - "3201:3000"
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     user: "472"

@@ -1,13 +1,11 @@
 import express, { type Router } from 'express'
-import type { HelloResponse } from '../contracts/web'
+import { requireAuth } from '../middlewares/require_auth'
 import usersRouter from './users'
 
 const router: Router = express.Router()
 
-router.get('/', (req, res) => {
-  const response: HelloResponse = 'Hello World'
-  res.send(response)
-})
+// Protect ALL /web routes with authentication
+router.use(requireAuth)
 
 // Mount users router
 router.use('/users', usersRouter)

@@ -2,14 +2,28 @@ import { HeadContent, Scripts, createRootRouteWithContext, Outlet } from '@tanst
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import type { QueryClient } from '@tanstack/react-query'
+import { ClerkProvider } from '@clerk/clerk-react'
 
-import Header from '../components/layout/Header'
+import { ThemeProvider } from '../components/theme-provider'
 import { Toaster } from '../components/ui/sonner'
+import { NotFound } from '../components/NotFound'
 
 import appCss from '../styles.css?url'
 
+const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+
+if (!CLERK_PUBLISHABLE_KEY) {
+  throw new Error('Missing Clerk Publishable Key')
+}
+
 export interface RouterContext {
   queryClient: QueryClient
+  auth:
+    | {
+        isAuthenticated: boolean
+        userId: string | undefined
+      }
+    | undefined // undefined when auth is still loading
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
@@ -23,7 +37,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'boilerplate',
       },
     ],
     links: [
@@ -36,12 +50,12 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
   component: RootComponent,
   shellComponent: RootDocument,
+  notFoundComponent: NotFound,
 })
 
 function RootComponent() {
   return (
     <>
-      <Header />
       <Outlet />
       <Toaster />
       <TanStackDevtools
@@ -61,14 +75,18 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        {children}
-        <Scripts />
-      </body>
-    </html>
+    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
+      <html lang="en" suppressHydrationWarning>
+        <head>
+          <HeadContent />
+        </head>
+        <body>
+          <ThemeProvider defaultTheme="system" storageKey="mainstream-theme">
+            {children}
+          </ThemeProvider>
+          <Scripts />
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }

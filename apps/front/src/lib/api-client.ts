@@ -13,6 +13,7 @@ interface ApiClientOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
   body?: unknown
   headers?: Record<string, string>
+  token?: string | null // Clerk session token
 }
 
 /**
@@ -37,7 +38,7 @@ export async function apiClient<T>(
   path: string,
   options: ApiClientOptions = {}
 ): Promise<T> {
-  const { method = 'GET', body, headers = {} } = options
+  const { method = 'GET', body, headers = {}, token } = options
 
   const url = `${API_URL}${path}`
 
@@ -49,6 +50,14 @@ export async function apiClient<T>(
     },
   }
 
+  // Add Clerk authentication token if provided
+  if (token) {
+    fetchOptions.headers = {
+      ...fetchOptions.headers,
+      Authorization: `Bearer ${token}`,
+    }
+  }
+
   if (body) {
     fetchOptions.body = JSON.stringify(body)
   }
@@ -57,6 +66,16 @@ export async function apiClient<T>(
 
   if (!response.ok) {
     const errorText = await response.text()
+
+    // Handle authentication errors specifically
+    if (response.status === 401) {
+      throw new Error('Authentication required. Please sign in.')
+    }
+
+    if (response.status === 403) {
+      throw new Error('Access denied. You do not have permission to perform this action.')
+    }
+
     throw new Error(
       `API request failed: ${response.status} ${response.statusText}\n${errorText}`
     )

@@ -15,6 +15,7 @@ export function getRouter() {
     defaultPreloadStaleTime: 0,
     context: {
       queryClient,
+      auth: undefined!, // Will be set by RouterProvider context prop
     },
   })
 

@@ -17,12 +17,14 @@
     "db:types": "node -r esbuild-register src/scripts/generate_types.ts",
     "db:migrate:types": "kysely migrate & db:types",
     "db:migrate:down": "kysely migrate:down",
-    "db:migrate:create": "kysely migrate:make"
+    "db:migrate:create": "kysely migrate:make",
+    "webhook:listen": "svix listen http://localhost:${PORT:-3030}/webhook/clerk"
   },
   "jest": {
     "preset": "@repo/jest-presets/node"
   },
   "dependencies": {
+    "@clerk/express": "1.7.54",
     "@repo/logger": "workspace:*",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
@@ -31,6 +33,7 @@
     "morgan": "^1.10.0",
     "pg": "8.16.3",
     "pino-http": "11.0.0",
+    "svix": "1.82.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
