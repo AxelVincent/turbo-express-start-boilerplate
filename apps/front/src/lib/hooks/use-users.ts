@@ -11,6 +11,9 @@ import type {
   CreateUserInput,
   User,
 } from "@repo/api/routes_web/users/add_user/contract"
+import type { UpdateUserInput } from "@repo/api/routes_web/users/update_user/contract"
+
+type UpdateUserPayload = { id: string } & UpdateUserInput
 
 export type UsersSearchParams = {
   page: number
@@ -74,7 +77,7 @@ export function useUpdateUser() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ id, ...input }: { id: string; role?: string }) => {
+    mutationFn: async ({ id, ...input }: UpdateUserPayload) => {
       return apiClient(`/web/users/${id}`, {
         method: "PATCH",
         body: input,

@@ -9,15 +9,18 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import type { User } from "@repo/api/routes_web/users/add_user/contract"
+import type { UserRole } from "@repo/api/routes_web/users/update_user/contract"
 
 interface UserCardProps {
   user: User
   onDelete: (userId: string) => void
   isDeleting: boolean
-  onRoleChange?: (userId: string, role: string) => void
+  onRoleChange?: (_userId: string, _role: UserRole) => void
 }
 
-const ROLES = [
+// Typed against the contract union, so a role that the API would reject can't
+// be added to the picker without a compile error.
+const ROLES: { value: UserRole; label: string }[] = [
   { value: "user", label: "User" },
   { value: "admin", label: "Admin" },
   { value: "super_admin", label: "Super Admin" },
@@ -47,7 +50,9 @@ export function UserCard({
             {onRoleChange ? (
               <Select
                 value={user.role}
-                onValueChange={(role) => onRoleChange(user.id, role)}
+                onValueChange={(role) =>
+                  onRoleChange(user.id, role as UserRole)
+                }
               >
                 <SelectTrigger className="w-[140px] h-8">
                   <SelectValue />

@@ -1,5 +1,6 @@
 import express, { type Router } from "express"
 import { validateRequest } from "../../../middlewares/zod_validation"
+import { withLogger } from "../../../middlewares/with_logger"
 import type { UpdateUserInput, User, UserParams } from "./contract"
 import { updateUserSchema, userParamsSchema, userSchema } from "./contract"
 import { updateUserQuery } from "@services/users/queries/update_user"
@@ -14,7 +15,7 @@ router.patch(
     bodySchema: updateUserSchema,
     responseSchema: userSchema,
   }),
-  async (req, res) => {
+  withLogger(async (req, res) => {
     const { id } = req.params as unknown as UserParams
     const input = req.body as UpdateUserInput
 
@@ -27,7 +28,7 @@ router.patch(
     }
 
     res.json(updatedUser as User)
-  },
+  }),
 )
 
 export default router

@@ -1,5 +1,6 @@
 import express, { type Router } from "express"
 import { validateRequest } from "../../../middlewares/zod_validation"
+import { withLogger } from "../../../middlewares/with_logger"
 import type { UserParams } from "./contract"
 import { userParamsSchema } from "./contract"
 import { deleteUserQuery } from "@services/users/queries/delete_user"
@@ -12,7 +13,7 @@ router.delete(
   validateRequest({
     paramsSchema: userParamsSchema,
   }),
-  async (req, res) => {
+  withLogger(async (req, res) => {
     const { id } = req.params as unknown as UserParams
 
     const deleted = await deleteUserQuery(id)
@@ -22,7 +23,7 @@ router.delete(
     }
 
     res.status(204).send()
-  },
+  }),
 )
 
 export default router

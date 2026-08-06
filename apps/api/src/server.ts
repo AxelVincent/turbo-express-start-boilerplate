@@ -1,11 +1,9 @@
 import { json, urlencoded } from "body-parser"
 import express, { type Express } from "express"
-import morgan from "morgan"
 import cors from "cors"
 import { toNodeHandler } from "better-auth/node"
 import { httpMetricsMiddleware } from "./middlewares/http_metrics"
 import { createMetricsHandler } from "@repo/metrics"
-import { pinoMiddleware } from "./middlewares/pino_middleware"
 import { betterAuthMiddleware } from "./middlewares/better_auth_middleware"
 import { metricsRegistry } from "./metrics/registry"
 import routesWeb from "./routes_web"
@@ -25,7 +23,6 @@ export const createServer = (): Express => {
 
   app
     .disable("x-powered-by")
-    .use(morgan("dev"))
     // CORS — credentials: true is required for cookie-based auth
     .use(
       cors({
@@ -45,7 +42,6 @@ export const createServer = (): Express => {
     .use(urlencoded({ extended: true, limit: "10mb" }))
     .use(json({ limit: "10mb" }))
     .use(httpMetricsMiddleware)
-    .use(pinoMiddleware)
     // Better Auth session middleware — extracts session, populates req.auth
     .use(betterAuthMiddleware)
     // Public routes

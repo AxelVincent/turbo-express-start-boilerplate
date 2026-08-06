@@ -1,5 +1,6 @@
 import express, { type Router } from "express"
 import { validateRequest } from "../../../middlewares/zod_validation"
+import { withLogger } from "../../../middlewares/with_logger"
 import { userQuerySchema, usersResponseSchema } from "./contract"
 import { getUsersQuery } from "@services/users/queries/get_users"
 
@@ -12,7 +13,7 @@ router.get(
     querySchema: userQuerySchema,
     responseSchema: usersResponseSchema,
   }),
-  async (req, res) => {
+  withLogger(async (req, res) => {
     const query = req.query
 
     const { users, total } = await getUsersQuery(query)
@@ -23,7 +24,7 @@ router.get(
       page: query.page,
       pageSize: query.pageSize,
     })
-  },
+  }),
 )
 
 export default router

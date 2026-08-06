@@ -5,8 +5,10 @@ interface LogContext {
   user?: {
     id: string
     email: string
-    firstName: string
-    lastName: string
+    name?: string
+    role?: string
+    orgId?: string
+    orgRole?: string
   }
   // Add request metadata to context
   request?: {
@@ -41,6 +43,15 @@ interface LogPayload {
   metadata?: Record<string, unknown>
 }
 
+// Sinks must not call logger.error themselves — infinite recursion.
+type ErrorSink = (_entry: LogPayload & LogContext) => void
+let errorSink: ErrorSink | undefined
+
+// Labels every log line, so a product built from this boilerplate shows up
+// under its own name in Loki rather than "boilerplate".
+const SERVICE_NAME =
+  process.env.OTEL_SERVICE_NAME || process.env.SERVICE_NAME || "boilerplate"
+
 const baseLogger = pino({
   level: process.env.LOG_LEVEL || "info",
   ...(process.env.NODE_ENV === "development"
@@ -62,7 +73,7 @@ const baseLogger = pino({
               options: {
                 batching: false,
                 host: process.env.LOKI_HOST || "http://localhost:3100",
-                labels: { job: "pino", service: "boilerplate" },
+                labels: { job: "pino", service: SERVICE_NAME },
               },
             },
           ],
@@ -86,7 +97,7 @@ const baseLogger = pino({
                 host: process.env.LOKI_HOST || "http://localhost:3100",
                 labels: {
                   job: "pino",
-                  service: "boilerplate",
+                  service: SERVICE_NAME,
                   environment: process.env.NODE_ENV || "production",
                 },
               },
@@ -107,7 +118,9 @@ const logger = {
   },
   error: (payload: LogPayload) => {
     const context = asyncLocalStorage.getStore()
-    baseLogger.error({ ...payload, ...(context || {}) })
+    const entry = { ...payload, ...(context || {}) }
+    baseLogger.error(entry)
+    errorSink?.(entry)
   },
   warn: (payload: LogPayload) => {
     const context = asyncLocalStorage.getStore()
@@ -124,6 +137,12 @@ const logger = {
   },
   getContext: (): LogContext | undefined => {
     return asyncLocalStorage.getStore()
+  },
+  // Fan every error out to an alerting channel (Slack, PagerDuty…) without
+  // making the logger depend on it. The sink must use `baseLogger` for its own
+  // failures, or an error while alerting re-enters this path forever.
+  setErrorSink: (sink?: ErrorSink): void => {
+    errorSink = sink
   },
 }
 

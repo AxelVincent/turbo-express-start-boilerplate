@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
 import type { CreateUserInput } from "@repo/api/routes_web/users/add_user/contract"
+import type { UserRole } from "@repo/api/routes_web/users/update_user/contract"
 import { useState } from "react"
 import { toast } from "sonner"
 import {
@@ -24,17 +25,10 @@ import {
 } from "@/components/features/users"
 
 /**
- * Example route demonstrating TanStack Query with authenticated API calls
- *
- * This route:
- * 1. Uses TanStack Query for client-side data management with authentication
- * 2. Provides optimistic updates and automatic refetching
- * 3. Type-safe contracts colocated with the route
- * 4. Supports search parameters (e.g., /users?page=2&search=john)
- * 5. Uses feature-based component architecture
- *
- * Note: We don't prefetch on the server because authentication requires client-side sessions.
- * All data fetching happens client-side with proper auth headers.
+ * Reference route for authenticated TanStack Query usage: search params drive
+ * the query key, mutations invalidate it, and the request/response types come
+ * from the route's contract. Data is fetched client-side rather than in a
+ * loader because the session cookie is only available there.
  */
 export const Route = createFileRoute("/_admin/admin/users")({
   // Validate search parameters
@@ -114,7 +108,7 @@ function UsersPage() {
     }
   }
 
-  const handleRoleChange = async (userId: string, role: string) => {
+  const handleRoleChange = async (userId: string, role: UserRole) => {
     try {
       await updateUserMutation.mutateAsync({ id: userId, role })
       toast.success("Role updated")

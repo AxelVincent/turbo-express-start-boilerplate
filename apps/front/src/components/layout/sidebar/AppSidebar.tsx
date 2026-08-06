@@ -1,10 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router"
-import { Moon, Sun, Monitor } from "lucide-react"
 
 import { authClient } from "@/lib/auth-client"
-import { useTheme } from "@/components/theme-provider"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   Sidebar,
   SidebarContent,
@@ -21,10 +18,9 @@ import {
 } from "@/components/ui/sidebar"
 import { sidebarNavGroups } from "./sidebar-nav"
 import { UserMenu } from "./UserMenu"
-import {
-  adminSidebarNavGroups,
-  backToAppItem,
-} from "../admin-sidebar/admin-sidebar-nav"
+import { AdminFooter } from "./AdminFooter"
+import { SidebarThemeToggle } from "./SidebarThemeToggle"
+import { adminSidebarNavGroups } from "../admin-sidebar/admin-sidebar-nav"
 import { APP_NAME } from "@/lib/constants"
 
 interface AppSidebarProps {
@@ -106,87 +102,12 @@ export function AppSidebar({ variant = "user" }: AppSidebarProps) {
       </SidebarContent>
 
       <SidebarFooter>
-        <SidebarToggle />
+        <SidebarThemeToggle />
         {isAdminVariant ? <AdminFooter /> : <UserMenu />}
       </SidebarFooter>
 
       <SidebarRail />
     </SidebarWrapper>
-  )
-}
-
-function SidebarToggle() {
-  const { theme, setTheme } = useTheme()
-
-  const toggleTheme = () => {
-    if (theme === "light") setTheme("dark")
-    else if (theme === "dark") setTheme("system")
-    else setTheme("light")
-  }
-
-  const getThemeIcon = () => {
-    if (theme === "light") return <Sun className="h-4 w-4" />
-    if (theme === "dark") return <Moon className="h-4 w-4" />
-    return <Monitor className="h-4 w-4" />
-  }
-
-  const getThemeLabel = () => {
-    if (theme === "light") return "Light"
-    if (theme === "dark") return "Dark"
-    return "System"
-  }
-
-  return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <SidebarMenuButton
-          onClick={toggleTheme}
-          tooltip={`Theme: ${getThemeLabel()}`}
-        >
-          {getThemeIcon()}
-          <span>Theme: {getThemeLabel()}</span>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-    </SidebarMenu>
-  )
-}
-
-function AdminFooter() {
-  const session = authClient.useSession()
-  const user = session.data?.user
-
-  return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <SidebarMenuButton asChild tooltip={backToAppItem.title}>
-          <Link to={backToAppItem.url}>
-            <backToAppItem.icon />
-            <span>{backToAppItem.title}</span>
-          </Link>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-
-      {user && (
-        <SidebarMenuItem>
-          <SidebarMenuButton size="lg" asChild tooltip={user.name}>
-            <Link to="/">
-              <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.image ?? undefined} alt={user.name} />
-                <AvatarFallback className="rounded-lg">
-                  {user.name.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user.name}</span>
-                <span className="truncate text-xs text-muted-foreground">
-                  {user.email}
-                </span>
-              </div>
-            </Link>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      )}
-    </SidebarMenu>
   )
 }
 

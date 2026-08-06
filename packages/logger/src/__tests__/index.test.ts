@@ -57,8 +57,10 @@ describe("@repo/logger", () => {
         user: {
           id: "123",
           email: "test@example.com",
-          firstName: "Test",
-          lastName: "User",
+          name: "Test User",
+          role: "admin",
+          orgId: "org_42",
+          orgRole: "owner",
         },
       },
       () => {
@@ -76,11 +78,62 @@ describe("@repo/logger", () => {
         user: {
           id: "123",
           email: "test@example.com",
-          firstName: "Test",
-          lastName: "User",
+          name: "Test User",
+          role: "admin",
+          orgId: "org_42",
+          orgRole: "owner",
         },
       }),
     )
+  })
+
+  it("forwards errors to the error sink with context folded in", () => {
+    const sink = jest.fn()
+    logger.setErrorSink(sink)
+
+    logger.runWithContext(
+      {
+        request: { id: "req_1", ipAddress: "127.0.0.1", timestamp: new Date() },
+      },
+      () => {
+        logger.error({ msg: "Boom", event: "boom.event" })
+      },
+    )
+
+    expect(sink).toHaveBeenCalledTimes(1)
+    expect(sink).toHaveBeenCalledWith(
+      expect.objectContaining({
+        msg: "Boom",
+        event: "boom.event",
+        request: expect.objectContaining({ id: "req_1" }),
+      }),
+    )
+
+    logger.setErrorSink(undefined)
+  })
+
+  it("does not send info, warn or debug to the error sink", () => {
+    const sink = jest.fn()
+    logger.setErrorSink(sink)
+
+    logger.info({ msg: "i", event: "e" })
+    logger.warn({ msg: "w", event: "e" })
+    logger.debug({ msg: "d", event: "e" })
+
+    expect(sink).not.toHaveBeenCalled()
+
+    logger.setErrorSink(undefined)
+  })
+
+  it("stops forwarding once the sink is cleared", () => {
+    const sink = jest.fn()
+    logger.setErrorSink(sink)
+    logger.setErrorSink(undefined)
+
+    logger.error({ msg: "Boom", event: "boom.event" })
+
+    expect(sink).not.toHaveBeenCalled()
+    expect(mockLogger.error).toHaveBeenCalled()
   })
 
   it("can get current context", () => {
@@ -92,8 +145,10 @@ describe("@repo/logger", () => {
         user: {
           id: "123",
           email: "test@example.com",
-          firstName: "Test",
-          lastName: "User",
+          name: "Test User",
+          role: "admin",
+          orgId: "org_42",
+          orgRole: "owner",
         },
       },
       () => {
@@ -102,8 +157,10 @@ describe("@repo/logger", () => {
           user: {
             id: "123",
             email: "test@example.com",
-            firstName: "Test",
-            lastName: "User",
+            name: "Test User",
+            role: "admin",
+            orgId: "org_42",
+            orgRole: "owner",
           },
         })
       },

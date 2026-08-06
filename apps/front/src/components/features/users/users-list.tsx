@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import type { User } from "@repo/api/routes_web/users/add_user/contract"
 import { UserCard } from "./user-card"
+import type { UserRole } from "@repo/api/routes_web/users/update_user/contract"
 
 interface UsersListProps {
   users?: User[]
@@ -9,7 +10,7 @@ interface UsersListProps {
   hasSearch: boolean
   onDeleteUser: (userId: string) => void
   isDeletingUser: boolean
-  onRoleChange?: (userId: string, role: string) => void
+  onRoleChange?: (_userId: string, _role: UserRole) => void
 }
 
 export function UsersList({
