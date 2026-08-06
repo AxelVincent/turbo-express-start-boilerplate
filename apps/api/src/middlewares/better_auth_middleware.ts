@@ -2,7 +2,7 @@ import { type RequestHandler } from "express"
 import { fromNodeHeaders } from "better-auth/node"
 import { auth } from "../auth/auth"
 import { logger } from "@repo/logger"
-import { getDatabase } from "../db/database"
+import { getMemberRoleQuery } from "./queries/get_member_role"
 
 /**
  * Middleware to extract Better Auth session and populate req.auth
@@ -33,14 +33,7 @@ export const betterAuthMiddleware: RequestHandler = async (req, _res, next) => {
       let orgRole = ""
       if (orgId) {
         try {
-          const db = getDatabase()
-          const member = await db
-            .selectFrom("member")
-            .select(["role"])
-            .where("organization_id", "=", orgId)
-            .where("user_id", "=", session.user.id)
-            .executeTakeFirst()
-          orgRole = member?.role || ""
+          orgRole = await getMemberRoleQuery(orgId, session.user.id)
         } catch {
           // Don't fail auth if member lookup fails
         }

@@ -15,13 +15,31 @@ module.exports = {
       "error",
       { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
     ],
+    // Data access: one query per file, no query builders outside queries/,
+    // and query types derived from the generated DB types rather than
+    // hand-written shapes that silently drift from the schema.
     "@repo/one-query-per-file": "warn",
+    "@repo/no-inline-queries": "error",
+    "@repo/no-manual-query-types": "error",
+    "@repo/no-business-logic-in-queries": "warn",
+    // Route layout: each handler in its own folder with a colocated
+    // contract.ts, so the frontend can import the same inferred types.
+    "@repo/routes-must-use-contract": "error",
+    "@repo/one-route-per-file": "error",
   },
   overrides: [
     {
       files: ["**/__tests__/**/*"],
       env: {
         jest: true,
+      },
+    },
+    {
+      // Every /web handler runs inside a logger context so requests carry a
+      // request id and user fields through to the logs.
+      files: ["**/routes_web/**/*.ts"],
+      rules: {
+        "@repo/routes-wrapped-with-logger": "error",
       },
     },
     {
