@@ -24,14 +24,19 @@ from a step whose verification failed.
 
 Ask for these first if they were not supplied:
 
-| Input          | Example     | Used for                                        |
-| -------------- | ----------- | ----------------------------------------------- |
-| `PROJECT_NAME` | `Northwind` | Display name in the UI                          |
-| `PROJECT_SLUG` | `northwind` | Database, metric prefix, service and job names  |
-| `PORT_OFFSET`  | `10`        | Added to every default port to avoid collisions |
+| Input           | Example                | Used for                                        |
+| --------------- | ---------------------- | ----------------------------------------------- |
+| `PROJECT_NAME`  | `Northwind`            | Display name in the UI                          |
+| `PROJECT_SLUG`  | `northwind`            | Database, metric prefix, service and job names  |
+| `PORT_OFFSET`   | `10`                   | Added to every default port to avoid collisions |
+| `DEPLOY_REGION` | `europe-west4-drams3a` | Railway region for `api` and `front`            |
 
 `PROJECT_SLUG` must be lowercase, alphanumeric with hyphens — it becomes a
 Postgres database name and a Prometheus metric prefix.
+
+`DEPLOY_REGION` only matters if you deploy to Railway; it is one of `us-west2`,
+`us-east4-eqdc4a`, `europe-west4-drams3a` or `asia-southeast1-eqsg3a`. Every
+service should share it — see the Regions section of `DEPLOY.md`.
 
 ## Step 1 — Pick a port offset and prove it is free
 
@@ -120,6 +125,7 @@ offset is 0.
 | Prometheus      | `prometheus.yml`                                                  | job/monitor names, and the scrape target port    |
 | Grafana folder  | `packages/metrics/grafana/provisioning/dashboards/dashboards.yml` | `Boilerplate` → `PROJECT_NAME`                   |
 | Workspace name  | `package.json`                                                    | `@repo/monorepo` → `@<slug>/monorepo` (optional) |
+| Railway region  | `apps/api/railway.json`, `apps/front/railway.json`                | `europe-west4-drams3a` → `DEPLOY_REGION`         |
 
 `APP_SLUG` covers the whole API on its own — every metric name, the `app` label
 and the default trace/log service name derive from it, so there is no need to

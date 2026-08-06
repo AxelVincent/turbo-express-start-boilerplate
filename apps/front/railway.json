@@ -12,6 +12,11 @@
     ]
   },
   "deploy": {
+    "multiRegionConfig": {
+      "europe-west4-drams3a": {
+        "numReplicas": 1
+      }
+    },
     "startCommand": "node .output/server/index.mjs",
     "healthcheckPath": "/",
     "healthcheckTimeout": 30,

@@ -78,6 +78,13 @@ backstop — comfortably inside Railway's draining window.
 and the Grafana admin password use `${{ secret(n) }}`, so every deployment of this
 template mints its own.
 
+**Region.** Railway templates cannot prompt for a region, so set your account's
+preferred region _before_ deploying and all ten services land together — which
+matters here, because the API talks to Postgres, Redis and Tempo over private
+networking. `api` and `front` additionally pin `europe-west4-drams3a` in their
+`railway.json`; change that key, or your preferred region, so the two agree. The
+five volume-backed services cannot be moved after provisioning.
+
 **Optional integrations.** Email (`RESEND_API_KEY`), Slack error alerting
 (`SLACK_BOT_TOKEN`) and Google OAuth are unset by default. The app degrades
 cleanly without them — email logs to stdout and Slack alerting no-ops.

@@ -145,6 +145,76 @@ move migrations into the CI job instead.
 handler closes the listener, drains connections, closes the pool and flushes
 traces, with its own 5s backstop, so it exits well inside that window.
 
+## Regions
+
+| Region                     | Identifier               |
+| -------------------------- | ------------------------ |
+| US West (California)       | `us-west2`               |
+| US East (Virginia)         | `us-east4-eqdc4a`        |
+| EU West (Amsterdam)        | `europe-west4-drams3a`   |
+| Southeast Asia (Singapore) | `asia-southeast1-eqsg3a` |
+
+**Keep every service in one region.** The API talks to Postgres, Redis and Tempo
+constantly over private networking. Splitting the stack puts that chatter on the
+public wire and adds latency to every request and every span export. Region is a
+per-service setting, so nothing stops you from mixing them — but there is no
+reason to.
+
+There are only two levers, and they cover different services.
+
+### The account preferred region covers everything
+
+Railway has no per-service region control in the template composer, and region
+is a service setting rather than an environment variable, so **a template cannot
+prompt for it**. Every service without an explicit region falls back to the
+deploying user's preferred region.
+
+So the one-knob answer is: set Account → Settings → **Preferred region** before
+deploying the template. All ten services land together, and nothing in this repo
+needs to change. This is the recommended route.
+
+### `railway.json` pins `api` and `front`
+
+The two services built from this repo can pin a region explicitly:
+
+```json
+"deploy": {
+  "multiRegionConfig": {
+    "europe-west4-drams3a": { "numReplicas": 1 }
+  }
+}
+```
+
+Config as code wins over the dashboard, so once this is set the Settings → Scale
+→ Regions field is managed by the repo and editing these files is how you move
+them. To vary by environment:
+
+```json
+"environments": {
+  "staging": {
+    "deploy": {
+      "multiRegionConfig": { "us-east4-eqdc4a": { "numReplicas": 1 } }
+    }
+  }
+}
+```
+
+**If you pin here, match your preferred region to it**, or set the other eight
+services by hand — otherwise `api` and `front` sit in one region while Postgres,
+Redis, the bucket, Caddy and the Grafana stack sit in another. Those eight have
+no `railway.json` because they are not built from this repo; post-deploy they
+are changed per service under Settings → **Scale** → Regions & Replicas.
+
+Two constraints worth knowing before the first deploy:
+
+- **Volumes pin the region and forbid replicas.** Postgres, Grafana, Loki,
+  Prometheus and Tempo are volume-backed. Railway states plainly that "Replicas
+  are not available for attached volumes", and a volume cannot move between
+  regions — so for those five the region is effectively permanent once
+  provisioned. Pick it before deploying, not after.
+- **Replicas are per region, not a total.** `numReplicas: 1` under two region
+  keys is two instances, not one spread across both.
+
 ## Observability
 
 `prometheus.yml` scrapes `host.docker.internal:3030`, which only resolves on a

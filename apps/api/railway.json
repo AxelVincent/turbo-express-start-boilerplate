@@ -12,6 +12,11 @@
     ]
   },
   "deploy": {
+    "multiRegionConfig": {
+      "europe-west4-drams3a": {
+        "numReplicas": 1
+      }
+    },
     "startCommand": "node apps/api/dist/index.js",
     "preDeployCommand": ["pnpm --filter @repo/api db:migrate"],
     "healthcheckPath": "/health",
