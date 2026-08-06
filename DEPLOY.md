@@ -175,6 +175,10 @@ needs to change. This is the recommended route.
 
 ### `railway.json` pins `api` and `front`
 
+This only applies once each service's config file path is set in the dashboard
+(the "One-time project setup" step above). It does **not** apply to a template
+deploy — see "Templates cannot read `apps/*/railway.json`" below.
+
 The two services built from this repo can pin a region explicitly:
 
 ```json
@@ -246,6 +250,40 @@ has to exist first. Once it does:
 
 Deploying that template provisions api, front, Postgres and Redis wired together
 in one click.
+
+### Templates cannot read `apps/*/railway.json`
+
+Railway only auto-detects a config file at the **repo root**, and the per-service
+config file path "does not follow the Root Directory path" — it is an absolute
+path that **can only be set in the dashboard UI**, not via the CLI, config as
+code, or a template. The template composer has no field for it, and no Build
+section at all.
+
+So a template deploy ignores both `railway.json` files entirely and falls
+through to Railpack, which fails on this repo:
+
+```
+✖ No start command detected
+```
+
+because the build lands on the workspace root, where there is no `start` script.
+Setting the root directory is not a fix either: these Dockerfiles run
+`turbo prune` from the repo root and need the whole tree as build context.
+
+The supported escape hatch is a service variable:
+
+| Service | Variable                                        |
+| ------- | ----------------------------------------------- |
+| `api`   | `RAILWAY_DOCKERFILE_PATH=apps/api/Dockerfile`   |
+| `front` | `RAILWAY_DOCKERFILE_PATH=apps/front/Dockerfile` |
+
+That selects the Dockerfile builder, and since both Dockerfiles declare `CMD`,
+no start command is needed. The remaining `railway.json` settings have to be
+re-entered in the composer's per-service Settings → Deploy — the template
+carries pre-deploy command, start command, healthcheck path, cron and restart
+policy, but has no field for `watchPatterns`, `drainingSeconds`,
+`overlapSeconds` or the region. Set those in the dashboard after deploying, or
+point the service at its config file there and let the repo take over.
 
 ### It does not give you your own repo — read this before using it
 

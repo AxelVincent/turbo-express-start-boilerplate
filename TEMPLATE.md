@@ -81,9 +81,14 @@ template mints its own.
 **Region.** Railway templates cannot prompt for a region, so set your account's
 preferred region _before_ deploying and all ten services land together — which
 matters here, because the API talks to Postgres, Redis and Tempo over private
-networking. `api` and `front` additionally pin `europe-west4-drams3a` in their
-`railway.json`; change that key, or your preferred region, so the two agree. The
-five volume-backed services cannot be moved after provisioning.
+networking. The five volume-backed services cannot be moved after provisioning,
+so choose before the first deploy.
+
+**Monorepo builds.** Railway only auto-detects config as code at the repo root,
+and the per-service config path cannot be set from a template — so `api` and
+`front` each carry `RAILWAY_DOCKERFILE_PATH` pointing at their own Dockerfile.
+That selects the Dockerfile builder instead of Railpack, which would otherwise
+fail on the workspace root for want of a start script.
 
 **Optional integrations.** Email (`RESEND_API_KEY`), Slack error alerting
 (`SLACK_BOT_TOKEN`) and Google OAuth are unset by default. The app degrades
