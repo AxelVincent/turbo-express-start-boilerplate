@@ -51,13 +51,17 @@
       "\\.integration\\.test\\.ts$"
     ],
     "moduleNameMapper": {
-      "^@services/(.*)$": "<rootDir>/src/services/$1"
+      "^@services/(.*)$": "<rootDir>/src/services/$1",
+      "^@external/(.*)$": "<rootDir>/src/external/$1",
+      "^@lib/(.*)$": "<rootDir>/src/lib/$1",
+      "^@queues/(.*)$": "<rootDir>/src/queues/$1"
     }
   },
   "dependencies": {
     "@lifeomic/attempt": "3.1.0",
     "@repo/logger": "workspace:*",
     "@repo/metrics": "workspace:*",
+    "@repo/tracing": "workspace:*",
     "axios": "1.15.0",
     "better-auth": "1.6.0",
     "body-parser": "^1.20.2",

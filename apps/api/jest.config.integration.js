@@ -12,6 +12,9 @@ module.exports = {
   // Module name mapping for path aliases used in source code
   moduleNameMapper: {
     "^@services/(.*)$": "<rootDir>/src/services/$1",
+    "^@external/(.*)$": "<rootDir>/src/external/$1",
+    "^@lib/(.*)$": "<rootDir>/src/lib/$1",
+    "^@queues/(.*)$": "<rootDir>/src/queues/$1",
   },
 
   reporters: !isCI

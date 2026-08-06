@@ -1,9 +1,9 @@
 apiVersion: 1
 
 providers:
-  - name: 'boilerplate Dashboards'
+  - name: "boilerplate Dashboards"
     orgId: 1
-    folder: 'boilerplate'
+    folder: "boilerplate"
     type: file
     disableDeletion: false
     updateIntervalSeconds: 10

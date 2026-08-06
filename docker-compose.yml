@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # front:
@@ -59,7 +59,16 @@ services:
       - REDIS_USER=${REDISUSER}
       - REDIS_PASSWORD=${REDISPASSWORD}
     healthcheck:
-      test: ["CMD", "redis-cli", "-u", "${REDISUSER}", "-a", "${REDISPASSWORD}", "ping"]
+      test:
+        [
+          "CMD",
+          "redis-cli",
+          "-u",
+          "${REDISUSER}",
+          "-a",
+          "${REDISPASSWORD}",
+          "ping",
+        ]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -84,10 +93,24 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+      - "--web.console.templates=/usr/share/prometheus/consoles"
+    restart: unless-stopped
+    networks:
+      - app_network
+
+  tempo:
+    image: grafana/tempo:latest
+    command: ["-config.file=/etc/tempo/tempo.yaml"]
+    ports:
+      - "${TEMPO_PORT}:3200"
+      - "${TEMPO_OTLP_HTTP_PORT}:4318"
+      - "${TEMPO_OTLP_GRPC_PORT}:4317"
+    volumes:
+      - ./packages/metrics/tempo/tempo.yaml:/etc/tempo/tempo.yaml
+      - tempo-data:/var/tempo
     restart: unless-stopped
     networks:
       - app_network
@@ -105,6 +128,7 @@ services:
     depends_on:
       - prometheus
       - loki
+      - tempo
     networks:
       - app_network
 
@@ -113,6 +137,7 @@ volumes:
   redis_data:
   grafana-data:
   prometheus-data:
+  tempo-data:
 
 networks:
   app_network:

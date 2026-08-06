@@ -8,7 +8,10 @@
     "rootDir": "./src",
     "baseUrl": "./src",
     "paths": {
-      "@services/*": ["services/*"]
+      "@services/*": ["services/*"],
+      "@external/*": ["external/*"],
+      "@lib/*": ["lib/*"],
+      "@queues/*": ["queues/*"]
     }
   },
   "exclude": ["node_modules", "tests", "src/**/__tests__", "src/routes_tests"],
