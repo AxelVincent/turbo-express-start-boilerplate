@@ -51,6 +51,8 @@ services:
       - ">${REDISPASSWORD}"
       - allcommands
       - allkeys
+      # BullMQ's event stream uses pub/sub, which is denied without this.
+      - allchannels
       - --appendonly
       - yes
       - --loadmodule

@@ -35,6 +35,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Written by LocalStorageProvider in development
+apps/api/uploads
+
+# MCP server config — may hold API keys
+.mcp.json
+
 # Misc
 .DS_Store
 *.pem

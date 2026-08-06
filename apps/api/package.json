@@ -58,6 +58,8 @@
     }
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "3.1033.0",
+    "@aws-sdk/s3-request-presigner": "3.1033.0",
     "@lifeomic/attempt": "3.1.0",
     "@repo/logger": "workspace:*",
     "@repo/metrics": "workspace:*",
@@ -70,9 +72,11 @@
     "express-async-handler": "1.2.0",
     "fast-glob": "3.3.3",
     "http-errors": "2.0.1",
+    "ioredis": "5.4.1",
     "kysely": "0.28.8",
     "on-finished": "2.4.1",
     "pg": "8.16.3",
+    "rate-limiter-flexible": "11.0.1",
     "resend": "6.10.0",
     "tsx": "4.20.3",
     "uuid": "13.0.0",

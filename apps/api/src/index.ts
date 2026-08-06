@@ -6,6 +6,7 @@ import { shutdownTracing } from "@repo/tracing"
 import { createServer } from "./server"
 import { logger } from "@repo/logger"
 import { createDatabase, closeDatabase } from "./db/database"
+import { startQueues, stopQueues } from "./queues"
 import { slack } from "@external/slack/client"
 import { SERVER_CONFIG } from "./config/server"
 
@@ -33,6 +34,8 @@ async function main(): Promise<void> {
   createDatabase()
   logger.info({ msg: "Database initialized", event: "database.initialized" })
 
+  await startQueues()
+
   const server = createServer()
   const httpServer = server.listen(port, () => {
     logger.info({ msg: `api running on ${port}`, event: "api.running" })
@@ -46,6 +49,18 @@ async function main(): Promise<void> {
       msg: `Received ${signal}, shutting down`,
       event: "api.shutdown_start",
     })
+
+    try {
+      await stopQueues()
+    } catch (err) {
+      logger.error({
+        msg: "Error stopping queues during shutdown",
+        event: "queues.stop_failed",
+        metadata: {
+          errorMessage: err instanceof Error ? err.message : String(err),
+        },
+      })
+    }
 
     httpServer.close(() => {
       void Promise.allSettled([closeDatabase(), shutdownTracing()]).then(() => {

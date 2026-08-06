@@ -1,5 +1,6 @@
 import { json, urlencoded } from "body-parser"
 import express, { type Express } from "express"
+import { join } from "node:path"
 import cors from "cors"
 import { toNodeHandler } from "better-auth/node"
 import { httpMetricsMiddleware } from "./middlewares/http_metrics"
@@ -79,8 +80,10 @@ export const createServer = (): Express => {
     // Service-to-service, behind INTERNAL_RPC_SECRET
     .use("/internal", routesInternal)
 
-  // Test routes — only available in development/test environments
+  // Dev/test-only surfaces: local media served from disk by
+  // LocalStorageProvider, plus the integration-test routes.
   if (isTestEnvironment()) {
+    app.use("/uploads", express.static(join(process.cwd(), "uploads")))
     const { testsAuther } = require("./middlewares/tests_auther")
     const { testTracker } = require("./middlewares/test_tracker")
     const testRoutes = require("./routes_tests").default
