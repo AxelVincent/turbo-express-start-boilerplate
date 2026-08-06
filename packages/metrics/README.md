@@ -1,4 +1,4 @@
-# @boilerplate/metrics
+# @repo/metrics
 
 Pure utility package for Prometheus metrics in Node.js applications with Express.
 
@@ -8,7 +8,7 @@ Pure utility package for Prometheus metrics in Node.js applications with Express
 # In your app's package.json, add the dependency
 {
   "dependencies": {
-    "@boilerplate/metrics": "workspace:*"
+    "@repo/metrics": "workspace:*"
   }
 }
 
@@ -22,7 +22,7 @@ pnpm install
 
 ```typescript
 // src/metrics/registry.ts
-import { createMetricsRegistry } from "@boilerplate/metrics"
+import { createMetricsRegistry } from "@repo/metrics"
 
 export const metricsRegistry = createMetricsRegistry({
   prefix: "myapp_",
@@ -39,7 +39,7 @@ export const metricsRegistry = createMetricsRegistry({
 ```typescript
 // src/index.ts
 import express from 'express'
-import { createHttpMetricsMiddleware, createMetricsHandler } from '@boilerplate/metrics'
+import { createHttpMetricsMiddleware, createMetricsHandler } from '@repo/metrics'
 import { metricsRegistry } from './metrics/registry'
 
 const app = express()
@@ -73,11 +73,7 @@ app.listen(3000)
 
 ```typescript
 // src/metrics/collectors.ts
-import {
-  createCounter,
-  createGauge,
-  createHistogram,
-} from "@boilerplate/metrics"
+import { createCounter, createGauge, createHistogram } from "@repo/metrics"
 import { metricsRegistry } from "./registry"
 
 // Counter - monotonically increasing value
@@ -115,7 +111,7 @@ export const taskDurationHistogram = createHistogram(
 **Use Case:** Track how long operations take
 
 ```typescript
-import { startDurationTimer } from "@boilerplate/metrics"
+import { startDurationTimer } from "@repo/metrics"
 import { taskDurationHistogram } from "./metrics/collectors"
 
 export const processTask = async (taskId: string) => {
@@ -151,7 +147,7 @@ export const processTask = async (taskId: string) => {
 **Use Case:** Check elapsed time or conditionally record metrics
 
 ```typescript
-import { startTimer } from "@boilerplate/metrics"
+import { startTimer } from "@repo/metrics"
 import { taskDurationHistogram } from "./metrics/collectors"
 
 export const processWithTimeout = async (taskId: string) => {
@@ -194,7 +190,7 @@ export const processWithTimeout = async (taskId: string) => {
 **Use Case:** Track duration of individual steps in a process
 
 ```typescript
-import { startDurationTimer } from "@boilerplate/metrics"
+import { startDurationTimer } from "@repo/metrics"
 import { taskDurationHistogram } from "./metrics/collectors"
 
 export const multiStepProcess = async (data: Data) => {
@@ -280,7 +276,7 @@ activeConnectionsGauge.set({ type: "database" }, currentConnections)
 ### HTTP Duration Histogram
 
 ```typescript
-import { createHttpDurationHistogram } from "@boilerplate/metrics"
+import { createHttpDurationHistogram } from "@repo/metrics"
 import { metricsRegistry } from "./metrics/registry"
 
 const httpDuration = createHttpDurationHistogram(
@@ -295,7 +291,7 @@ Default buckets: `[0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 2, 5, 10]` seconds
 ### HTTP Request Counter
 
 ```typescript
-import { createHttpRequestCounter } from "@boilerplate/metrics"
+import { createHttpRequestCounter } from "@repo/metrics"
 import { metricsRegistry } from "./metrics/registry"
 
 const httpRequests = createHttpRequestCounter(
@@ -308,7 +304,7 @@ const httpRequests = createHttpRequestCounter(
 ### HTTP Size Histograms
 
 ```typescript
-import { createHttpSizeHistogram } from "@boilerplate/metrics"
+import { createHttpSizeHistogram } from "@repo/metrics"
 import { metricsRegistry } from "./metrics/registry"
 
 // Request size
@@ -697,7 +693,7 @@ import type {
   HttpMetricOptions,
   MetricsRegistryOptions,
   DurationTimer,
-} from "@boilerplate/metrics"
+} from "@repo/metrics"
 
 import type {
   Registry,
@@ -705,7 +701,7 @@ import type {
   Gauge,
   Histogram,
   Summary,
-} from "@boilerplate/metrics"
+} from "@repo/metrics"
 ```
 
 ---

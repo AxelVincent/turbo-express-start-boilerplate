@@ -16,7 +16,8 @@ export const createDatabase = (): Kysely<Database> => {
       user: process.env.PGUSER,
       password: process.env.PGPASSWORD,
       database: process.env.PGDATABASE,
-      max: 10,
+      min: Number(process.env.PGMIN) || 2,
+      max: Number(process.env.PGMAX) || 10,
     }),
   })
 

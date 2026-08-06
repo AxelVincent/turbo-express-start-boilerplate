@@ -1,0 +1,3 @@
+Grafana reads plugins provisioning files from this directory. Mounting the
+provisioning tree replaces Grafana's built-in one, so this must exist even when
+empty or Grafana logs an error on every startup.

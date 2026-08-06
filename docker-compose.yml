@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   # front:
   #   build:
@@ -17,7 +15,7 @@ services:
   #     dockerfile: ./apps/api/Dockerfile
   #   restart: always
   #   ports:
-  #     - "${API_PORT}:3001"
+  #     - "${API_PORT}:3030"
   #   networks:
   #     - app_network
 
@@ -38,17 +36,17 @@ services:
   redis:
     image: redis/redis-stack-server:7.2.0-v17
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:6379"
     volumes:
       - redis_data:/data/redis
     command:
       - redis-server
       - --requirepass
-      - ${REDISPASSWORD}
+      - ${REDIS_PASSWORD}
       - --user
-      - ${REDISUSER}
+      - ${REDIS_USER}
       - on
-      - ">${REDISPASSWORD}"
+      - ">${REDIS_PASSWORD}"
       - allcommands
       - allkeys
       # BullMQ's event stream uses pub/sub, which is denied without this.
@@ -58,17 +56,19 @@ services:
       - --loadmodule
       - /opt/redis-stack/lib/rejson.so
     environment:
-      - REDIS_USER=${REDISUSER}
-      - REDIS_PASSWORD=${REDISPASSWORD}
+      - REDIS_USER=${REDIS_USER}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
     healthcheck:
+      # --user, not -u: redis-cli's -u takes a connection URI, so passing a
+      # username there makes the check fail against an otherwise healthy server.
       test:
         [
           "CMD",
           "redis-cli",
-          "-u",
-          "${REDISUSER}",
-          "-a",
-          "${REDISPASSWORD}",
+          "--user",
+          "${REDIS_USER}",
+          "--pass",
+          "${REDIS_PASSWORD}",
           "ping",
         ]
       interval: 5s
@@ -80,7 +80,7 @@ services:
       - app_network
 
   loki:
-    image: grafana/loki:latest
+    image: grafana/loki:3.4.2
     ports:
       - "${LOKI_PORT}:3100"
     command: -config.file=/etc/loki/local-config.yaml
@@ -88,9 +88,13 @@ services:
       - app_network
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.1.0
     ports:
       - "${PROMETHEUS_PORT}:9090"
+    # Docker Desktop resolves host.docker.internal already; Linux does not, so
+    # map it explicitly to let Prometheus scrape the API running on the host.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
@@ -104,7 +108,7 @@ services:
       - app_network
 
   tempo:
-    image: grafana/tempo:latest
+    image: grafana/tempo:2.7.1
     command: ["-config.file=/etc/tempo/tempo.yaml"]
     ports:
       - "${TEMPO_PORT}:3200"
@@ -118,7 +122,7 @@ services:
       - app_network
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:11.5.2
     ports:
       - "${GRAFANA_PORT}:3000"
     environment:

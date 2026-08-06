@@ -25,7 +25,7 @@ A production-ready, full-stack monorepo boilerplate for building modern web appl
 
 ### Prerequisites
 
-- Node.js >= 18.0.0
+- Node.js >= 20.0.0
 - pnpm 9.7.1+
 - Docker and Docker Compose
 
@@ -35,19 +35,28 @@ A production-ready, full-stack monorepo boilerplate for building modern web appl
 # Install dependencies
 pnpm install
 
-# Copy environment variables
+# Copy environment variables — one per workspace that needs them.
+# The root .env drives docker-compose; each app reads its own.
 cp .env.example .env
+cp apps/api/.env.example apps/api/.env
+cp apps/front/.env.example apps/front/.env
 
-# Start infrastructure services
+# Start infrastructure (Postgres, Redis, Grafana, Loki, Tempo, Prometheus)
 docker network create app_network
-docker-compose up -d
+docker compose up -d
 
-# Run database migrations
+# Create the schema and generate its TypeScript types
 pnpm db:migrate
+pnpm db:types
 
 # Start development servers
 pnpm dev
 ```
+
+The three env files overlap on purpose: `PGPORT`, `REDIS_PORT` and the
+observability ports appear in the root file (the host side of each Docker port
+mapping) and again in `apps/api/.env` (what the API connects to). Change both
+sides together.
 
 ### Access Points
 
@@ -58,6 +67,33 @@ pnpm dev
 | Grafana    | http://localhost:3202 |
 | Prometheus | http://localhost:9092 |
 | Tempo      | http://localhost:3200 |
+
+Every port is driven by the root `.env`, so two projects built from this
+boilerplate will collide on the defaults. Offset them in the second project's
+`.env` (and the matching values in `apps/api/.env`) before running both at once.
+
+## Renaming for Your Project
+
+Everything below carries the boilerplate's identity. Change these and the rest
+of the codebase follows — nothing else hardcodes a project name.
+
+| What                 | Where                                                             | Currently                        |
+| -------------------- | ----------------------------------------------------------------- | -------------------------------- |
+| Display name         | `apps/front/src/lib/constants.ts` (`APP_NAME`)                    | `Acme`                           |
+| Database             | `.env` and `apps/api/.env` (`PGDATABASE`)                         | `boilerplate`                    |
+| Service name         | `apps/api/.env` (`OTEL_SERVICE_NAME`)                             | `boilerplate-api`                |
+| Service name default | `apps/api/src/tracing.ts`, `packages/logger/src/index.ts`         | `boilerplate-api`, `boilerplate` |
+| Metric prefix        | `apps/api/src/metrics/registry.ts`                                | `boilerplate_`                   |
+| Prometheus job       | `prometheus.yml`                                                  | `boilerplate-api`                |
+| Grafana folder       | `packages/metrics/grafana/provisioning/dashboards/dashboards.yml` | `Boilerplate`                    |
+| Workspace name       | root `package.json` (`name`)                                      | `@repo/monorepo`                 |
+
+`APP_NAME` drives the page title, sidebar, auth header and landing page, so it
+is the only one that changes user-visible text. `OTEL_SERVICE_NAME` labels both
+traces in Tempo and logs in Loki, so set it before you start collecting either.
+
+The internal package scope (`@repo/*`) is deliberately generic — there is no
+need to rename it, and doing so touches every import.
 
 ## Project Structure
 

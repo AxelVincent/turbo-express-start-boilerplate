@@ -26,7 +26,5 @@ storage:
     wal:
       path: /var/tempo/wal
 
-metrics_generator_enabled: false
-
 usage_report:
   reporting_enabled: false

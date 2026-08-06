@@ -3,7 +3,7 @@
   "tasks": {
     "build": {
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": ["dist/**", "public/dist/**"],
+      "outputs": ["dist/**", ".output/**", ".vinxi/**"],
       "dependsOn": ["^build"],
       "env": [
         "VITE_API_URL",

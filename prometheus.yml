@@ -5,10 +5,15 @@ global:
     monitor: "boilerplate-monitor"
 
 scrape_configs:
-  # Application metrics (prom-client)
+  # Application metrics (prom-client), exposed by the API at /metrics.
+  #
+  # The API runs on the host in development while Prometheus runs in Compose,
+  # so it is reached through host.docker.internal — mapped explicitly in
+  # docker-compose.yml because Linux doesn't provide it by default. Once the
+  # API is deployed as a container, point this at its service name instead.
   - job_name: "boilerplate-api"
     static_configs:
-      - targets: ["api.railway.internal"]
+      - targets: ["host.docker.internal:3030"]
     metrics_path: "/metrics"
     scrape_interval: 10s
     basic_auth:

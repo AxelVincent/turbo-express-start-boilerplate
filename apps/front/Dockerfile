@@ -21,20 +21,11 @@ RUN turbo prune @repo/front --docker
 FROM base AS installer
 WORKDIR /app
 
-# Define build arguments again
+# VITE_* values are inlined at build time, so they must be present here rather
+# than supplied at run time. Add an ARG/ENV pair for each new one, and list it
+# in turbo.json's build env so the cache key accounts for it.
 ARG VITE_API_URL
-ARG VITE_CLERK_PUBLISHABLE_KEY
-ARG SENTRY_AUTH_TOKEN
-ARG VITE_POSTHOG_KEY
-ARG VITE_POSTHOG_HOST
-
-
-# Set them as environment variables
 ENV VITE_API_URL=$VITE_API_URL
-ENV VITE_CLERK_PUBLISHABLE_KEY=$VITE_CLERK_PUBLISHABLE_KEY
-ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
-ENV VITE_POSTHOG_KEY=$VITE_POSTHOG_KEY
-ENV VITE_POSTHOG_HOST=$VITE_POSTHOG_HOST
 
 COPY --from=builder /app/out/full/ .
 COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml

@@ -48,9 +48,9 @@ type ErrorSink = (_entry: LogPayload & LogContext) => void
 let errorSink: ErrorSink | undefined
 
 // Labels every log line, so a product built from this boilerplate shows up
-// under its own name in Loki rather than "boilerplate".
-const SERVICE_NAME =
-  process.env.OTEL_SERVICE_NAME || process.env.SERVICE_NAME || "boilerplate"
+// under its own name in Loki rather than "boilerplate". Shared with tracing so
+// logs and spans agree on who emitted them.
+const SERVICE_NAME = process.env.OTEL_SERVICE_NAME || "boilerplate"
 
 const baseLogger = pino({
   level: process.env.LOG_LEVEL || "info",

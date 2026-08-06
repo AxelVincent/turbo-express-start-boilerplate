@@ -10,7 +10,7 @@ import { startQueues, stopQueues } from "./queues"
 import { slack } from "@external/slack/client"
 import { SERVER_CONFIG } from "./config/server"
 
-const port = process.env.PORT || 3001
+const port = process.env.PORT || 3030
 
 // Route every logger.error to Slack outside development. Left unset in dev so
 // local noise doesn't page anyone.

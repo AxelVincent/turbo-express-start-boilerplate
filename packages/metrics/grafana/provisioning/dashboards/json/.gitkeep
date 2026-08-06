@@ -1,0 +1,3 @@
+Grafana provisions dashboards from this directory (see ../dashboards.yml).
+Export a dashboard as JSON from the Grafana UI and drop it in here to have it
+recreated automatically on the next `docker-compose up`.
