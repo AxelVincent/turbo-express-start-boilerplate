@@ -155,7 +155,60 @@ has to exist first. Once it does:
    (`https://github.com/<you>/<repo>/tree/<branch>`).
 4. Workspace → Templates → **Publish**.
 
-Deploying that template then provisions api, front, Postgres and Redis wired
-together in one click — which is the fastest path to standing up the next
-project. Keep the template's repo URL pointed at this boilerplate rather than at
-a product built from it, or forks inherit the wrong code.
+Deploying that template provisions api, front, Postgres and Redis wired together
+in one click.
+
+### It does not give you your own repo — read this before using it
+
+Since March 2024, deploying a Railway template **attaches the services directly
+to the template's repository**. It does not copy or fork anything into your
+account. Left alone, every project you spin up would be deploying this
+boilerplate, and any product code would have to be committed here.
+
+To get your own copy you must **eject**, per service:
+
+Service → Settings → Source → **Upstream Repo** → `Eject` → pick the GitHub
+org → `Eject service`.
+
+That mirrors the repo into your account and repoints the service at the mirror.
+Railway keeps watching upstream afterwards and opens a PR branch when the
+boilerplate changes, which is a genuinely useful way to pull improvements into
+a shipped product.
+
+One caveat specific to this repo: ejecting is a _per-service_ action, and here
+two services (`api` and `front`) share one monorepo. Whether ejecting the second
+one reuses the first mirror or creates a second copy is not documented — verify
+on the first run before relying on it.
+
+## Recommended: start from a GitHub template repository instead
+
+For "keep the boilerplate clean, start each project from a copy", the repo-first
+route is simpler and avoids the eject ambiguity entirely.
+
+Mark this repository as a **template repository** (Settings → check _Template
+repository_, or `gh repo edit --template`). Then each new project is:
+
+1. **Use this template** → new repo, in your account, private if you want.
+2. Run `SETUP.md` in it — rename, offset ports, verify.
+3. Create a Railway project pointed at the _new_ repo; the committed
+   `railway.json` files configure both services.
+
+A template repository beats a fork for this:
+
+|                    | Fork                              | Template repository      |
+| ------------------ | --------------------------------- | ------------------------ |
+| History            | inherits every boilerplate commit | one clean initial commit |
+| Link to source     | permanent "forked from" banner    | none                     |
+| Visibility         | fork of a public repo is public   | private allowed          |
+| Pull requests      | default to targeting upstream     | target your own repo     |
+| Contribution graph | commits don't count               | commits count            |
+
+The one thing a fork gives you that a template repo doesn't is an easy upstream
+merge to pull boilerplate improvements later. If that matters more than a clean
+history, add this repo as a second remote in the new project instead —
+`git remote add boilerplate <url>` — which gets you the same ability without
+the fork relationship.
+
+The two approaches also compose: use the GitHub template for the code and keep
+the Railway template purely for provisioning Postgres, Redis and the service
+skeleton.

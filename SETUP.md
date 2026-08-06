@@ -1,9 +1,19 @@
 # Scaffold a new project from this boilerplate
 
 This file is a prompt. Paste it into Claude Code (or follow it by hand) in a
-fresh clone of this boilerplate. It renames the project and moves every port
-off the defaults, so several projects built from this boilerplate can run side
-by side.
+fresh copy of this boilerplate. It renames the project and moves every port off
+the defaults, so several projects built from this boilerplate can run side by
+side.
+
+**Get the copy first.** Use GitHub's **Use this template** button rather than a
+fork or a clone-and-push: it gives you a new repo with a single clean commit, no
+"forked from" link, and the option to be private. A fork drags the whole
+boilerplate history along and points its pull requests back at upstream. If you
+still want to pull boilerplate improvements later, add it as a second remote:
+
+```bash
+git remote add boilerplate https://github.com/AxelVincent/turbo-express-start-boilerplate.git
+```
 
 Work top to bottom. Every step ends in something you can check — do not move on
 from a step whose verification failed.
