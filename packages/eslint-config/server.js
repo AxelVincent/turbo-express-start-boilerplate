@@ -35,9 +35,14 @@ module.exports = {
       },
     },
     {
-      // Every /web handler runs inside a logger context so requests carry a
-      // request id and user fields through to the logs.
-      files: ["**/routes_web/**/*.ts"],
+      // Every request-handling surface runs inside a logger context, so
+      // requests carry a request id and user fields through to the logs.
+      files: [
+        "**/routes_web/**/*.ts",
+        "**/routes_public/**/*.ts",
+        "**/routes_webhook/**/*.ts",
+        "**/routes_internal/**/*.ts",
+      ],
       rules: {
         "@repo/routes-wrapped-with-logger": "error",
       },

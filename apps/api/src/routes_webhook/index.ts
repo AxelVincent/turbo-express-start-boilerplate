@@ -1,4 +1,5 @@
 import express, { type Router } from "express"
+import resendInboundRouter from "./resend_inbound/resend_inbound"
 
 /**
  * Inbound webhooks from third parties (Stripe, Resend, Slack…). Mounted at
@@ -11,5 +12,7 @@ import express, { type Router } from "express"
  * only in key order or whitespace will fail an otherwise valid signature.
  */
 const router: Router = express.Router()
+
+router.use("/resend-inbound", resendInboundRouter)
 
 export default router
