@@ -6,8 +6,13 @@ import { describe, it, expect, jest } from "@jest/globals"
 // own wiring — so stub it out along with the auth instance it wraps.
 jest.mock("better-auth/node", () => ({
   toNodeHandler: () => (_req: unknown, res: { end: () => void }) => res.end(),
+  fromNodeHeaders: () => new Headers(),
 }))
-jest.mock("../auth/auth", () => ({ auth: {} }))
+// getSession must exist and resolve — betterAuthMiddleware calls it on every
+// request, and a bare {} sends it down its error path on each one.
+jest.mock("../auth/auth", () => ({
+  auth: { api: { getSession: async () => null } },
+}))
 
 import { createServer } from "../server"
 

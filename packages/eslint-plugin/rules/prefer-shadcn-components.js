@@ -3,7 +3,7 @@
  *
  * The shadcn library in `src/components/ui/` provides styled, accessible
  * primitives (Input, Textarea, Button, Label, Select, Checkbox, RadioGroup,
- * Progress, Table…). Using the native element bypasses our design system and
+ * Table…). Using the native element bypasses our design system and
  * produces inconsistent UI. This rule flags those usages and points at the
  * shadcn replacement to use instead.
  *
@@ -22,7 +22,6 @@ const MAPPINGS = {
   button: { component: "Button", from: "@/components/ui/button" },
   select: { component: "Select", from: "@/components/ui/select" },
   label: { component: "Label", from: "@/components/ui/label" },
-  progress: { component: "Progress", from: "@/components/ui/progress" },
   table: { component: "Table", from: TABLE_FROM },
   thead: { component: "TableHeader", from: TABLE_FROM },
   tbody: { component: "TableBody", from: TABLE_FROM },

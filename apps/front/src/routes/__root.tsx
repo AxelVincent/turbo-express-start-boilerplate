@@ -11,6 +11,8 @@ import type { QueryClient } from "@tanstack/react-query"
 import { AuthProvider } from "../lib/auth-provider"
 import { ThemeProvider } from "../components/theme-provider"
 import { Toaster } from "../components/ui/sonner"
+import { ConfirmProvider } from "../components/ui/confirm-dialog"
+import { TooltipProvider } from "../components/ui/tooltip"
 import { NotFound } from "../components/NotFound"
 import { APP_NAME } from "../lib/constants"
 
@@ -60,8 +62,12 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 function RootComponent() {
   return (
     <AuthProvider>
-      <Outlet />
-      <Toaster />
+      <TooltipProvider>
+        <ConfirmProvider>
+          <Outlet />
+          <Toaster />
+        </ConfirmProvider>
+      </TooltipProvider>
       <TanStackDevtools
         config={{
           position: "bottom-right",

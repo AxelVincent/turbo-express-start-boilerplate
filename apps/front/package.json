@@ -7,7 +7,7 @@
     "build": "vite build",
     "serve": "vite preview",
     "lint": "eslint . && tsc --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run",
     "ui:add": "npx shadcn@latest add",
     "typecheck": "tsc --noEmit"
   },
