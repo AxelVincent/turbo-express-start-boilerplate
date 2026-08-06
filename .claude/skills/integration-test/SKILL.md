@@ -32,12 +32,12 @@ Every API interaction in a test handler must go through a **domain user method**
 
 Check existing domains in `tests/user/domains/`:
 
-| Domain | Access | Key Operations |
-|--------|--------|------------|
-| `user.orgs` | `OrgsUser` | `createOrg(overrides?)`, `createInvitation(...)` |
-| `user.agents` | `AgentsUser` | `create(overrides?)`, `list()`, `delete(id)`, `getPersona(id)`, `updatePersona(id, payload)` |
-| `user.auth` | `AuthUser` | `signupNewAccount(overrides?, expectedCode?)` |
-| `user.me` | `MeUser` | `getProfile()`, `getOrganizations()` |
+| Domain         | Access        | Key Operations                                                                                            |
+| -------------- | ------------- | --------------------------------------------------------------------------------------------------------- |
+| `user.orgs`    | `OrgsUser`    | `createOrg(overrides?)`, `createInvitation(...)`                                                          |
+| `user.agents`  | `AgentsUser`  | `create(overrides?)`, `list()`, `delete(id)`, `getPersona(id)`, `updatePersona(id, payload)`              |
+| `user.auth`    | `AuthUser`    | `signupNewAccount(overrides?, expectedCode?)`                                                             |
+| `user.me`      | `MeUser`      | `getProfile()`, `getOrganizations()`                                                                      |
 | `user.apiKeys` | `ApiKeysUser` | `insertKey(orgId, provider, key)`, `getKey(orgId, provider)`, `getAllKeys(orgId)`, `deleteAllKeys(orgId)` |
 
 If the route being tested doesn't have a domain method, **create one**:
@@ -45,18 +45,29 @@ If the route being tested doesn't have a domain method, **create one**:
 1. Create `tests/user/domains/<feature>_user.ts`:
 
 ```typescript
-import type { BaseUser } from '../base_user'
-import type { ExpectedResponseCode } from '../../utils/requests'
+import type { BaseUser } from "../base_user"
+import type { ExpectedResponseCode } from "../../utils/requests"
 
 export class FeatureUser {
   constructor(private readonly user: BaseUser) {}
 
-  async configure(agentId: string, payload: Record<string, unknown>, expectedCode: ExpectedResponseCode = 200) {
-    return this.user.put_auth<ResponseType>(`/orgs/agents/${agentId}/feature`, payload, expectedCode)
+  async configure(
+    agentId: string,
+    payload: Record<string, unknown>,
+    expectedCode: ExpectedResponseCode = 200,
+  ) {
+    return this.user.put_auth<ResponseType>(
+      `/orgs/agents/${agentId}/feature`,
+      payload,
+      expectedCode,
+    )
   }
 
   async getSettings(agentId: string, expectedCode: ExpectedResponseCode = 200) {
-    return this.user.get_auth<ResponseType>(`/orgs/agents/${agentId}/feature`, expectedCode)
+    return this.user.get_auth<ResponseType>(
+      `/orgs/agents/${agentId}/feature`,
+      expectedCode,
+    )
   }
 }
 ```
@@ -86,11 +97,11 @@ src/routes_web/<scope>/<resource>/__tests__/
 #### Jest declaration (`<resource>.integration.test.ts`)
 
 ```typescript
-import { createIntegrationTestSuite } from '<relative>/tests/utils/create_integration_test_suite'
+import { createIntegrationTestSuite } from "<relative>/tests/utils/create_integration_test_suite"
 
 createIntegrationTestSuite(
-  { name: '<feature>', routePrefix: '/<feature>' },
-  { when: '<user action>', then: '<expected result>', route: '/<case_name>' },
+  { name: "<feature>", routePrefix: "/<feature>" },
+  { when: "<user action>", then: "<expected result>", route: "/<case_name>" },
   // ... more cases
 )
 ```
@@ -100,11 +111,11 @@ Options per case: `noAuth`, `concurrent` (default true, set false for shared sta
 #### Cases index (`cases/index.ts`)
 
 ```typescript
-import { createTestRouter } from '<relative>/tests/utils/routes'
-import { myCase } from './my_case'
+import { createTestRouter } from "<relative>/tests/utils/routes"
+import { myCase } from "./my_case"
 
-const router = createTestRouter({ '/my_case': myCase })
-export default ['/<feature>', router]
+const router = createTestRouter({ "/my_case": myCase })
+export default ["/<feature>", router]
 ```
 
 #### Case handler (`cases/<scenario>.ts`)
@@ -114,12 +125,12 @@ Each file exports exactly **one** async function. Must contain `// Given`, `// W
 Tests read like a real step-by-step user journey: create user → create org → create agent → domain operations → assertions.
 
 ```typescript
-import type { Request } from 'express'
-import { makeUserWithOrg } from '<relative>/tests/utils/user'
-import { isEqual, isDefined } from '<relative>/tests/utils/assertions'
+import type { Request } from "express"
+import { makeUserWithOrg } from "<relative>/tests/utils/user"
+import { isEqual, isDefined } from "<relative>/tests/utils/assertions"
 
 export async function myScenario(req: Request) {
-  const groupKey = req.headers['x-test-user-seed'] as string
+  const groupKey = req.headers["x-test-user-seed"] as string
 
   // Given
   const { user, orgId } = await makeUserWithOrg(groupKey)
@@ -131,7 +142,7 @@ export async function myScenario(req: Request) {
 
   // Then
   isDefined(result)
-  isEqual('enabled', result.enabled, true)
+  isEqual("enabled", result.enabled, true)
 }
 ```
 
@@ -148,10 +159,12 @@ pnpm --filter @repo/api test:integration -- --testPathPattern="<feature>"
 ## Lint rules (violations fail CI)
 
 ### On `*.integration.test.ts`:
+
 - One `createIntegrationTestSuite` per file, max 10 cases, unique routes
 - No commented-out tests; skipped tests need a ticket reference
 
 ### On `cases/*.ts`:
+
 - **`require-given-when-then`** — Must have `// Given`, `// When`, `// Then` in order
 - **`no-raw-http-in-test-cases`** — No `user.get_auth()` / `post_auth()` / etc. Use domain methods
 - **`no-direct-db-in-test-cases`** — No `getDatabase()`. Use domain user classes
@@ -165,11 +178,24 @@ Helper files prefixed with `_` (e.g. `cases/_helpers.ts`) are exempt.
 
 ```typescript
 import {
-  isDefined, isNotNull, isNull, isTruthy, isFalsy,
-  isEqual, isNotEqual, isGreaterThan, isLowerThan, isGreaterThanOrEqual,
-  isIncluded, isNotIncluded, hasNoDuplicates, hasLength, isNotEmpty, containsSameElements,
+  isDefined,
+  isNotNull,
+  isNull,
+  isTruthy,
+  isFalsy,
+  isEqual,
+  isNotEqual,
+  isGreaterThan,
+  isLowerThan,
+  isGreaterThanOrEqual,
+  isIncluded,
+  isNotIncluded,
+  hasNoDuplicates,
+  hasLength,
+  isNotEmpty,
+  containsSameElements,
   expectToThrow,
-} from '<relative>/tests/utils/assertions'
+} from "<relative>/tests/utils/assertions"
 ```
 
 Pattern: `isEqual('label', actual, expected)` — throws HTTP 500 on failure, propagated to Jest.

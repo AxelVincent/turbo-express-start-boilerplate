@@ -46,4 +46,7 @@ apps/api/uploads
 *.pem
 _temp
 
-.claude
+# Claude Code: personal settings stay local, shared skills are versioned so a
+# product built from this boilerplate inherits them.
+.claude/*
+!.claude/skills/

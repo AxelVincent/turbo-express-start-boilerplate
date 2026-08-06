@@ -1,0 +1,55 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "workspaces": {
+    ".": {
+      "entry": [],
+      "project": []
+    },
+    "apps/api": {
+      "entry": [
+        "src/tracing.ts",
+        "src/db/migrations/*.ts",
+        "src/scripts/*.ts",
+        "src/**/*.test.ts"
+      ],
+      "project": ["src/**/*.ts", "tests/**/*.ts"],
+      "ignore": ["src/db/types.ts", "tests/utils/assertions/**/*.ts"],
+      "ignoreDependencies": ["kysely-codegen", "ts-jest"]
+    },
+    "apps/front": {
+      "entry": [
+        "src/router.tsx",
+        "src/entry-client.tsx",
+        "src/entry-server.tsx",
+        "src/routes/**/*.{ts,tsx}",
+        "src/**/*.test.{ts,tsx}"
+      ],
+      "project": ["src/**/*.{ts,tsx}"],
+      "ignore": ["src/components/ui/**/*.tsx"],
+      "ignoreDependencies": ["tailwindcss-animate"]
+    },
+    "packages/logger": {
+      "project": ["src/**/*.ts"],
+      "ignoreDependencies": ["pino-loki", "pino-pretty"]
+    },
+    "packages/metrics": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/tracing": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/jest-presets": {
+      "project": ["node/*.js"],
+      "ignoreDependencies": ["ts-jest"]
+    },
+    "packages/eslint-config": {
+      "entry": ["library.js", "react-internal.js"],
+      "project": ["*.js"],
+      "ignoreDependencies": ["@vercel/style-guide", "eslint-plugin-only-warn"]
+    },
+    "packages/eslint-plugin": {
+      "entry": ["rules/**/*.js"],
+      "project": ["*.js", "rules/**/*.js"]
+    }
+  }
+}

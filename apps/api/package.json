@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "exports": {
-    "./contracts/*": "./src/contracts/*.ts",
     "./routes_web/*/*/contract": "./src/routes_web/*/*/contract.ts",
     "./auth/*": "./src/auth/*.ts"
   },

@@ -13,8 +13,11 @@ A production-ready, full-stack monorepo boilerplate for building modern web appl
 - **Admin Backoffice** - Dual sidebar system with role-based admin panel
 - **Organization Management** - Multi-org with member management, invitations, and settings
 - **Integration Test System** - BDD-style test framework with user pooling and auto-cleanup
-- **Custom ESLint Plugin** - 15 rules enforcing code organization and test quality
-- **Full Observability** - Prometheus, Grafana, Loki, structured logging
+- **Custom ESLint Plugin** - 27 rules enforcing API/frontend architecture and test quality
+- **Full Observability** - Prometheus metrics, Grafana, Loki logs, Tempo traces, Slack error alerts
+- **Object Storage** - S3 in production, local filesystem in development, one interface
+- **Background Jobs & Rate Limiting** - Redis-backed queue lifecycle and outbound API throttling
+- **Graceful Shutdown** - Drains connections, closes the pool, flushes traces on SIGTERM
 - **Docker Infrastructure** - PostgreSQL, Redis, monitoring stack
 - **Shadcn/ui + Tailwind 4** - Beautiful UI with dark/light theme support
 
@@ -48,11 +51,13 @@ pnpm dev
 
 ### Access Points
 
-| Service  | URL                   |
-| -------- | --------------------- |
-| Frontend | http://localhost:3000 |
-| API      | http://localhost:3035 |
-| Grafana  | http://localhost:3202 |
+| Service    | URL                   |
+| ---------- | --------------------- |
+| Frontend   | http://localhost:3005 |
+| API        | http://localhost:3030 |
+| Grafana    | http://localhost:3202 |
+| Prometheus | http://localhost:9092 |
+| Tempo      | http://localhost:3200 |
 
 ## Project Structure
 
@@ -90,11 +95,12 @@ turbo-express-start-boilerplate/
 │           └── lib/             # API client, hooks, query engine
 │
 ├── packages/
-│   ├── eslint-plugin/           # 15 custom ESLint rules
+│   ├── eslint-plugin/           # 27 custom ESLint rules
 │   ├── eslint-config/           # Shared ESLint configuration
 │   ├── typescript-config/       # Shared TypeScript configurations
 │   ├── logger/                  # Pino logging with Loki integration
 │   ├── metrics/                 # Prometheus metrics framework
+│   ├── tracing/                 # OpenTelemetry bootstrap (OTLP -> Tempo)
 │   └── jest-presets/            # Jest test presets
 │
 ├── docker-compose.yml
@@ -189,19 +195,31 @@ pnpm --filter @repo/api test:integration
 
 ## Custom ESLint Plugin
 
-15 rules enforcing code quality:
+27 rules that turn the architecture into errors instead of things you have to
+remember. See `packages/eslint-plugin/README.md` for the full table.
 
-**Code Organization:**
+**API structure:**
 
-- `one-query-per-file` - One query export per file in queries/ folders
-- `no-barrel-files` - No pure re-export index files
+- `one-route-per-file` - Each handler in `<route>/<route>.ts` with its own contract
+- `routes-must-use-contract` - Schemas come from a sibling `contract.ts`
+- `routes-wrapped-with-logger` - Handlers carry request context into the logs
 
-**Integration Test Quality:**
+**Data access:**
+
+- `no-inline-queries` - Query builders only inside `queries/`
+- `no-manual-query-types` - Query types derived from generated DB types
+- `one-query-per-file`, `no-business-logic-in-queries`, `no-barrel-files`
+
+**Frontend:**
+
+- `use-contract-types-in-hooks` - Hooks consume the route's inferred types
+- `prefer-shadcn-components`, `max-component-declarations`, `max-route-file-lines`
+
+**Integration test quality:**
 
 - `one-test-suite-per-file`, `max-test-cases-per-suite` (max 10)
 - `require-given-when-then` - BDD comment structure
-- `no-raw-http-in-test-cases` - Use domain methods
-- `no-direct-db-in-test-cases` - No direct DB access
+- `no-raw-http-in-test-cases` / `no-direct-db-in-test-cases`
 - And 8 more structural rules
 
 ## Query Engine
@@ -246,8 +264,8 @@ pnpm --filter @repo/api db:types
 | Database | PostgreSQL 15                                                |
 | Auth     | Better Auth (email/password, organizations, roles)           |
 | Testing  | Jest, custom integration test framework                      |
-| Linting  | ESLint + 15 custom rules, TypeScript strict mode             |
-| Infra    | Docker Compose, Prometheus, Grafana, Loki, Redis             |
+| Linting  | ESLint + 27 custom rules, Knip, TypeScript strict mode       |
+| Infra    | Docker Compose, Prometheus, Grafana, Loki, Tempo, Redis      |
 | Monorepo | Turborepo, pnpm workspaces                                   |
 
 ## License
