@@ -2,7 +2,7 @@
 
 A production-ready, full-stack monorepo boilerplate for building modern web applications. Features React 19, Express, PostgreSQL, Better Auth with multi-org support, and a complete observability stack.
 
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/lNcqoC?referralCode=Dhlvs9&utm_medium=integration&utm_source=template&utm_campaign=generic)
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/jxlr-boilerplate?referralCode=Dhlvs9&utm_medium=integration&utm_source=template&utm_campaign=generic)
 
 ## Features
 
