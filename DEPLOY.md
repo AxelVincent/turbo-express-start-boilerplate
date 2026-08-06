@@ -54,8 +54,23 @@ Then set the rest by hand:
 | `OTEL_SERVICE_NAME`   | names this service in both Tempo and Loki                                       |
 | `S3_*`                | required outside development — see `apps/api/.env.example`                      |
 
-Do **not** set `PORT`. Railway assigns it and the API binds whatever it is
-given.
+### Ports
+
+Railway routes the public domain to a **target port** you set per service
+(Settings → Networking → Public Networking). It must match the port the process
+actually listens on, or the domain 502s against a healthy container.
+
+The simplest arrangement, and the one the Lead Club project uses, is to pin both
+ends: set the target port to the app's port and let the app bind it.
+
+| Service | Target port | Bound by                                   |
+| ------- | ----------- | ------------------------------------------ |
+| `api`   | 3030        | `process.env.PORT \|\| 3030` in `index.ts` |
+| `front` | 3000        | Nitro, via `PORT`                          |
+
+If you prefer to let Railway choose, leave `PORT` unset **and** update the
+target port to match what it assigns — changing one without the other is the
+failure mode.
 
 ### The frontend's API URL is a build argument, not a runtime variable
 
@@ -84,8 +99,12 @@ branch. The `watchPatterns` in each `railway.json` mean a change under
 `apps/api/**` doesn't rebuild the frontend, and vice versa; a change under
 `packages/**` rebuilds both, which is correct because both depend on them.
 
-Nothing else to configure — but note that Railway will deploy a commit whose
-tests fail, because it never runs them.
+By default Railway will deploy a commit whose tests fail, because it never runs
+them. It has a native fix: Settings → Source → **Wait for CI**, which holds the
+deploy until the repo's GitHub Actions finish successfully. With
+`.github/workflows/ci.yml` present, ticking that box gets you a gated deploy
+with no tokens, no secrets and no deploy job — which is why it is worth
+preferring over Option B unless you need the extra control.
 
 ### Option B — GitHub Actions gates the deploy
 
@@ -212,3 +231,40 @@ the fork relationship.
 The two approaches also compose: use the GitHub template for the code and keep
 the Railway template purely for provisioning Postgres, Redis and the service
 skeleton.
+
+### The "clone the infra, repoint the code" workflow
+
+This is the fastest route once a reference project exists, and it avoids
+ejecting entirely.
+
+1. Generate a template from a working project.
+2. Deploy it for the new product — you get every datastore, volume and
+   observability service already wired.
+3. On `api` and `front` only: Settings → Source → **Disconnect**, then connect
+   the new product's repository.
+4. Set the config file path on each (`apps/api/railway.json`,
+   `apps/front/railway.json`) so build and deploy settings come from the new
+   repo rather than being re-entered by hand.
+5. Replace the app-level variables; leave the datastore reference variables
+   alone, since they already point at the new project's own Postgres and Redis.
+
+Step 3 is genuinely two changes. What it does **not** carry across is
+variables: a template generated from a product project brings that product's
+variable names with it, so prune them back to what
+`apps/api/.env.example` lists before publishing, or every new project starts
+with a pile of irrelevant keys to clear out.
+
+The bigger win is step 2. Postgres, Redis, object storage and the
+Grafana/Loki/Prometheus/Tempo group — with their volumes and datasource
+wiring — are the parts that take real time to rebuild by hand and are entirely
+product-agnostic. Templating those is worth it even if you connect the two app
+services manually every time.
+
+Two things to fix in the template before publishing, so new projects do not
+inherit them:
+
+- Give each service a stable **private domain**. Railway assigns random names
+  (`scintillating-optimism.railway.internal`), which anything scraping or
+  calling the API internally — Prometheus, a worker — then has to be told about.
+- Set **watch paths** on both app services. Without them every push rebuilds
+  everything; `apps/*/railway.json` sets them once you enable config-as-code.
