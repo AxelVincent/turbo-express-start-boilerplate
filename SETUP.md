@@ -8,12 +8,33 @@ side.
 **Get the copy first.** Use GitHub's **Use this template** button rather than a
 fork or a clone-and-push: it gives you a new repo with a single clean commit, no
 "forked from" link, and the option to be private. A fork drags the whole
-boilerplate history along and points its pull requests back at upstream. If you
-still want to pull boilerplate improvements later, add it as a second remote:
+boilerplate history along and points its pull requests back at upstream.
+
+From the CLI:
+
+```bash
+gh repo create my-project --template AxelVincent/turbo-express-start-boilerplate --private --clone
+```
+
+This creates the `my-project` repository on your GitHub account from the
+template and clones it into a `my-project/` folder — no need to create
+anything on GitHub first.
+
+If you still want to pull boilerplate improvements later, add it as a second
+remote:
 
 ```bash
 git remote add boilerplate https://github.com/AxelVincent/turbo-express-start-boilerplate.git
 ```
+
+**Railway is a separate decision.** The README's **Deploy on Railway** button
+provisions the full stack in one click, but since March 2024 the deployed
+services attach to the _template's_ repository — it does not create a repo of
+your own. Create your repo with the template flow above, run this file in it,
+then either point a fresh Railway project at the new repo (the committed
+`railway.json` files configure both services) or deploy the Railway template
+for its datastores and repoint `api` and `front` at your repo. `DEPLOY.md`
+covers both routes.
 
 Work top to bottom. Every step ends in something you can check — do not move on
 from a step whose verification failed.
