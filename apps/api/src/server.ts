@@ -7,6 +7,9 @@ import { createMetricsHandler } from "@repo/metrics"
 import { betterAuthMiddleware } from "./middlewares/better_auth_middleware"
 import { metricsRegistry } from "./metrics/registry"
 import routesWeb from "./routes_web"
+import routesPublic from "./routes_public"
+import routesWebhook from "./routes_webhook"
+import routesInternal from "./routes_internal"
 import { auth } from "./auth/auth"
 import { BETTER_AUTH_CONFIG } from "./config/better_auth"
 
@@ -28,6 +31,8 @@ export const createServer = (): Express => {
       cors({
         origin: BETTER_AUTH_CONFIG.trustedOrigins,
         credentials: true,
+        // Lets the browser read the download filename off a file response.
+        exposedHeaders: ["Content-Disposition"],
       }),
     )
     // Better Auth API routes — must be before body parsing
@@ -40,7 +45,17 @@ export const createServer = (): Express => {
     .all("/api/auth/*", toNodeHandler(auth) as any)
     // Body parsing for all other routes
     .use(urlencoded({ extended: true, limit: "10mb" }))
-    .use(json({ limit: "10mb" }))
+    .use(
+      json({
+        limit: "10mb",
+        // Keep the exact bytes as received so webhook signatures can be
+        // verified against them — a re-serialized body differs in key order
+        // and whitespace, and would fail an otherwise valid signature.
+        verify: (req, _res, buf) => {
+          ;(req as express.Request).rawBody = buf
+        },
+      }),
+    )
     .use(httpMetricsMiddleware)
     // Better Auth session middleware — extracts session, populates req.auth
     .use(betterAuthMiddleware)
@@ -55,8 +70,14 @@ export const createServer = (): Express => {
     .get("/health", (_, res) => {
       return res.json({ status: "ok" })
     })
-    // Protected routes
+    // Unauthenticated public API
+    .use("/public", routesPublic)
+    // Inbound webhooks — each route verifies its own provider signature
+    .use("/webhook", routesWebhook)
+    // Authenticated user routes
     .use("/web", routesWeb)
+    // Service-to-service, behind INTERNAL_RPC_SECRET
+    .use("/internal", routesInternal)
 
   // Test routes — only available in development/test environments
   if (isTestEnvironment()) {
