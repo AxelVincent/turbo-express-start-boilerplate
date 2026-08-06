@@ -3,5 +3,6 @@
 // product reports under.
 import "dotenv/config"
 import { bootstrapTracing } from "@repo/tracing"
+import { SERVICE_NAME } from "./config/service"
 
-bootstrapTracing({ serviceName: "boilerplate-api" })
+bootstrapTracing({ serviceName: SERVICE_NAME })

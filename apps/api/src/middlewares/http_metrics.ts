@@ -1,10 +1,11 @@
 import { createHttpMetricsMiddleware } from "@repo/metrics"
 import { metricsRegistry } from "../metrics/registry"
+import { METRIC_PREFIX } from "../config/service"
 
 export const httpMetricsMiddleware = createHttpMetricsMiddleware(
   metricsRegistry,
   {
-    prefix: "boilerplate_",
+    prefix: METRIC_PREFIX,
     routeExtractor: (req) => {
       // Express doesn't provide route patterns for nested routers in req.baseUrl
       // req.baseUrl contains actual values like "/web/places/123abc/notes"

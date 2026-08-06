@@ -77,20 +77,25 @@ boilerplate will collide on the defaults. Offset them in the second project's
 Everything below carries the boilerplate's identity. Change these and the rest
 of the codebase follows — nothing else hardcodes a project name.
 
-| What                 | Where                                                             | Currently                        |
-| -------------------- | ----------------------------------------------------------------- | -------------------------------- |
-| Display name         | `apps/front/src/lib/constants.ts` (`APP_NAME`)                    | `Acme`                           |
-| Database             | `.env` and `apps/api/.env` (`PGDATABASE`)                         | `boilerplate`                    |
-| Service name         | `apps/api/.env` (`OTEL_SERVICE_NAME`)                             | `boilerplate-api`                |
-| Service name default | `apps/api/src/tracing.ts`, `packages/logger/src/index.ts`         | `boilerplate-api`, `boilerplate` |
-| Metric prefix        | `apps/api/src/metrics/registry.ts`                                | `boilerplate_`                   |
-| Prometheus job       | `prometheus.yml`                                                  | `boilerplate-api`                |
-| Grafana folder       | `packages/metrics/grafana/provisioning/dashboards/dashboards.yml` | `Boilerplate`                    |
-| Workspace name       | root `package.json` (`name`)                                      | `@repo/monorepo`                 |
+| What           | Where                                                             | Currently         |
+| -------------- | ----------------------------------------------------------------- | ----------------- |
+| Project slug   | `apps/api/src/config/service.ts` (`APP_SLUG`)                     | `boilerplate`     |
+| Display name   | `apps/front/src/lib/constants.ts` (`APP_NAME`)                    | `Acme`            |
+| Database       | `.env` and `apps/api/.env` (`PGDATABASE`)                         | `boilerplate`     |
+| Service name   | `apps/api/.env` (`OTEL_SERVICE_NAME`)                             | `boilerplate-api` |
+| Log service    | `packages/logger/src/index.ts` (fallback only)                    | `boilerplate`     |
+| Prometheus job | `prometheus.yml`                                                  | `boilerplate-api` |
+| Grafana folder | `packages/metrics/grafana/provisioning/dashboards/dashboards.yml` | `Boilerplate`     |
+| Workspace name | root `package.json` (`name`)                                      | `@repo/monorepo`  |
 
-`APP_NAME` drives the page title, sidebar, auth header and landing page, so it
-is the only one that changes user-visible text. `OTEL_SERVICE_NAME` labels both
-traces in Tempo and logs in Loki, so set it before you start collecting either.
+`APP_SLUG` is the single source of truth inside the API: every Prometheus
+metric name, the `app` label and the default trace/log service name derive from
+it. `APP_NAME` is the only one that changes user-visible text — page title,
+sidebar, auth header and landing page. `OTEL_SERVICE_NAME` labels both traces in
+Tempo and logs in Loki, so set it before you start collecting either.
+
+Scaffolding a fresh project? `SETUP.md` is a step-by-step prompt that does all
+of this plus moves every port off the defaults.
 
 The internal package scope (`@repo/*`) is deliberately generic — there is no
 need to rename it, and doing so touches every import.
