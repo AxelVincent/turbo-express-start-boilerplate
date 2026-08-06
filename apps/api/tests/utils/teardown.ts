@@ -1,17 +1,16 @@
-import 'dotenv/config'
-import { existsSync } from 'fs'
-import { mkdir, writeFile } from 'fs/promises'
-import { resolve } from 'path'
-import axios from 'axios'
+import "dotenv/config"
+import { existsSync } from "fs"
+import { mkdir, writeFile } from "fs/promises"
+import { resolve } from "path"
+import axios from "axios"
 
 const API_URL = `http://localhost:${process.env.PORT || 3035}`
-const HEADERS = { authorization: process.env.HEALTH_AUTH_TOKEN || 'test-secret' }
+const HEADERS = {
+  authorization: process.env.HEALTH_AUTH_TOKEN || "test-secret",
+}
 
 export default async function globalTeardown() {
-  await Promise.allSettled([
-    storeTestCoverage(),
-    showAdditionalUsersCount(),
-  ])
+  await Promise.allSettled([storeTestCoverage(), showAdditionalUsersCount()])
 }
 
 async function storeTestCoverage() {
@@ -23,14 +22,14 @@ async function storeTestCoverage() {
 
     if (!data?.coverage) return
 
-    const coveragePath = resolve(process.cwd(), 'coverage')
+    const coveragePath = resolve(process.cwd(), "coverage")
     if (!existsSync(coveragePath)) await mkdir(coveragePath)
 
     await writeFile(
-      resolve(coveragePath, 'coverage-final.json'),
+      resolve(coveragePath, "coverage-final.json"),
       JSON.stringify(data.coverage),
     )
-    console.log('Coverage data stored.')
+    console.log("Coverage data stored.")
   } catch {
     // Coverage collection is optional
   }
@@ -44,7 +43,9 @@ async function showAdditionalUsersCount() {
     })
     const count = data?.count || 0
     if (count > 0) {
-      console.log(`${count} additional test user(s) were created beyond the seeded pool.`)
+      console.log(
+        `${count} additional test user(s) were created beyond the seeded pool.`,
+      )
     }
   } catch {
     // Stats collection is optional

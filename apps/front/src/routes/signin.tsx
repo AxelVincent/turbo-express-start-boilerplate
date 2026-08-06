@@ -1,20 +1,20 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { useEffect } from 'react'
-import { authClient } from '@/lib/auth-client'
-import { useAuth } from '@/lib/auth-provider'
-import { AuthHeader } from '@/components/auth/auth-header'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+import { useEffect } from "react"
+import { authClient } from "@/lib/auth-client"
+import { useAuth } from "@/lib/auth-provider"
+import { AuthHeader } from "@/components/auth/auth-header"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
+} from "@/components/ui/card"
 import {
   Form,
   FormControl,
@@ -22,20 +22,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
+} from "@/components/ui/form"
 
-export const Route = createFileRoute('/signin')({
-  validateSearch: (
-    search: Record<string, unknown>,
-  ): { redirect?: string } => ({
+export const Route = createFileRoute("/signin")({
+  validateSearch: (search: Record<string, unknown>): { redirect?: string } => ({
     redirect: (search.redirect as string) || undefined,
   }),
   component: SignInPage,
 })
 
 const signinSchema = z.object({
-  email: z.string().email('Please enter a valid email'),
-  password: z.string().min(1, 'Password is required'),
+  email: z.string().email("Please enter a valid email"),
+  password: z.string().min(1, "Password is required"),
 })
 
 type SignInFormValues = z.infer<typeof signinSchema>
@@ -44,13 +42,13 @@ function SignInPage() {
   const { redirect } = Route.useSearch()
   const auth = useAuth()
   const navigate = useNavigate()
-  const postAuthPath = redirect || '/orgs'
+  const postAuthPath = redirect || "/orgs"
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signinSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   })
 
@@ -71,7 +69,7 @@ function SignInPage() {
     })
 
     if (error) {
-      form.setError('root', { message: error.message ?? 'Sign in failed' })
+      form.setError("root", { message: error.message ?? "Sign in failed" })
     } else {
       // Force session refresh so router context updates immediately
       await authClient.getSession({ query: { disableCookieCache: true } })
@@ -88,7 +86,10 @@ function SignInPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className="space-y-4"
+            >
               <FormField
                 control={form.control}
                 name="email"
@@ -128,24 +129,37 @@ function SignInPage() {
               />
 
               <div className="text-right">
-                <Link to="/forgot-password" className="text-sm text-primary hover:underline">
+                <Link
+                  to="/forgot-password"
+                  className="text-sm text-primary hover:underline"
+                >
                   Forgot password?
                 </Link>
               </div>
 
               {form.formState.errors.root && (
-                <p className="text-sm text-destructive">{form.formState.errors.root.message}</p>
+                <p className="text-sm text-destructive">
+                  {form.formState.errors.root.message}
+                </p>
               )}
 
-              <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? 'Signing in...' : 'Sign in'}
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting ? "Signing in..." : "Sign in"}
               </Button>
             </form>
           </Form>
 
           <p className="text-center text-sm text-muted-foreground mt-4">
-            Don&apos;t have an account?{' '}
-            <Link to="/signup" search={redirect ? { redirect } : undefined} className="text-primary hover:underline font-medium">
+            Don&apos;t have an account?{" "}
+            <Link
+              to="/signup"
+              search={redirect ? { redirect } : undefined}
+              className="text-primary hover:underline font-medium"
+            >
               Sign up
             </Link>
           </p>

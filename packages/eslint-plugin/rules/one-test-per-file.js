@@ -5,7 +5,7 @@
  * This keeps tests focused and makes the test suite easier to navigate.
  */
 
-"use strict";
+"use strict"
 
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
@@ -23,20 +23,20 @@ module.exports = {
   },
 
   create(context) {
-    const filename = context.getFilename().replace(/\\/g, "/");
+    const filename = context.getFilename().replace(/\\/g, "/")
 
-    if (!/__tests__\/cases\//.test(filename)) return {};
-    if (/\/index\.[tj]sx?$/.test(filename)) return {};
-    if (/\/_[^/]+\.[tj]sx?$/.test(filename)) return {};
+    if (!/__tests__\/cases\//.test(filename)) return {}
+    if (/\/index\.[tj]sx?$/.test(filename)) return {}
+    if (/\/_[^/]+\.[tj]sx?$/.test(filename)) return {}
 
-    let exportCount = 0;
-    let firstExport = null;
+    let exportCount = 0
+    let firstExport = null
 
     return {
       ExportNamedDeclaration(node) {
-        exportCount++;
+        exportCount++
         if (exportCount === 1) {
-          firstExport = node;
+          firstExport = node
         }
       },
 
@@ -46,9 +46,9 @@ module.exports = {
             node: firstExport,
             messageId: "tooManyExports",
             data: { count: String(exportCount) },
-          });
+          })
         }
       },
-    };
+    }
   },
-};
+}

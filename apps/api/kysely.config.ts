@@ -1,6 +1,6 @@
-import { defineConfig } from "kysely-ctl";
-import { PostgresDialect } from "kysely";
-import { Pool } from "pg";
+import { defineConfig } from "kysely-ctl"
+import { PostgresDialect } from "kysely"
+import { Pool } from "pg"
 
 export default defineConfig({
   dialect: new PostgresDialect({
@@ -15,4 +15,4 @@ export default defineConfig({
   migrations: {
     migrationFolder: "src/db/migrations",
   },
-});
+})

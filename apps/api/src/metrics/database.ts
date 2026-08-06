@@ -1,14 +1,14 @@
-import { startDurationTimer } from '@repo/metrics'
+import { startDurationTimer } from "@repo/metrics"
 import {
   databaseQueriesCounter,
   databaseQueryDurationHistogram,
-} from './collectors'
+} from "./collectors"
 
 /**
  * Wrapper to track database query metrics with start/stop
  */
 export const trackDatabaseQuery = async <T>(
-  operation: 'select' | 'insert' | 'update' | 'delete',
+  operation: "select" | "insert" | "update" | "delete",
   table: string,
   queryFn: () => Promise<T>,
 ): Promise<T> => {

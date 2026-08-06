@@ -1,19 +1,19 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
-import { toast } from 'sonner'
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
 import {
   useOrganizations,
   useCreateOrganization,
   useSetActiveOrganization,
   getLastActiveOrgId,
   organizationsListOptions,
-} from '@/lib/hooks/use-organizations'
-import { prefetch } from '@/lib/query-client'
-import { useAuth } from '@/lib/auth-provider'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
+} from "@/lib/hooks/use-organizations"
+import { prefetch } from "@/lib/query-client"
+import { useAuth } from "@/lib/auth-provider"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   Dialog,
   DialogContent,
@@ -22,11 +22,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
-export const Route = createFileRoute('/_auth/orgs/')({
+export const Route = createFileRoute("/_auth/orgs/")({
   loader: async ({ context: { queryClient } }) => {
     await prefetch(queryClient, organizationsListOptions())
   },
@@ -41,8 +41,8 @@ function OrgsListPage() {
   const createOrg = useCreateOrganization()
   const canCreateOrg = true
   const [showCreate, setShowCreate] = useState(false)
-  const [newOrgName, setNewOrgName] = useState('')
-  const [newOrgSlug, setNewOrgSlug] = useState('')
+  const [newOrgName, setNewOrgName] = useState("")
+  const [newOrgSlug, setNewOrgSlug] = useState("")
 
   // Auto-redirect to last active org, or to the only org (skip for super admins)
   useEffect(() => {
@@ -62,9 +62,9 @@ function OrgsListPage() {
   const handleSelectOrg = async (id: string) => {
     try {
       await setActiveOrg.mutateAsync(id)
-      navigate({ to: '/orgs/$orgId', params: { orgId: id } })
+      navigate({ to: "/orgs/$orgId", params: { orgId: id } })
     } catch {
-      toast.error('Failed to switch organization')
+      toast.error("Failed to switch organization")
     }
   }
 
@@ -73,24 +73,32 @@ function OrgsListPage() {
     try {
       const result = await createOrg.mutateAsync({
         name: newOrgName.trim(),
-        slug: newOrgSlug.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-'),
+        slug: newOrgSlug
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9-]/g, "-"),
       })
       setShowCreate(false)
-      setNewOrgName('')
-      setNewOrgSlug('')
+      setNewOrgName("")
+      setNewOrgSlug("")
       if (result?.data?.id) {
         handleSelectOrg(result.data.id)
       }
     } catch (err) {
-      toast.error('Failed to create organization', {
-        description: err instanceof Error ? err.message : 'Please try again',
+      toast.error("Failed to create organization", {
+        description: err instanceof Error ? err.message : "Please try again",
       })
     }
   }
 
   const handleNameChange = (name: string) => {
     setNewOrgName(name)
-    setNewOrgSlug(name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''))
+    setNewOrgSlug(
+      name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, ""),
+    )
   }
 
   if (isLoading) {
@@ -110,7 +118,9 @@ function OrgsListPage() {
     return (
       <Card className="border-destructive bg-destructive/10">
         <CardHeader>
-          <CardTitle className="text-destructive">Error loading organizations</CardTitle>
+          <CardTitle className="text-destructive">
+            Error loading organizations
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-destructive/80">{error.message}</p>
@@ -169,9 +179,13 @@ function OrgsListPage() {
                 </Button>
                 <Button
                   onClick={handleCreateOrg}
-                  disabled={!newOrgName.trim() || !newOrgSlug.trim() || createOrg.isPending}
+                  disabled={
+                    !newOrgName.trim() ||
+                    !newOrgSlug.trim() ||
+                    createOrg.isPending
+                  }
                 >
-                  {createOrg.isPending ? 'Creating...' : 'Create'}
+                  {createOrg.isPending ? "Creating..." : "Create"}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -213,7 +227,9 @@ function OrgsListPage() {
                     {org.name.charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <CardTitle className="text-base truncate">{org.name}</CardTitle>
+                    <CardTitle className="text-base truncate">
+                      {org.name}
+                    </CardTitle>
                     <p className="text-xs text-muted-foreground">/{org.slug}</p>
                   </div>
                 </div>

@@ -1,10 +1,10 @@
-const { RuleTester } = require("eslint");
-const rule = require("./one-test-per-file");
+const { RuleTester } = require("eslint")
+const rule = require("./one-test-per-file")
 
 const ruleTester = new RuleTester({
   parser: require.resolve("@typescript-eslint/parser"),
   parserOptions: { ecmaVersion: 2020, sourceType: "module" },
-});
+})
 
 ruleTester.run("one-test-per-file", rule, {
   valid: [
@@ -47,4 +47,4 @@ ruleTester.run("one-test-per-file", rule, {
       errors: [{ messageId: "tooManyExports", data: { count: "2" } }],
     },
   ],
-});
+})

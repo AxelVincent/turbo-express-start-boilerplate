@@ -1,8 +1,8 @@
-import { startDurationTimer } from '@repo/metrics'
+import { startDurationTimer } from "@repo/metrics"
 import {
   externalApiDurationHistogram,
   externalApiRequestsCounter,
-} from './collectors'
+} from "./collectors"
 
 /**
  * Wrapper to track external API call metrics
@@ -13,11 +13,11 @@ export const trackExternalApiCall = async <T>(
   apiFn: () => Promise<T>,
 ): Promise<T> => {
   const timer = startDurationTimer(externalApiDurationHistogram)
-  let statusCode = 'unknown'
+  let statusCode = "unknown"
 
   try {
     const result = await apiFn()
-    statusCode = '200' // Assuming success if no error
+    statusCode = "200" // Assuming success if no error
 
     timer.stop({ service, endpoint })
     externalApiRequestsCounter.inc({
@@ -29,10 +29,10 @@ export const trackExternalApiCall = async <T>(
     return result
   } catch (error) {
     // Try to extract status code from error
-    if (error && typeof error === 'object' && 'statusCode' in error) {
+    if (error && typeof error === "object" && "statusCode" in error) {
       statusCode = String(error.statusCode)
     } else {
-      statusCode = '500'
+      statusCode = "500"
     }
 
     timer.stop({ service, endpoint })

@@ -1,10 +1,10 @@
-import {
-    createHttpMetricsMiddleware,
-  } from '@repo/metrics'
-import { metricsRegistry } from '../metrics/registry';
+import { createHttpMetricsMiddleware } from "@repo/metrics"
+import { metricsRegistry } from "../metrics/registry"
 
-export const httpMetricsMiddleware = createHttpMetricsMiddleware(metricsRegistry, {
-    prefix: 'boilerplate_',
+export const httpMetricsMiddleware = createHttpMetricsMiddleware(
+  metricsRegistry,
+  {
+    prefix: "boilerplate_",
     routeExtractor: (req) => {
       // Express doesn't provide route patterns for nested routers in req.baseUrl
       // req.baseUrl contains actual values like "/web/places/123abc/notes"
@@ -25,16 +25,17 @@ export const httpMetricsMiddleware = createHttpMetricsMiddleware(metricsRegistry
         // Use a regex to only replace full path segments
         const valueStr = String(paramValue)
         pattern = pattern.replace(
-          new RegExp(`/${valueStr}(?=/|$)`, 'g'),
+          new RegExp(`/${valueStr}(?=/|$)`, "g"),
           `/:${paramName}`,
         )
       }
 
       return pattern
     },
-    shouldTrack: (req) => req.method !== 'OPTIONS',
+    shouldTrack: (req) => req.method !== "OPTIONS",
     // Note: We don't include user_id in labels to avoid cardinality explosion
     // (one metric series per user would be too many for Prometheus)
     // User-specific metrics should be tracked separately if needed
     extraLabels: () => ({}),
-  });
+  },
+)

@@ -7,7 +7,7 @@
  * actually lives. Import directly from the source module instead.
  */
 
-"use strict";
+"use strict"
 
 /**
  * Returns true when the AST node is a re-export statement:
@@ -20,7 +20,7 @@ function isReExport(node) {
   return (
     (node.type === "ExportNamedDeclaration" && node.source != null) ||
     node.type === "ExportAllDeclaration"
-  );
+  )
 }
 
 /** @type {import('eslint').Rule.RuleModule} */
@@ -42,32 +42,32 @@ module.exports = {
   },
 
   create(context) {
-    const filename = context.getFilename().replace(/\\/g, "/");
+    const filename = context.getFilename().replace(/\\/g, "/")
 
     // Only inspect index files
     if (!/\/index\.[tj]sx?$/.test(filename)) {
-      return {};
+      return {}
     }
 
     return {
       "Program:exit"(programNode) {
-        const { body } = programNode;
+        const { body } = programNode
 
         // Empty files are fine
         if (body.length === 0) {
-          return;
+          return
         }
 
         // A barrel if EVERY statement is a re-export
-        const everyStatementIsReExport = body.every(isReExport);
+        const everyStatementIsReExport = body.every(isReExport)
 
         if (everyStatementIsReExport) {
           context.report({
             node: body[0],
             messageId: "noBarrelFile",
-          });
+          })
         }
       },
-    };
+    }
   },
-};
+}

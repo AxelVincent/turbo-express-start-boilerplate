@@ -1,4 +1,4 @@
-import { baseTemplate } from './base_template'
+import { baseTemplate } from "./base_template"
 
 interface OrgInvitationParams {
   inviterName: string
@@ -12,7 +12,12 @@ interface EmailTemplate {
   html: string
 }
 
-export function orgInvitationTemplate({ inviterName, orgName, inviteLink, role }: OrgInvitationParams): EmailTemplate {
+export function orgInvitationTemplate({
+  inviterName,
+  orgName,
+  inviteLink,
+  role,
+}: OrgInvitationParams): EmailTemplate {
   const content = `
 <h1 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#0f172a;letter-spacing:-0.02em;">You've been invited</h1>
 <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#64748b;">

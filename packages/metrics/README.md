@@ -22,13 +22,13 @@ pnpm install
 
 ```typescript
 // src/metrics/registry.ts
-import { createMetricsRegistry } from '@boilerplate/metrics'
+import { createMetricsRegistry } from "@boilerplate/metrics"
 
 export const metricsRegistry = createMetricsRegistry({
-  prefix: 'myapp_',
+  prefix: "myapp_",
   defaultLabels: {
-    app: 'my-application',
-    environment: process.env.NODE_ENV || 'development',
+    app: "my-application",
+    environment: process.env.NODE_ENV || "development",
   },
   collectDefaultMetrics: true, // Collects Node.js metrics (CPU, memory, etc.)
 })
@@ -73,31 +73,35 @@ app.listen(3000)
 
 ```typescript
 // src/metrics/collectors.ts
-import { createCounter, createGauge, createHistogram } from '@boilerplate/metrics'
-import { metricsRegistry } from './registry'
+import {
+  createCounter,
+  createGauge,
+  createHistogram,
+} from "@boilerplate/metrics"
+import { metricsRegistry } from "./registry"
 
 // Counter - monotonically increasing value
 export const requestsCounter = createCounter(
   metricsRegistry,
-  'myapp_requests_total',
-  'Total number of requests',
-  ['endpoint', 'status'], // Labels
+  "myapp_requests_total",
+  "Total number of requests",
+  ["endpoint", "status"], // Labels
 )
 
 // Gauge - value that can go up or down
 export const activeConnectionsGauge = createGauge(
   metricsRegistry,
-  'myapp_active_connections',
-  'Number of active connections',
-  ['type'],
+  "myapp_active_connections",
+  "Number of active connections",
+  ["type"],
 )
 
 // Histogram - for measuring durations/sizes
 export const taskDurationHistogram = createHistogram(
   metricsRegistry,
-  'myapp_task_duration_seconds',
-  'Duration of tasks in seconds',
-  ['task_type'],
+  "myapp_task_duration_seconds",
+  "Duration of tasks in seconds",
+  ["task_type"],
   [0.1, 0.5, 1, 2, 5, 10, 30], // Buckets in seconds
 )
 ```
@@ -111,8 +115,8 @@ export const taskDurationHistogram = createHistogram(
 **Use Case:** Track how long operations take
 
 ```typescript
-import { startDurationTimer } from '@boilerplate/metrics'
-import { taskDurationHistogram } from './metrics/collectors'
+import { startDurationTimer } from "@boilerplate/metrics"
+import { taskDurationHistogram } from "./metrics/collectors"
 
 export const processTask = async (taskId: string) => {
   // ✅ Start timer - automatically records to histogram when stopped
@@ -124,18 +128,17 @@ export const processTask = async (taskId: string) => {
 
     // ✅ Stop timer with labels - returns duration in seconds
     const duration = timer.stop({
-      task_type: 'data_processing',
-      status: 'success',
+      task_type: "data_processing",
+      status: "success",
     })
 
     console.log(`Task completed in ${duration}s`)
     return result
-
   } catch (error) {
     // ✅ Still record duration even on failure
     timer.stop({
-      task_type: 'data_processing',
-      status: 'failed',
+      task_type: "data_processing",
+      status: "failed",
     })
 
     throw error
@@ -148,8 +151,8 @@ export const processTask = async (taskId: string) => {
 **Use Case:** Check elapsed time or conditionally record metrics
 
 ```typescript
-import { startTimer } from '@boilerplate/metrics'
-import { taskDurationHistogram } from './metrics/collectors'
+import { startTimer } from "@boilerplate/metrics"
+import { taskDurationHistogram } from "./metrics/collectors"
 
 export const processWithTimeout = async (taskId: string) => {
   // ✅ Generic timer - doesn't auto-record
@@ -163,7 +166,7 @@ export const processWithTimeout = async (taskId: string) => {
 
     // Timeout after 5 minutes
     if (elapsed > 300) {
-      throw new Error('Task timeout')
+      throw new Error("Task timeout")
     }
 
     // Log progress every 30 seconds
@@ -177,7 +180,7 @@ export const processWithTimeout = async (taskId: string) => {
 
   if (finalDuration > 10) {
     taskDurationHistogram.observe(
-      { task_type: 'slow_processing' },
+      { task_type: "slow_processing" },
       finalDuration,
     )
   }
@@ -191,8 +194,8 @@ export const processWithTimeout = async (taskId: string) => {
 **Use Case:** Track duration of individual steps in a process
 
 ```typescript
-import { startDurationTimer } from '@boilerplate/metrics'
-import { taskDurationHistogram } from './metrics/collectors'
+import { startDurationTimer } from "@boilerplate/metrics"
+import { taskDurationHistogram } from "./metrics/collectors"
 
 export const multiStepProcess = async (data: Data) => {
   // Track total duration
@@ -201,20 +204,20 @@ export const multiStepProcess = async (data: Data) => {
   // Step 1: Validation
   const validateTimer = startDurationTimer(taskDurationHistogram)
   await validateData(data)
-  validateTimer.stop({ task_type: 'validation', step: 'validate' })
+  validateTimer.stop({ task_type: "validation", step: "validate" })
 
   // Step 2: Processing
   const processTimer = startDurationTimer(taskDurationHistogram)
   const result = await processData(data)
-  processTimer.stop({ task_type: 'validation', step: 'process' })
+  processTimer.stop({ task_type: "validation", step: "process" })
 
   // Step 3: Storage
   const storeTimer = startDurationTimer(taskDurationHistogram)
   await storeResult(result)
-  storeTimer.stop({ task_type: 'validation', step: 'store' })
+  storeTimer.stop({ task_type: "validation", step: "store" })
 
   // Record total duration
-  totalTimer.stop({ task_type: 'validation', step: 'total' })
+  totalTimer.stop({ task_type: "validation", step: "total" })
 
   return result
 }
@@ -225,7 +228,7 @@ export const multiStepProcess = async (data: Data) => {
 **Use Case:** Count events (requests, errors, operations)
 
 ```typescript
-import { requestsCounter } from './metrics/collectors'
+import { requestsCounter } from "./metrics/collectors"
 
 export const handleRequest = async (req: Request, res: Response) => {
   try {
@@ -233,18 +236,18 @@ export const handleRequest = async (req: Request, res: Response) => {
 
     // ✅ Increment counter with labels
     requestsCounter.inc({
-      endpoint: '/api/users',
-      status: 'success',
+      endpoint: "/api/users",
+      status: "success",
     })
 
     res.json(result)
   } catch (error) {
     requestsCounter.inc({
-      endpoint: '/api/users',
-      status: 'error',
+      endpoint: "/api/users",
+      status: "error",
     })
 
-    res.status(500).json({ error: 'Internal error' })
+    res.status(500).json({ error: "Internal error" })
   }
 }
 ```
@@ -254,20 +257,20 @@ export const handleRequest = async (req: Request, res: Response) => {
 **Use Case:** Track current state (active connections, queue size, memory usage)
 
 ```typescript
-import { activeConnectionsGauge } from './metrics/collectors'
+import { activeConnectionsGauge } from "./metrics/collectors"
 
 // When connection opens
-socket.on('connect', () => {
-  activeConnectionsGauge.inc({ type: 'websocket' })
+socket.on("connect", () => {
+  activeConnectionsGauge.inc({ type: "websocket" })
 })
 
 // When connection closes
-socket.on('disconnect', () => {
-  activeConnectionsGauge.dec({ type: 'websocket' })
+socket.on("disconnect", () => {
+  activeConnectionsGauge.dec({ type: "websocket" })
 })
 
 // Set to specific value
-activeConnectionsGauge.set({ type: 'database' }, currentConnections)
+activeConnectionsGauge.set({ type: "database" }, currentConnections)
 ```
 
 ---
@@ -277,13 +280,13 @@ activeConnectionsGauge.set({ type: 'database' }, currentConnections)
 ### HTTP Duration Histogram
 
 ```typescript
-import { createHttpDurationHistogram } from '@boilerplate/metrics'
-import { metricsRegistry } from './metrics/registry'
+import { createHttpDurationHistogram } from "@boilerplate/metrics"
+import { metricsRegistry } from "./metrics/registry"
 
 const httpDuration = createHttpDurationHistogram(
   metricsRegistry,
-  'http_request_duration_seconds', // Optional: defaults to this
-  ['method', 'route', 'status_code'], // Optional: defaults to these
+  "http_request_duration_seconds", // Optional: defaults to this
+  ["method", "route", "status_code"], // Optional: defaults to these
 )
 ```
 
@@ -292,35 +295,35 @@ Default buckets: `[0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 2, 5, 10]` seconds
 ### HTTP Request Counter
 
 ```typescript
-import { createHttpRequestCounter } from '@boilerplate/metrics'
-import { metricsRegistry } from './metrics/registry'
+import { createHttpRequestCounter } from "@boilerplate/metrics"
+import { metricsRegistry } from "./metrics/registry"
 
 const httpRequests = createHttpRequestCounter(
   metricsRegistry,
-  'http_requests_total', // Optional: defaults to this
-  ['method', 'route', 'status_code'], // Optional: defaults to these
+  "http_requests_total", // Optional: defaults to this
+  ["method", "route", "status_code"], // Optional: defaults to these
 )
 ```
 
 ### HTTP Size Histograms
 
 ```typescript
-import { createHttpSizeHistogram } from '@boilerplate/metrics'
-import { metricsRegistry } from './metrics/registry'
+import { createHttpSizeHistogram } from "@boilerplate/metrics"
+import { metricsRegistry } from "./metrics/registry"
 
 // Request size
 const requestSize = createHttpSizeHistogram(
   metricsRegistry,
-  'http_request_size_bytes',
-  ['method', 'route'],
+  "http_request_size_bytes",
+  ["method", "route"],
   false, // isResponse
 )
 
 // Response size
 const responseSize = createHttpSizeHistogram(
   metricsRegistry,
-  'http_request_size_bytes',
-  ['method', 'route'],
+  "http_request_size_bytes",
+  ["method", "route"],
   true, // isResponse - will change name to http_response_size_bytes
 )
 ```
@@ -339,17 +342,18 @@ Creates a Prometheus registry with Node.js metrics collection.
 
 ```typescript
 interface MetricsRegistryOptions {
-  prefix?: string                    // Default: 'app_'
+  prefix?: string // Default: 'app_'
   defaultLabels?: Record<string, string | number>
-  collectDefaultMetrics?: boolean    // Default: true
+  collectDefaultMetrics?: boolean // Default: true
 }
 ```
 
 **Example:**
+
 ```typescript
 const registry = createMetricsRegistry({
-  prefix: 'myapp_',
-  defaultLabels: { app: 'api', env: 'production' },
+  prefix: "myapp_",
+  defaultLabels: { app: "api", env: "production" },
   collectDefaultMetrics: true,
 })
 ```
@@ -363,14 +367,14 @@ Creates a counter metric (monotonically increasing).
 ```typescript
 const counter = createCounter(
   registry,
-  'requests_total',
-  'Total number of requests',
-  ['method', 'status'],
+  "requests_total",
+  "Total number of requests",
+  ["method", "status"],
 )
 
 // Usage
-counter.inc({ method: 'GET', status: '200' })
-counter.inc({ method: 'POST', status: '201' }, 5) // Increment by 5
+counter.inc({ method: "GET", status: "200" })
+counter.inc({ method: "POST", status: "201" }, 5) // Increment by 5
 ```
 
 #### `createGauge(registry, name, help, labelNames?)`
@@ -378,19 +382,16 @@ counter.inc({ method: 'POST', status: '201' }, 5) // Increment by 5
 Creates a gauge metric (can increase or decrease).
 
 ```typescript
-const gauge = createGauge(
-  registry,
-  'queue_size',
-  'Current queue size',
-  ['queue_name'],
-)
+const gauge = createGauge(registry, "queue_size", "Current queue size", [
+  "queue_name",
+])
 
 // Usage
-gauge.inc({ queue_name: 'tasks' })           // Increment by 1
-gauge.dec({ queue_name: 'tasks' })           // Decrement by 1
-gauge.set({ queue_name: 'tasks' }, 42)       // Set to specific value
-gauge.inc({ queue_name: 'tasks' }, 5)        // Increment by 5
-gauge.dec({ queue_name: 'tasks' }, 3)        // Decrement by 3
+gauge.inc({ queue_name: "tasks" }) // Increment by 1
+gauge.dec({ queue_name: "tasks" }) // Decrement by 1
+gauge.set({ queue_name: "tasks" }, 42) // Set to specific value
+gauge.inc({ queue_name: "tasks" }, 5) // Increment by 5
+gauge.dec({ queue_name: "tasks" }, 3) // Decrement by 3
 ```
 
 #### `createHistogram(registry, name, help, labelNames?, buckets?)`
@@ -400,14 +401,14 @@ Creates a histogram metric (for distributions).
 ```typescript
 const histogram = createHistogram(
   registry,
-  'request_duration_seconds',
-  'Request duration in seconds',
-  ['endpoint'],
+  "request_duration_seconds",
+  "Request duration in seconds",
+  ["endpoint"],
   [0.1, 0.5, 1, 2, 5], // Custom buckets
 )
 
 // Usage
-histogram.observe({ endpoint: '/api/users' }, 0.234)
+histogram.observe({ endpoint: "/api/users" }, 0.234)
 ```
 
 #### `createSummary(registry, name, help, labelNames?, percentiles?)`
@@ -417,14 +418,14 @@ Creates a summary metric (for quantiles).
 ```typescript
 const summary = createSummary(
   registry,
-  'request_size_bytes',
-  'Request size in bytes',
-  ['method'],
+  "request_size_bytes",
+  "Request size in bytes",
+  ["method"],
   [0.5, 0.9, 0.99], // Percentiles
 )
 
 // Usage
-summary.observe({ method: 'POST' }, 1024)
+summary.observe({ method: "POST" }, 1024)
 ```
 
 ### Middleware
@@ -442,20 +443,22 @@ interface HttpMetricOptions {
 ```
 
 **Example:**
+
 ```typescript
 app.use(
   createHttpMetricsMiddleware(registry, {
     routeExtractor: (req) => req.route?.path || req.path,
-    shouldTrack: (req) => req.method !== 'OPTIONS',
+    shouldTrack: (req) => req.method !== "OPTIONS",
     extraLabels: (req, res) => ({
-      user_id: req.user?.id || 'anonymous',
-      api_version: 'v1',
+      user_id: req.user?.id || "anonymous",
+      api_version: "v1",
     }),
   }),
 )
 ```
 
 **Metrics Created:**
+
 - `http_request_duration_seconds` - Histogram of request durations
 - `http_requests_total` - Counter of total requests
 - `http_request_size_bytes` - Histogram of request sizes
@@ -466,7 +469,7 @@ app.use(
 Express handler for `/metrics` endpoint.
 
 ```typescript
-app.get('/metrics', createMetricsHandler(registry))
+app.get("/metrics", createMetricsHandler(registry))
 ```
 
 ### Timers
@@ -479,7 +482,7 @@ Starts a timer that automatically records to a histogram.
 const timer = startDurationTimer(myHistogram)
 
 // Later...
-const duration = timer.stop({ label: 'value' }) // Returns duration in seconds
+const duration = timer.stop({ label: "value" }) // Returns duration in seconds
 const elapsed = timer.elapsed() // Check elapsed time without stopping
 ```
 
@@ -495,14 +498,15 @@ const duration = timer.stop() // Returns duration in seconds
 const elapsed = timer.elapsed() // Check elapsed time without stopping
 
 // Manually record if needed
-myHistogram.observe({ label: 'value' }, duration)
+myHistogram.observe({ label: "value" }, duration)
 ```
 
 **DurationTimer Interface:**
+
 ```typescript
 interface DurationTimer {
-  stop: (labels?: Record<string, string>) => number  // Returns seconds
-  elapsed: () => number                               // Returns seconds
+  stop: (labels?: Record<string, string>) => number // Returns seconds
+  elapsed: () => number // Returns seconds
 }
 ```
 
@@ -518,16 +522,17 @@ global:
   evaluation_interval: 15s
 
 scrape_configs:
-  - job_name: 'my-app'
+  - job_name: "my-app"
     static_configs:
-      - targets: ['localhost:3000']
-    metrics_path: '/metrics'
+      - targets: ["localhost:3000"]
+    metrics_path: "/metrics"
     scrape_interval: 10s
 ```
 
 ### 2. Run Prometheus
 
 **Docker:**
+
 ```bash
 docker run -d \
   --name prometheus \
@@ -537,6 +542,7 @@ docker run -d \
 ```
 
 **Docker Compose:**
+
 ```yaml
 services:
   prometheus:
@@ -601,32 +607,38 @@ datasources:
 ## Common PromQL Queries
 
 ### Request Rate
+
 ```promql
 rate(myapp_http_requests_total[5m])
 ```
 
 ### Request Duration P95
+
 ```promql
 histogram_quantile(0.95, rate(myapp_http_request_duration_seconds_bucket[5m]))
 ```
 
 ### Error Rate
+
 ```promql
 rate(myapp_http_requests_total{status_code=~"5.."}[5m])
 ```
 
 ### Success Rate
+
 ```promql
 rate(myapp_http_requests_total{status_code=~"2.."}[5m]) /
 rate(myapp_http_requests_total[5m])
 ```
 
 ### Active Connections
+
 ```promql
 myapp_active_connections
 ```
 
 ### Memory Usage
+
 ```promql
 myapp_nodejs_process_resident_memory_bytes
 ```
@@ -655,16 +667,16 @@ Choose buckets based on expected values:
 
 ```typescript
 // Fast operations (milliseconds to seconds)
-[0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 2, 5]
-
-// Medium operations (seconds to minutes)
-[0.1, 0.5, 1, 2, 5, 10, 30, 60, 120]
-
-// Slow operations (minutes)
-[1, 5, 10, 30, 60, 300, 600]
-
-// Sizes (bytes)
-[100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000]
+;[0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 2, 5][
+  // Medium operations (seconds to minutes)
+  (0.1, 0.5, 1, 2, 5, 10, 30, 60, 120)
+][
+  // Slow operations (minutes)
+  (1, 5, 10, 30, 60, 300, 600)
+][
+  // Sizes (bytes)
+  (100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000)
+]
 ```
 
 ### 4. Performance
@@ -685,7 +697,7 @@ import type {
   HttpMetricOptions,
   MetricsRegistryOptions,
   DurationTimer,
-} from '@boilerplate/metrics'
+} from "@boilerplate/metrics"
 
 import type {
   Registry,
@@ -693,7 +705,7 @@ import type {
   Gauge,
   Histogram,
   Summary,
-} from '@boilerplate/metrics'
+} from "@boilerplate/metrics"
 ```
 
 ---
@@ -703,11 +715,13 @@ import type {
 ### Metrics not appearing in Prometheus
 
 1. Check metrics endpoint is accessible:
+
    ```bash
    curl http://localhost:3000/metrics
    ```
 
 2. Verify Prometheus configuration:
+
    ```bash
    # Check targets status
    curl http://localhost:9090/api/v1/targets

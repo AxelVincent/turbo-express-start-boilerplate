@@ -1,6 +1,6 @@
-import { retry } from '@lifeomic/attempt'
-import axios, { type AxiosRequestConfig, type Method } from 'axios'
-import { API_WEB_URL } from './constants'
+import { retry } from "@lifeomic/attempt"
+import axios, { type AxiosRequestConfig, type Method } from "axios"
+import { API_WEB_URL } from "./constants"
 
 /**
  * Expected status code(s) or error + message combination.
@@ -17,9 +17,7 @@ export const sendRequest = async <T>(
   expectedCode: ExpectedResponseCode,
   config: AxiosRequestConfig,
 ): Promise<T> => {
-  const result = await axios
-    .request<T>(config)
-    .catch((error) => error.response)
+  const result = await axios.request<T>(config).catch((error) => error.response)
 
   const status = result?.status
 
@@ -29,7 +27,7 @@ export const sendRequest = async <T>(
         `${path}: expected one of [${expectedCode}], got ${status}`,
       )
     }
-  } else if (typeof expectedCode === 'object') {
+  } else if (typeof expectedCode === "object") {
     if (status !== expectedCode.errorStatusCode) {
       throw new Error(
         `${path}: expected ${expectedCode.errorStatusCode}, got ${status}`,
@@ -53,7 +51,7 @@ export const get = async <T>(
 ) =>
   sendRequest<T>(path, expectedCode, {
     url: getUrl(path),
-    method: 'GET',
+    method: "GET",
     headers,
   })
 
@@ -65,9 +63,9 @@ export const post = async <T>(
 ) =>
   sendRequest<T>(path, expectedCode, {
     url: getUrl(path),
-    method: 'POST',
+    method: "POST",
     data: payload,
-    headers: headers || { 'Content-Type': 'application/json' },
+    headers: headers || { "Content-Type": "application/json" },
   })
 
 const withBodyAuthed =
@@ -92,13 +90,13 @@ export const get_auth = async <T>(
 ) =>
   sendRequest<T>(path, expectedCode, {
     url: getUrl(path),
-    method: 'GET',
+    method: "GET",
     headers,
   })
 
-export const post_auth = withBodyAuthed('POST')
-export const patch_auth = withBodyAuthed('PATCH')
-export const put_auth = withBodyAuthed('PUT')
+export const post_auth = withBodyAuthed("POST")
+export const patch_auth = withBodyAuthed("PATCH")
+export const put_auth = withBodyAuthed("PUT")
 
 export const del_auth = async <T>(
   path: string,
@@ -107,7 +105,7 @@ export const del_auth = async <T>(
 ) =>
   sendRequest<T>(path, expectedCode, {
     url: getUrl(path),
-    method: 'DELETE',
+    method: "DELETE",
     headers,
   })
 
@@ -122,17 +120,15 @@ export const post_auth_with_lock_retry = async <T>(
 ) =>
   retry(
     async () => {
-      const codes = Array.isArray(expectedCode)
-        ? expectedCode
-        : [expectedCode]
+      const codes = Array.isArray(expectedCode) ? expectedCode : [expectedCode]
       const response = await post_auth<T & { type?: string }>(
         path,
         payload,
         headers,
         [...codes, 423],
       )
-      if ((response as any).type === 'ResourceLockedError') {
-        throw new Error('ResourceLockedError')
+      if ((response as any).type === "ResourceLockedError") {
+        throw new Error("ResourceLockedError")
       }
       return response
     },
@@ -140,7 +136,7 @@ export const post_auth_with_lock_retry = async <T>(
       delay: 500,
       maxAttempts: 10,
       handleError: (err, context) => {
-        if (err.message === 'ResourceLockedError') return
+        if (err.message === "ResourceLockedError") return
         context.abort()
         throw err
       },

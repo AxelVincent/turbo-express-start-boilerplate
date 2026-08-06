@@ -3,7 +3,7 @@
  * Improves CI sharding — each file becomes a unit of parallelism.
  */
 
-"use strict";
+"use strict"
 
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
@@ -21,14 +21,14 @@ module.exports = {
   },
 
   create(context) {
-    let callCount = 0;
-    let secondCallNode = null;
+    let callCount = 0
+    let secondCallNode = null
 
     return {
       'CallExpression[callee.name="createIntegrationTestSuite"]'(node) {
-        callCount++;
+        callCount++
         if (callCount === 2) {
-          secondCallNode = node;
+          secondCallNode = node
         }
       },
 
@@ -37,9 +37,9 @@ module.exports = {
           context.report({
             node: secondCallNode,
             messageId: "onePerFile",
-          });
+          })
         }
       },
-    };
+    }
   },
-};
+}

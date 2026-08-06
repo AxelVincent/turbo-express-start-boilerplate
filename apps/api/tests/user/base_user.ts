@@ -1,4 +1,4 @@
-import { randomUUID as uuid } from 'crypto'
+import { randomUUID as uuid } from "crypto"
 import {
   get_auth,
   post_auth,
@@ -7,7 +7,7 @@ import {
   del_auth,
   post_auth_with_lock_retry,
   type ExpectedResponseCode,
-} from '../utils/requests'
+} from "../utils/requests"
 
 export type BaseUserConstructorArgs = {
   email?: string
@@ -16,7 +16,7 @@ export type BaseUserConstructorArgs = {
 }
 
 export class BaseUser {
-  id = ''
+  id = ""
   token: string | null = null
   sessionToken: string | null = null
   deviceId = uuid()
@@ -26,8 +26,8 @@ export class BaseUser {
   userAgent: string
 
   // Organization context
-  orgId = ''
-  orgRole = ''
+  orgId = ""
+  orgRole = ""
 
   /** Org IDs created by this user during tests — auto-cleaned on unlock. */
   readonly createdOrgIds: string[] = []
@@ -43,16 +43,16 @@ export class BaseUser {
   /** Returns headers with this user's auth token + session cookie. */
   headers(): Record<string, string> {
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-      'user-agent': this.userAgent,
+      "Content-Type": "application/json",
+      "user-agent": this.userAgent,
     }
 
     // Better Auth uses cookies for session, but also supports Bearer token
     if (this.sessionToken) {
-      headers['cookie'] = `better-auth.session_token=${this.sessionToken}`
+      headers["cookie"] = `better-auth.session_token=${this.sessionToken}`
     }
     if (this.token) {
-      headers['authorization'] = `Bearer ${this.token}`
+      headers["authorization"] = `Bearer ${this.token}`
     }
 
     return headers
@@ -68,15 +68,27 @@ export class BaseUser {
     return get_auth<T>(path, this.headers(), expectedCode)
   }
 
-  async post_auth<T>(path: string, payload: unknown, expectedCode: ExpectedResponseCode = 200) {
+  async post_auth<T>(
+    path: string,
+    payload: unknown,
+    expectedCode: ExpectedResponseCode = 200,
+  ) {
     return post_auth<T>(path, payload, this.headers(), expectedCode)
   }
 
-  async patch_auth<T>(path: string, payload: unknown, expectedCode: ExpectedResponseCode = 200) {
+  async patch_auth<T>(
+    path: string,
+    payload: unknown,
+    expectedCode: ExpectedResponseCode = 200,
+  ) {
     return patch_auth<T>(path, payload, this.headers(), expectedCode)
   }
 
-  async put_auth<T>(path: string, payload: unknown, expectedCode: ExpectedResponseCode = 200) {
+  async put_auth<T>(
+    path: string,
+    payload: unknown,
+    expectedCode: ExpectedResponseCode = 200,
+  ) {
     return put_auth<T>(path, payload, this.headers(), expectedCode)
   }
 

@@ -1,4 +1,4 @@
-import type { Request, Response } from 'express'
+import type { Request, Response } from "express"
 
 export interface MetricLabels {
   [key: string]: string | number

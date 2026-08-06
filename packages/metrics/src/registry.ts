@@ -1,5 +1,5 @@
-import { Registry, collectDefaultMetrics } from 'prom-client'
-import type { MetricsRegistryOptions } from './types'
+import { Registry, collectDefaultMetrics } from "prom-client"
+import type { MetricsRegistryOptions } from "./types"
 
 /**
  * Creates a Prometheus registry with optional configuration
@@ -8,7 +8,7 @@ export const createMetricsRegistry = (
   options: MetricsRegistryOptions = {},
 ): Registry => {
   const {
-    prefix = 'app_',
+    prefix = "app_",
     defaultLabels = {},
     collectDefaultMetrics: shouldCollectDefaults = true,
   } = options
@@ -33,4 +33,4 @@ export const createMetricsRegistry = (
 }
 
 // Re-export prom-client types and classes
-export { Registry, Counter, Gauge, Histogram, Summary } from 'prom-client'
+export { Registry, Counter, Gauge, Histogram, Summary } from "prom-client"

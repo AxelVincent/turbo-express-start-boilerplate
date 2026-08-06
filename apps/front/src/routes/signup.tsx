@@ -1,21 +1,21 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { useEffect } from 'react'
-import { authClient } from '@/lib/auth-client'
-import { useAuth } from '@/lib/auth-provider'
-import { AuthHeader } from '@/components/auth/auth-header'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { PasswordStrength } from '@/components/ui/password-strength'
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+import { useEffect } from "react"
+import { authClient } from "@/lib/auth-client"
+import { useAuth } from "@/lib/auth-provider"
+import { AuthHeader } from "@/components/auth/auth-header"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { PasswordStrength } from "@/components/ui/password-strength"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
+} from "@/components/ui/card"
 import {
   Form,
   FormControl,
@@ -23,26 +23,24 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
+} from "@/components/ui/form"
 
-export const Route = createFileRoute('/signup')({
-  validateSearch: (
-    search: Record<string, unknown>,
-  ): { redirect?: string } => ({
+export const Route = createFileRoute("/signup")({
+  validateSearch: (search: Record<string, unknown>): { redirect?: string } => ({
     redirect: (search.redirect as string) || undefined,
   }),
   component: SignUpPage,
 })
 
 const signupSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Please enter a valid email'),
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Please enter a valid email"),
   password: z
     .string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(/[A-Z]/, 'Password must contain at least 1 uppercase letter')
-    .regex(/[a-z]/, 'Password must contain at least 1 lowercase letter')
-    .regex(/[0-9]/, 'Password must contain at least 1 number'),
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Password must contain at least 1 uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least 1 lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least 1 number"),
 })
 
 type SignUpFormValues = z.infer<typeof signupSchema>
@@ -51,14 +49,14 @@ function SignUpPage() {
   const { redirect } = Route.useSearch()
   const auth = useAuth()
   const navigate = useNavigate()
-  const postAuthPath = redirect || '/orgs'
+  const postAuthPath = redirect || "/orgs"
 
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
-      name: '',
-      email: '',
-      password: '',
+      name: "",
+      email: "",
+      password: "",
     },
   })
 
@@ -77,11 +75,11 @@ function SignUpPage() {
       name: values.name,
       email: values.email,
       password: values.password,
-      role: 'user',
+      role: "user",
     })
 
     if (error) {
-      form.setError('root', { message: error.message ?? 'Sign up failed' })
+      form.setError("root", { message: error.message ?? "Sign up failed" })
     }
   }
 
@@ -95,7 +93,10 @@ function SignUpPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className="space-y-4"
+            >
               <FormField
                 control={form.control}
                 name="name"
@@ -148,25 +149,37 @@ function SignUpPage() {
                         {...field}
                       />
                     </FormControl>
-                    <PasswordStrength password={field.value ?? ''} />
+                    <PasswordStrength password={field.value ?? ""} />
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
               {form.formState.errors.root && (
-                <p className="text-sm text-destructive">{form.formState.errors.root.message}</p>
+                <p className="text-sm text-destructive">
+                  {form.formState.errors.root.message}
+                </p>
               )}
 
-              <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? 'Creating account...' : 'Create account'}
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting
+                  ? "Creating account..."
+                  : "Create account"}
               </Button>
             </form>
           </Form>
 
           <p className="text-center text-sm text-muted-foreground mt-4">
-            Already have an account?{' '}
-            <Link to="/signin" search={redirect ? { redirect } : undefined} className="text-primary hover:underline font-medium">
+            Already have an account?{" "}
+            <Link
+              to="/signin"
+              search={redirect ? { redirect } : undefined}
+              className="text-primary hover:underline font-medium"
+            >
               Sign in
             </Link>
           </p>

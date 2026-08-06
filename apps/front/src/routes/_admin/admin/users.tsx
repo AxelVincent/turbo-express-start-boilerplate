@@ -1,22 +1,27 @@
-import { createFileRoute } from '@tanstack/react-router'
-import type { CreateUserInput } from '@repo/api/routes_web/users/add_user/contract'
-import { useState } from 'react'
-import { toast } from 'sonner'
+import { createFileRoute } from "@tanstack/react-router"
+import type { CreateUserInput } from "@repo/api/routes_web/users/add_user/contract"
+import { useState } from "react"
+import { toast } from "sonner"
 import {
   useUsers,
   useCreateUser,
   useDeleteUser,
   useUpdateUser,
   type UsersSearchParams,
-} from '@/lib/hooks/use-users'
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+} from "@/lib/hooks/use-users"
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import {
   UserSearchForm,
   CreateUserDialog,
   DeleteUserDialog,
   UsersList,
   UsersPagination,
-} from '@/components/features/users'
+} from "@/components/features/users"
 
 /**
  * Example route demonstrating TanStack Query with authenticated API calls
@@ -31,7 +36,7 @@ import {
  * Note: We don't prefetch on the server because authentication requires client-side sessions.
  * All data fetching happens client-side with proper auth headers.
  */
-export const Route = createFileRoute('/_admin/admin/users')({
+export const Route = createFileRoute("/_admin/admin/users")({
   // Validate search parameters
   validateSearch: (search: Record<string, unknown>): UsersSearchParams => {
     return {
@@ -79,13 +84,14 @@ function UsersPage() {
     try {
       await createUserMutation.mutateAsync(input)
       setShowCreateDialog(false)
-      toast.success('User created successfully!', {
+      toast.success("User created successfully!", {
         description: `${input.name} has been added to the directory.`,
       })
     } catch (error) {
-      console.error('Failed to create user:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-      toast.error('Failed to create user', {
+      console.error("Failed to create user:", error)
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error"
+      toast.error("Failed to create user", {
         description: errorMessage,
       })
     }
@@ -97,13 +103,13 @@ function UsersPage() {
     try {
       await deleteUserMutation.mutateAsync(userToDelete)
       setUserToDelete(null)
-      toast.success('User deleted successfully', {
-        description: 'The user has been removed from the database.',
+      toast.success("User deleted successfully", {
+        description: "The user has been removed from the database.",
       })
     } catch (error) {
-      console.error('Failed to delete user:', error)
-      toast.error('Failed to delete user', {
-        description: 'Please try again.',
+      console.error("Failed to delete user:", error)
+      toast.error("Failed to delete user", {
+        description: "Please try again.",
       })
     }
   }
@@ -111,9 +117,9 @@ function UsersPage() {
   const handleRoleChange = async (userId: string, role: string) => {
     try {
       await updateUserMutation.mutateAsync({ id: userId, role })
-      toast.success('Role updated')
+      toast.success("Role updated")
     } catch {
-      toast.error('Failed to update role')
+      toast.error("Failed to update role")
     }
   }
 
@@ -123,8 +129,12 @@ function UsersPage() {
       <div>
         <Card className="border-destructive bg-destructive/10">
           <CardHeader>
-            <CardTitle className="text-destructive">Error Loading Users</CardTitle>
-            <CardDescription className="text-destructive/80">{error.message}</CardDescription>
+            <CardTitle className="text-destructive">
+              Error Loading Users
+            </CardTitle>
+            <CardDescription className="text-destructive/80">
+              {error.message}
+            </CardDescription>
           </CardHeader>
         </Card>
       </div>

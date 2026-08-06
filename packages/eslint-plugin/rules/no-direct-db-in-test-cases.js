@@ -12,7 +12,7 @@
  * Forbidden: getDatabase(), db.insertInto(), db.deleteFrom()
  */
 
-"use strict";
+"use strict"
 
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
@@ -32,13 +32,13 @@ module.exports = {
   },
 
   create(context) {
-    const filename = context.getFilename().replace(/\\/g, "/");
+    const filename = context.getFilename().replace(/\\/g, "/")
 
     // Only enforce in __tests__/cases/ files (not index files)
-    if (!/__tests__\/cases\//.test(filename)) return {};
-    if (/\/index\.[tj]sx?$/.test(filename)) return {};
+    if (!/__tests__\/cases\//.test(filename)) return {}
+    if (/\/index\.[tj]sx?$/.test(filename)) return {}
     // Skip helper files
-    if (/\/_[^/]+\.[tj]sx?$/.test(filename)) return {};
+    if (/\/_[^/]+\.[tj]sx?$/.test(filename)) return {}
 
     return {
       // Flag getDatabase() calls
@@ -46,12 +46,12 @@ module.exports = {
         context.report({
           node,
           messageId: "noDirectDb",
-        });
+        })
       },
 
       // Flag imports from database module
       ImportDeclaration(node) {
-        const source = node.source.value;
+        const source = node.source.value
         if (
           typeof source === "string" &&
           (source.includes("external/database") ||
@@ -61,13 +61,13 @@ module.exports = {
             node,
             messageId: "noDbImport",
             data: { source },
-          });
+          })
         }
       },
 
       // Flag require() calls to database module
       'CallExpression[callee.name="require"]'(node) {
-        const arg = node.arguments[0];
+        const arg = node.arguments[0]
         if (
           arg &&
           arg.type === "Literal" &&
@@ -79,9 +79,9 @@ module.exports = {
             node,
             messageId: "noDbImport",
             data: { source: arg.value },
-          });
+          })
         }
       },
-    };
+    }
   },
-};
+}

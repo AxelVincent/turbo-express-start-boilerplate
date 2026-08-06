@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from "zod"
 
 // ===== SCHEMAS =====
 export const errorResponseSchema = z.object({

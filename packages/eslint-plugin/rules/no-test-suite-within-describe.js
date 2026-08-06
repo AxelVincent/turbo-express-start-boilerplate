@@ -3,7 +3,7 @@
  * Suites should be top-level in each file.
  */
 
-"use strict";
+"use strict"
 
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
@@ -21,15 +21,15 @@ module.exports = {
   },
 
   create(context) {
-    let insideDescribe = false;
+    let insideDescribe = false
 
     return {
       'CallExpression[callee.name="describe"]'() {
-        insideDescribe = true;
+        insideDescribe = true
       },
 
       'CallExpression[callee.name="describe"]:exit'() {
-        insideDescribe = false;
+        insideDescribe = false
       },
 
       'CallExpression[callee.name="createIntegrationTestSuite"]'(node) {
@@ -37,9 +37,9 @@ module.exports = {
           context.report({
             node,
             messageId: "noSuiteInDescribe",
-          });
+          })
         }
       },
-    };
+    }
   },
-};
+}

@@ -3,7 +3,7 @@
  * Duplicate routes shadow each other at the Express router level.
  */
 
-"use strict";
+"use strict"
 
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
@@ -23,32 +23,32 @@ module.exports = {
     return {
       'CallExpression[callee.name="createIntegrationTestSuite"]'(node) {
         // Skip the first argument (options object), rest are test cases
-        const testCases = node.arguments.slice(1);
-        const seenRoutes = new Map();
+        const testCases = node.arguments.slice(1)
+        const seenRoutes = new Map()
 
         for (const testCase of testCases) {
-          if (testCase.type !== "ObjectExpression") continue;
+          if (testCase.type !== "ObjectExpression") continue
 
           const routeProp = testCase.properties.find(
             (p) =>
               p.type === "Property" &&
               p.key.type === "Identifier" &&
-              p.key.name === "route"
-          );
+              p.key.name === "route",
+          )
 
-          if (!routeProp || routeProp.value.type !== "Literal") continue;
+          if (!routeProp || routeProp.value.type !== "Literal") continue
 
-          const routeValue = routeProp.value.value;
+          const routeValue = routeProp.value.value
           if (seenRoutes.has(routeValue)) {
             context.report({
               node: routeProp,
               messageId: "duplicateRoute",
-            });
+            })
           } else {
-            seenRoutes.set(routeValue, routeProp);
+            seenRoutes.set(routeValue, routeProp)
           }
         }
       },
-    };
+    }
   },
-};
+}

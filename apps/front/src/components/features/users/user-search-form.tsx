@@ -1,6 +1,6 @@
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 
 interface UserSearchFormProps {
   defaultValue?: string
@@ -8,11 +8,15 @@ interface UserSearchFormProps {
   onClear: () => void
 }
 
-export function UserSearchForm({ defaultValue, onSubmit, onClear }: UserSearchFormProps) {
+export function UserSearchForm({
+  defaultValue,
+  onSubmit,
+  onClear,
+}: UserSearchFormProps) {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const formData = new FormData(event.currentTarget)
-    const searchTerm = formData.get('search') as string
+    const searchTerm = formData.get("search") as string
     onSubmit(searchTerm)
   }
 
@@ -23,7 +27,7 @@ export function UserSearchForm({ defaultValue, onSubmit, onClear }: UserSearchFo
           <Input
             type="text"
             name="search"
-            defaultValue={defaultValue || ''}
+            defaultValue={defaultValue || ""}
             placeholder="Search by name or email..."
             className="flex-1"
           />

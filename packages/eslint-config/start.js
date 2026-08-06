@@ -1,14 +1,10 @@
-const { resolve } = require("node:path");
+const { resolve } = require("node:path")
 
-const project = resolve(process.cwd(), "tsconfig.json");
+const project = resolve(process.cwd(), "tsconfig.json")
 
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
-  extends: [
-    "eslint:recommended",
-    "prettier",
-    "turbo",
-  ],
+  extends: ["eslint:recommended", "prettier", "turbo"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     project: true,
@@ -42,8 +38,11 @@ module.exports = {
       rules: {
         "no-undef": "off",
         "no-unused-vars": "off",
-        "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+        ],
       },
     },
   ],
-};
+}

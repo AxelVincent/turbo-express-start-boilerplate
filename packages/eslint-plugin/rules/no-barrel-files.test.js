@@ -2,10 +2,10 @@
  * @fileoverview Tests for no-barrel-files rule.
  */
 
-"use strict";
+"use strict"
 
-const { RuleTester } = require("eslint");
-const rule = require("./no-barrel-files");
+const { RuleTester } = require("eslint")
+const rule = require("./no-barrel-files")
 
 const ruleTester = new RuleTester({
   parser: require.resolve("@typescript-eslint/parser"),
@@ -13,7 +13,7 @@ const ruleTester = new RuleTester({
     ecmaVersion: "latest",
     sourceType: "module",
   },
-});
+})
 
 ruleTester.run("no-barrel-files", rule, {
   valid: [
@@ -145,6 +145,6 @@ ruleTester.run("no-barrel-files", rule, {
       errors: [{ messageId: "noBarrelFile" }],
     },
   ],
-});
+})
 
-console.log("All tests passed!");
+console.log("All tests passed!")

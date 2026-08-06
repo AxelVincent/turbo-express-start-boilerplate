@@ -1,15 +1,20 @@
-import { HeadContent, Scripts, createRootRouteWithContext, Outlet } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
-import type { QueryClient } from '@tanstack/react-query'
+import {
+  HeadContent,
+  Scripts,
+  createRootRouteWithContext,
+  Outlet,
+} from "@tanstack/react-router"
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
+import { TanStackDevtools } from "@tanstack/react-devtools"
+import type { QueryClient } from "@tanstack/react-query"
 
-import { AuthProvider } from '../lib/auth-provider'
-import { ThemeProvider } from '../components/theme-provider'
-import { Toaster } from '../components/ui/sonner'
-import { NotFound } from '../components/NotFound'
-import { APP_NAME } from '../lib/constants'
+import { AuthProvider } from "../lib/auth-provider"
+import { ThemeProvider } from "../components/theme-provider"
+import { Toaster } from "../components/ui/sonner"
+import { NotFound } from "../components/NotFound"
+import { APP_NAME } from "../lib/constants"
 
-import appCss from '../styles.css?url'
+import appCss from "../styles.css?url"
 
 export interface RouterContext {
   queryClient: QueryClient
@@ -29,11 +34,11 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   head: () => ({
     meta: [
       {
-        charSet: 'utf-8',
+        charSet: "utf-8",
       },
       {
-        name: 'viewport',
-        content: 'width=device-width, initial-scale=1',
+        name: "viewport",
+        content: "width=device-width, initial-scale=1",
       },
       {
         title: APP_NAME,
@@ -41,7 +46,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     ],
     links: [
       {
-        rel: 'stylesheet',
+        rel: "stylesheet",
         href: appCss,
       },
     ],
@@ -59,11 +64,11 @@ function RootComponent() {
       <Toaster />
       <TanStackDevtools
         config={{
-          position: 'bottom-right',
+          position: "bottom-right",
         }}
         plugins={[
           {
-            name: 'Tanstack Router',
+            name: "Tanstack Router",
             render: <TanStackRouterDevtoolsPanel />,
           },
         ]}

@@ -1,5 +1,5 @@
-import { type Request, type Response, type NextFunction } from 'express'
-import onFinished from 'on-finished'
+import { type Request, type Response, type NextFunction } from "express"
+import onFinished from "on-finished"
 
 interface RequestLog {
   url: string

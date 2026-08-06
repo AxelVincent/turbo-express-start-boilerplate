@@ -1,16 +1,22 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
-import { toast } from 'sonner'
-import { authClient } from '@/lib/auth-client'
-import { useAuth } from '@/lib/auth-provider'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Separator } from '@/components/ui/separator'
+import { createFileRoute } from "@tanstack/react-router"
+import { useState } from "react"
+import { toast } from "sonner"
+import { authClient } from "@/lib/auth-client"
+import { useAuth } from "@/lib/auth-provider"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Separator } from "@/components/ui/separator"
 
-export const Route = createFileRoute('/_auth/settings')({
+export const Route = createFileRoute("/_auth/settings")({
   component: SettingsPage,
 })
 
@@ -33,7 +39,7 @@ function SettingsPage() {
 
 function ProfileSection() {
   const { user } = useAuth()
-  const [name, setName] = useState(user?.name ?? '')
+  const [name, setName] = useState(user?.name ?? "")
   const [isSaving, setIsSaving] = useState(false)
 
   const handleSave = async () => {
@@ -42,10 +48,10 @@ function ProfileSection() {
     setIsSaving(true)
     try {
       await authClient.updateUser({ name: name.trim() })
-      toast.success('Profile updated')
+      toast.success("Profile updated")
     } catch (err) {
-      toast.error('Failed to update profile', {
-        description: err instanceof Error ? err.message : 'Please try again',
+      toast.error("Failed to update profile", {
+        description: err instanceof Error ? err.message : "Please try again",
       })
     } finally {
       setIsSaving(false)
@@ -63,7 +69,7 @@ function ProfileSection() {
           <Avatar className="h-16 w-16">
             {user?.image && <AvatarImage src={user.image} alt={user.name} />}
             <AvatarFallback className="text-xl">
-              {user?.name?.charAt(0).toUpperCase() ?? '?'}
+              {user?.name?.charAt(0).toUpperCase() ?? "?"}
             </AvatarFallback>
           </Avatar>
           <div>
@@ -81,21 +87,21 @@ function ProfileSection() {
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
               onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSave()
+                if (e.key === "Enter") handleSave()
               }}
             />
             <Button
               onClick={handleSave}
               disabled={!name.trim() || name.trim() === user?.name || isSaving}
             >
-              {isSaving ? 'Saving...' : 'Save'}
+              {isSaving ? "Saving..." : "Save"}
             </Button>
           </div>
         </div>
 
         <div className="space-y-2">
           <Label>Email</Label>
-          <Input value={user?.email ?? ''} disabled />
+          <Input value={user?.email ?? ""} disabled />
           <p className="text-xs text-muted-foreground">
             Contact support to change your email address.
           </p>
@@ -106,23 +112,23 @@ function ProfileSection() {
 }
 
 function ChangePasswordSection() {
-  const [currentPassword, setCurrentPassword] = useState('')
-  const [newPassword, setNewPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [error, setError] = useState('')
+  const [currentPassword, setCurrentPassword] = useState("")
+  const [newPassword, setNewPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [error, setError] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
+    setError("")
 
     if (newPassword.length < 8) {
-      setError('New password must be at least 8 characters')
+      setError("New password must be at least 8 characters")
       return
     }
 
     if (newPassword !== confirmPassword) {
-      setError('Passwords do not match')
+      setError("Passwords do not match")
       return
     }
 
@@ -133,12 +139,12 @@ function ChangePasswordSection() {
         newPassword,
         revokeOtherSessions: false,
       })
-      toast.success('Password changed successfully')
-      setCurrentPassword('')
-      setNewPassword('')
-      setConfirmPassword('')
+      toast.success("Password changed successfully")
+      setCurrentPassword("")
+      setNewPassword("")
+      setConfirmPassword("")
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to change password')
+      setError(err instanceof Error ? err.message : "Failed to change password")
     } finally {
       setIsSubmitting(false)
     }
@@ -148,7 +154,9 @@ function ChangePasswordSection() {
     <Card>
       <CardHeader>
         <CardTitle>Change Password</CardTitle>
-        <CardDescription>Update your password to keep your account secure.</CardDescription>
+        <CardDescription>
+          Update your password to keep your account secure.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleChangePassword} className="space-y-4 max-w-md">
@@ -189,8 +197,16 @@ function ChangePasswordSection() {
 
           {error && <p className="text-sm text-destructive">{error}</p>}
 
-          <Button type="submit" disabled={isSubmitting || !currentPassword || !newPassword || !confirmPassword}>
-            {isSubmitting ? 'Changing...' : 'Change password'}
+          <Button
+            type="submit"
+            disabled={
+              isSubmitting ||
+              !currentPassword ||
+              !newPassword ||
+              !confirmPassword
+            }
+          >
+            {isSubmitting ? "Changing..." : "Change password"}
           </Button>
         </form>
       </CardContent>

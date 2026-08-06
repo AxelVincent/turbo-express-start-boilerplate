@@ -1,12 +1,12 @@
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
-import { useSetActiveOrganization } from '@/lib/hooks/use-organizations'
-import { useAuth } from '@/lib/auth-provider'
-import { useEffect } from 'react'
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
+import { useSetActiveOrganization } from "@/lib/hooks/use-organizations"
+import { useAuth } from "@/lib/auth-provider"
+import { useEffect } from "react"
 
-export const Route = createFileRoute('/_auth/orgs/$orgId')({
+export const Route = createFileRoute("/_auth/orgs/$orgId")({
   beforeLoad: ({ context }) => {
     if (context.auth?.isAuthenticated === false) {
-      throw redirect({ to: '/signin' })
+      throw redirect({ to: "/signin" })
     }
   },
   component: OrgLayout,

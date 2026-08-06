@@ -1,5 +1,5 @@
-import type { BaseUser } from '../base_user'
-import type { ExpectedResponseCode } from '../../utils/requests'
+import type { BaseUser } from "../base_user"
+import type { ExpectedResponseCode } from "../../utils/requests"
 
 type ProfileResponse = {
   id: string
@@ -36,27 +36,41 @@ export class MeUser {
   constructor(private readonly user: BaseUser) {}
 
   async getProfile(expectedCode: ExpectedResponseCode = 200) {
-    return this.user.get_auth<ProfileResponse>('/me', expectedCode)
+    return this.user.get_auth<ProfileResponse>("/me", expectedCode)
   }
 
   async getOrganizations(expectedCode: ExpectedResponseCode = 200) {
-    return this.user.get_auth<OrganizationsResponse>('/me/organizations', expectedCode)
+    return this.user.get_auth<OrganizationsResponse>(
+      "/me/organizations",
+      expectedCode,
+    )
   }
 
   async getUsers(expectedCode: ExpectedResponseCode = 200) {
-    return this.user.get_auth<UsersListResponse>('/users', expectedCode)
+    return this.user.get_auth<UsersListResponse>("/users", expectedCode)
   }
 
   async getUser(userId: string, expectedCode: ExpectedResponseCode = 200) {
     return this.user.get_auth<UserResponse>(`/users/${userId}`, expectedCode)
   }
 
-  async createUser(input: { name: string; email: string }, expectedCode: ExpectedResponseCode = 201) {
-    return this.user.post_auth<UserResponse>('/users', input, expectedCode)
+  async createUser(
+    input: { name: string; email: string },
+    expectedCode: ExpectedResponseCode = 201,
+  ) {
+    return this.user.post_auth<UserResponse>("/users", input, expectedCode)
   }
 
-  async updateUser(userId: string, input: { name?: string; email?: string; role?: string }, expectedCode: ExpectedResponseCode = 200) {
-    return this.user.patch_auth<UserResponse>(`/users/${userId}`, input, expectedCode)
+  async updateUser(
+    userId: string,
+    input: { name?: string; email?: string; role?: string },
+    expectedCode: ExpectedResponseCode = 200,
+  ) {
+    return this.user.patch_auth<UserResponse>(
+      `/users/${userId}`,
+      input,
+      expectedCode,
+    )
   }
 
   async deleteUser(userId: string, expectedCode: ExpectedResponseCode = 204) {

@@ -1,7 +1,7 @@
-import { logger } from '@repo/logger'
-import type { NextFunction, Request, RequestHandler, Response } from 'express'
-import { z } from 'zod'
-import type { ErrorResponse } from '../types/errors'
+import { logger } from "@repo/logger"
+import type { NextFunction, Request, RequestHandler, Response } from "express"
+import { z } from "zod"
+import type { ErrorResponse } from "../types/errors"
 
 type ZodValidationOptions<TParams, TQuery, TBody, TResponse> = {
   paramsSchema?: z.ZodType<TParams, any, any>
@@ -52,24 +52,24 @@ export const validateRequest = <
     } catch (error) {
       if (error instanceof z.ZodError) {
         logger.info({
-          msg: 'Validation error',
-          event: 'validation_error',
+          msg: "Validation error",
+          event: "validation_error",
           metadata: { error },
         })
         res.status(400).json({
-          error: 'Invalid request data',
-          message: 'Invalid request data',
+          error: "Invalid request data",
+          message: "Invalid request data",
           details: error.errors,
         })
       } else {
         logger.error({
-          msg: 'Validation middleware error',
-          event: 'validation_middleware_error',
+          msg: "Validation middleware error",
+          event: "validation_middleware_error",
           metadata: { error },
         })
         res.status(500).json({
-          error: 'Internal Server Error',
-          message: 'Failed to validate request',
+          error: "Internal Server Error",
+          message: "Failed to validate request",
         })
       }
     }

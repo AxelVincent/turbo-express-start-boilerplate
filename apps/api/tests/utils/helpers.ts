@@ -1,4 +1,10 @@
-export function testMessage({ when, then }: { when: string; then: string }): string {
+export function testMessage({
+  when,
+  then,
+}: {
+  when: string
+  then: string
+}): string {
   return `WHEN ${when}, THEN ${then}`
 }
 

@@ -48,11 +48,11 @@ pnpm dev
 
 ### Access Points
 
-| Service | URL |
-|---------|-----|
+| Service  | URL                   |
+| -------- | --------------------- |
 | Frontend | http://localhost:3000 |
-| API | http://localhost:3035 |
-| Grafana | http://localhost:3202 |
+| API      | http://localhost:3035 |
+| Grafana  | http://localhost:3202 |
 
 ## Project Structure
 
@@ -128,7 +128,7 @@ Frontend routes under `/_auth/` require authentication, `/_admin/` requires admi
 // _auth.tsx - Protected layout
 beforeLoad: ({ context }) => {
   if (context.auth?.isAuthenticated === false) {
-    throw redirect({ to: '/signin' })
+    throw redirect({ to: "/signin" })
   }
 }
 
@@ -160,11 +160,11 @@ BDD-style integration test framework ported from production:
 
 ```typescript
 createIntegrationTestSuite(
-  { name: 'users', routePrefix: '/users' },
+  { name: "users", routePrefix: "/users" },
   {
-    when: 'an authenticated user requests the users list',
-    then: 'they receive a paginated list of users',
-    route: '/get_users_returns_list',
+    when: "an authenticated user requests the users list",
+    then: "they receive a paginated list of users",
+    route: "/get_users_returns_list",
   },
 )
 ```
@@ -192,10 +192,12 @@ pnpm --filter @repo/api test:integration
 15 rules enforcing code quality:
 
 **Code Organization:**
+
 - `one-query-per-file` - One query export per file in queries/ folders
 - `no-barrel-files` - No pure re-export index files
 
 **Integration Test Quality:**
+
 - `one-test-suite-per-file`, `max-test-cases-per-suite` (max 10)
 - `require-given-when-then` - BDD comment structure
 - `no-raw-http-in-test-cases` - Use domain methods
@@ -237,16 +239,16 @@ pnpm --filter @repo/api db:types
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
+| Layer    | Technology                                                   |
+| -------- | ------------------------------------------------------------ |
 | Frontend | React 19, TanStack Router/Query/Start, Tailwind 4, Shadcn/ui |
-| Backend | Express, Kysely, Zod, Better Auth, Pino |
-| Database | PostgreSQL 15 |
-| Auth | Better Auth (email/password, organizations, roles) |
-| Testing | Jest, custom integration test framework |
-| Linting | ESLint + 15 custom rules, TypeScript strict mode |
-| Infra | Docker Compose, Prometheus, Grafana, Loki, Redis |
-| Monorepo | Turborepo, pnpm workspaces |
+| Backend  | Express, Kysely, Zod, Better Auth, Pino                      |
+| Database | PostgreSQL 15                                                |
+| Auth     | Better Auth (email/password, organizations, roles)           |
+| Testing  | Jest, custom integration test framework                      |
+| Linting  | ESLint + 15 custom rules, TypeScript strict mode             |
+| Infra    | Docker Compose, Prometheus, Grafana, Loki, Redis             |
+| Monorepo | Turborepo, pnpm workspaces                                   |
 
 ## License
 

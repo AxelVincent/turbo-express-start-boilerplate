@@ -1,12 +1,12 @@
-"use strict";
+"use strict"
 
-const { RuleTester } = require("eslint");
-const rule = require("./no-test-suite-within-describe");
+const { RuleTester } = require("eslint")
+const rule = require("./no-test-suite-within-describe")
 
 const ruleTester = new RuleTester({
   parser: require.resolve("@typescript-eslint/parser"),
   parserOptions: { ecmaVersion: "latest", sourceType: "module" },
-});
+})
 
 ruleTester.run("no-test-suite-within-describe", rule, {
   valid: [
@@ -20,6 +20,6 @@ ruleTester.run("no-test-suite-within-describe", rule, {
       errors: [{ messageId: "noSuiteInDescribe" }],
     },
   ],
-});
+})
 
-console.log("All tests passed!");
+console.log("All tests passed!")

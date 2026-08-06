@@ -1,22 +1,27 @@
-import { createFileRoute, Outlet, redirect, useNavigate } from '@tanstack/react-router'
-import { useEffect } from 'react'
+import {
+  createFileRoute,
+  Outlet,
+  redirect,
+  useNavigate,
+} from "@tanstack/react-router"
+import { useEffect } from "react"
 
-import { useAuth } from '@/lib/auth-provider'
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
-import { AppSidebar } from '@/components/layout/sidebar/AppSidebar'
-import { OrgSwitcher } from '@/components/layout/sidebar/OrgSwitcher'
-import { Separator } from '@/components/ui/separator'
+import { useAuth } from "@/lib/auth-provider"
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/layout/sidebar/AppSidebar"
+import { OrgSwitcher } from "@/components/layout/sidebar/OrgSwitcher"
+import { Separator } from "@/components/ui/separator"
 
 /**
  * Protected layout route
  * All routes under /_auth require authentication
  * Unauthenticated users are redirected to signin page
  */
-export const Route = createFileRoute('/_auth')({
+export const Route = createFileRoute("/_auth")({
   beforeLoad: ({ context, location }) => {
     if (context.auth?.isAuthenticated === false) {
       throw redirect({
-        to: '/signin',
+        to: "/signin",
         search: {
           redirect: location.href,
         },
@@ -49,7 +54,7 @@ function AuthLayout() {
 
   useEffect(() => {
     if (!auth.isLoading && !auth.isAuthenticated) {
-      navigate({ to: '/signin' })
+      navigate({ to: "/signin" })
     }
   }, [auth.isLoading, auth.isAuthenticated, navigate])
 

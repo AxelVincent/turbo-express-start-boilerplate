@@ -1,11 +1,11 @@
-import type { NextFunction, Request, Response } from 'express'
-import type { Histogram, Registry } from 'prom-client'
+import type { NextFunction, Request, Response } from "express"
+import type { Histogram, Registry } from "prom-client"
 import {
   createHttpDurationHistogram,
   createHttpRequestCounter,
   createHttpSizeHistogram,
-} from './collectors'
-import type { DurationTimer, HttpMetricOptions } from './types'
+} from "./collectors"
+import type { DurationTimer, HttpMetricOptions } from "./types"
 
 /**
  * Creates Express middleware for automatic HTTP metrics collection
@@ -15,7 +15,7 @@ export const createHttpMetricsMiddleware = (
   options: HttpMetricOptions = {},
 ) => {
   const {
-    prefix = '',
+    prefix = "",
     routeExtractor = (req) => req.route?.path || req.path,
     shouldTrack = () => true,
     extraLabels = () => ({}),
@@ -37,7 +37,7 @@ export const createHttpMetricsMiddleware = (
   const responseSizeHistogram = createHttpSizeHistogram(
     registry,
     `${prefix}http_request_size_bytes`,
-    ['method', 'route'],
+    ["method", "route"],
     true,
   )
 
@@ -49,15 +49,15 @@ export const createHttpMetricsMiddleware = (
 
     const startTime = process.hrtime()
 
-    const requestSize = req.headers['content-length']
-      ? Number.parseInt(req.headers['content-length'], 10)
+    const requestSize = req.headers["content-length"]
+      ? Number.parseInt(req.headers["content-length"], 10)
       : undefined
 
     const originalSend = res.send
     let responseSize = 0
 
     res.send = function (data: unknown): Response {
-      if (data && typeof data === 'string') {
+      if (data && typeof data === "string") {
         responseSize = Buffer.byteLength(data)
       } else if (data && Buffer.isBuffer(data)) {
         responseSize = data.length
@@ -65,7 +65,7 @@ export const createHttpMetricsMiddleware = (
       return originalSend.call(this, data)
     }
 
-    res.on('finish', () => {
+    res.on("finish", () => {
       try {
         const [seconds, nanoseconds] = process.hrtime(startTime)
         const durationSeconds = seconds + nanoseconds / 1e9
@@ -124,18 +124,18 @@ export const createMetricsHandler = (
     if (options?.username && options?.password) {
       const authHeader = req.headers.authorization
 
-      if (!authHeader || !authHeader.startsWith('Basic ')) {
-        res.set('WWW-Authenticate', 'Basic realm="Metrics"')
-        res.status(401).end('Authentication required')
+      if (!authHeader || !authHeader.startsWith("Basic ")) {
+        res.set("WWW-Authenticate", 'Basic realm="Metrics"')
+        res.status(401).end("Authentication required")
         return
       }
 
       try {
-        const base64Credentials = authHeader.split(' ')[1]
-        const credentials = Buffer.from(base64Credentials, 'base64').toString(
-          'utf-8',
+        const base64Credentials = authHeader.split(" ")[1]
+        const credentials = Buffer.from(base64Credentials, "base64").toString(
+          "utf-8",
         )
-        const [username, password] = credentials.split(':')
+        const [username, password] = credentials.split(":")
 
         // Use constant-time comparison to prevent timing attacks
         const usernameMatch =
@@ -146,24 +146,24 @@ export const createMetricsHandler = (
           Buffer.from(password).equals(Buffer.from(options.password))
 
         if (!usernameMatch || !passwordMatch) {
-          res.set('WWW-Authenticate', 'Basic realm="Metrics"')
-          res.status(401).end('Invalid credentials')
+          res.set("WWW-Authenticate", 'Basic realm="Metrics"')
+          res.status(401).end("Invalid credentials")
           return
         }
       } catch (_error) {
-        res.set('WWW-Authenticate', 'Basic realm="Metrics"')
-        res.status(401).end('Invalid authorization header')
+        res.set("WWW-Authenticate", 'Basic realm="Metrics"')
+        res.status(401).end("Invalid authorization header")
         return
       }
     }
 
     // Serve metrics
     try {
-      res.set('Content-Type', registry.contentType)
+      res.set("Content-Type", registry.contentType)
       const metrics = await registry.metrics()
       res.end(metrics)
     } catch (_error) {
-      res.status(500).end('Error collecting metrics')
+      res.status(500).end("Error collecting metrics")
     }
   }
 }

@@ -1,5 +1,5 @@
-import { z } from 'zod'
-import { errorResponseSchema, type ErrorResponse } from '../../../types/errors'
+import { z } from "zod"
+import { errorResponseSchema, type ErrorResponse } from "../../../types/errors"
 
 // ===== SCHEMAS =====
 export const userParamsSchema = z.object({

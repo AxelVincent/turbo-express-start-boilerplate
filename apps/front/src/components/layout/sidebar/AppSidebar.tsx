@@ -1,10 +1,10 @@
-import { Link, useRouterState } from '@tanstack/react-router'
-import { Moon, Sun, Monitor } from 'lucide-react'
+import { Link, useRouterState } from "@tanstack/react-router"
+import { Moon, Sun, Monitor } from "lucide-react"
 
-import { authClient } from '@/lib/auth-client'
-import { useTheme } from '@/components/theme-provider'
-import { useIsMobile } from '@/hooks/use-mobile'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { authClient } from "@/lib/auth-client"
+import { useTheme } from "@/components/theme-provider"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   Sidebar,
   SidebarContent,
@@ -18,25 +18,28 @@ import {
   SidebarMenuItem,
   SidebarRail,
   useSidebar,
-} from '@/components/ui/sidebar'
-import { sidebarNavGroups } from './sidebar-nav'
-import { UserMenu } from './UserMenu'
-import { adminSidebarNavGroups, backToAppItem } from '../admin-sidebar/admin-sidebar-nav'
-import { APP_NAME } from '@/lib/constants'
+} from "@/components/ui/sidebar"
+import { sidebarNavGroups } from "./sidebar-nav"
+import { UserMenu } from "./UserMenu"
+import {
+  adminSidebarNavGroups,
+  backToAppItem,
+} from "../admin-sidebar/admin-sidebar-nav"
+import { APP_NAME } from "@/lib/constants"
 
 interface AppSidebarProps {
-  variant?: 'user' | 'admin'
+  variant?: "user" | "admin"
 }
 
-export function AppSidebar({ variant = 'user' }: AppSidebarProps) {
+export function AppSidebar({ variant = "user" }: AppSidebarProps) {
   const routerState = useRouterState()
   const currentPath = routerState.location.pathname
 
-  const isAdminVariant = variant === 'admin'
+  const isAdminVariant = variant === "admin"
 
   const session = authClient.useSession()
   const userRole = session.data?.user?.role as string | undefined
-  const isAdmin = userRole === 'admin' || userRole === 'super_admin'
+  const isAdmin = userRole === "admin" || userRole === "super_admin"
 
   const navGroups = isAdminVariant
     ? adminSidebarNavGroups
@@ -44,8 +47,8 @@ export function AppSidebar({ variant = 'user' }: AppSidebarProps) {
 
   const getIsActive = (itemUrl: string) => {
     if (isAdminVariant) {
-      return itemUrl === '/admin'
-        ? currentPath === '/admin'
+      return itemUrl === "/admin"
+        ? currentPath === "/admin"
         : currentPath.startsWith(itemUrl)
     }
     return currentPath === itemUrl
@@ -56,8 +59,12 @@ export function AppSidebar({ variant = 'user' }: AppSidebarProps) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild tooltip={isAdminVariant ? 'Admin' : 'Home'}>
-              <a href={isAdminVariant ? '/admin' : '/'}>
+            <SidebarMenuButton
+              size="lg"
+              asChild
+              tooltip={isAdminVariant ? "Admin" : "Home"}
+            >
+              <a href={isAdminVariant ? "/admin" : "/"}>
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <span className="text-sm font-bold">{APP_NAME[0]}</span>
                 </div>
@@ -100,11 +107,7 @@ export function AppSidebar({ variant = 'user' }: AppSidebarProps) {
 
       <SidebarFooter>
         <SidebarToggle />
-        {isAdminVariant ? (
-          <AdminFooter />
-        ) : (
-          <UserMenu />
-        )}
+        {isAdminVariant ? <AdminFooter /> : <UserMenu />}
       </SidebarFooter>
 
       <SidebarRail />
@@ -116,27 +119,30 @@ function SidebarToggle() {
   const { theme, setTheme } = useTheme()
 
   const toggleTheme = () => {
-    if (theme === 'light') setTheme('dark')
-    else if (theme === 'dark') setTheme('system')
-    else setTheme('light')
+    if (theme === "light") setTheme("dark")
+    else if (theme === "dark") setTheme("system")
+    else setTheme("light")
   }
 
   const getThemeIcon = () => {
-    if (theme === 'light') return <Sun className="h-4 w-4" />
-    if (theme === 'dark') return <Moon className="h-4 w-4" />
+    if (theme === "light") return <Sun className="h-4 w-4" />
+    if (theme === "dark") return <Moon className="h-4 w-4" />
     return <Monitor className="h-4 w-4" />
   }
 
   const getThemeLabel = () => {
-    if (theme === 'light') return 'Light'
-    if (theme === 'dark') return 'Dark'
-    return 'System'
+    if (theme === "light") return "Light"
+    if (theme === "dark") return "Dark"
+    return "System"
   }
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <SidebarMenuButton onClick={toggleTheme} tooltip={`Theme: ${getThemeLabel()}`}>
+        <SidebarMenuButton
+          onClick={toggleTheme}
+          tooltip={`Theme: ${getThemeLabel()}`}
+        >
           {getThemeIcon()}
           <span>Theme: {getThemeLabel()}</span>
         </SidebarMenuButton>
@@ -165,10 +171,7 @@ function AdminFooter() {
           <SidebarMenuButton size="lg" asChild tooltip={user.name}>
             <Link to="/">
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage
-                  src={user.image ?? undefined}
-                  alt={user.name}
-                />
+                <AvatarImage src={user.image ?? undefined} alt={user.name} />
                 <AvatarFallback className="rounded-lg">
                   {user.name.charAt(0).toUpperCase()}
                 </AvatarFallback>
@@ -193,7 +196,7 @@ function SidebarWrapper({ children }: { children: React.ReactNode }) {
 
   const width = isMobile
     ? undefined
-    : `var(${state === 'expanded' ? '--sidebar-width' : '--sidebar-width-icon'})`
+    : `var(${state === "expanded" ? "--sidebar-width" : "--sidebar-width-icon"})`
 
   return (
     <Sidebar

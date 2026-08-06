@@ -1,5 +1,5 @@
-import { z } from 'zod'
-import { errorResponseSchema, type ErrorResponse } from '../../../types/errors'
+import { z } from "zod"
+import { errorResponseSchema, type ErrorResponse } from "../../../types/errors"
 
 // ===== SCHEMAS =====
 export const userSchema = z.object({
@@ -30,7 +30,10 @@ export const userListResponseSchema = z.object({
   pageSize: z.number().int().positive(),
 })
 
-export const usersResponseSchema = z.union([userListResponseSchema, errorResponseSchema])
+export const usersResponseSchema = z.union([
+  userListResponseSchema,
+  errorResponseSchema,
+])
 
 // ===== TYPES =====
 export type User = z.infer<typeof userSchema>

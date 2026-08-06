@@ -1,14 +1,14 @@
-import { throwAssertionFailedError } from './error'
+import { throwAssertionFailedError } from "./error"
 
 export function isDefined<T>(value: T | undefined): asserts value is T {
   if (value === undefined) {
-    throwAssertionFailedError('expected value to be defined', isDefined)
+    throwAssertionFailedError("expected value to be defined", isDefined)
   }
 }
 
 export function isNotNull<T>(value: T | null): asserts value is T {
   if (value === null) {
-    throwAssertionFailedError('expected value to not be null', isNotNull)
+    throwAssertionFailedError("expected value to not be null", isNotNull)
   }
 }
 

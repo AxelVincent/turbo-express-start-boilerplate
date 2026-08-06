@@ -1,5 +1,10 @@
-import { useMutation, useQuery, useQueryClient, queryOptions } from '@tanstack/react-query'
-import { authClient } from '../auth-client'
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  queryOptions,
+} from "@tanstack/react-query"
+import { authClient } from "../auth-client"
 
 export interface Organization {
   id: string
@@ -11,8 +16,8 @@ export interface Organization {
 
 // Query keys factory
 export const organizationsKeys = {
-  all: ['organizations'] as const,
-  list: () => [...organizationsKeys.all, 'list'] as const,
+  all: ["organizations"] as const,
+  list: () => [...organizationsKeys.all, "list"] as const,
 }
 
 // Query options — reusable in both hooks and route loaders
@@ -47,7 +52,7 @@ export function useCreateOrganization() {
   })
 }
 
-const LAST_ORG_KEY = 'app:lastOrgId'
+const LAST_ORG_KEY = "app:lastOrgId"
 
 export function getLastActiveOrgId(): string | null {
   try {
@@ -77,7 +82,7 @@ export function useSetActiveOrganization() {
       }
       // Remove all org-specific cached data so no stale cross-org data is served
       queryClient.removeQueries({
-        predicate: (query) => query.queryKey[0] !== 'organizations',
+        predicate: (query) => query.queryKey[0] !== "organizations",
       })
     },
   })

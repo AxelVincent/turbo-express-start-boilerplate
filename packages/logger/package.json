@@ -21,8 +21,9 @@
     "preset": "@repo/jest-presets/node"
   },
   "dependencies": {
-     "dotenv": "16.4.7",
-"pino": "^10.1.0"  },
+    "dotenv": "16.4.7",
+    "pino": "^10.1.0"
+  },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@repo/eslint-config": "workspace:*",

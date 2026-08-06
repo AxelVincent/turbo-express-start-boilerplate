@@ -1,10 +1,10 @@
-import { getDatabase } from '../../../db/database'
+import { getDatabase } from "../../../db/database"
 
 export async function deleteUserQuery(id: string): Promise<boolean> {
   const db = getDatabase()
   const result = await db
-    .deleteFrom('user')
-    .where('id', '=', id)
+    .deleteFrom("user")
+    .where("id", "=", id)
     .executeTakeFirst()
 
   return Number(result.numDeletedRows) > 0

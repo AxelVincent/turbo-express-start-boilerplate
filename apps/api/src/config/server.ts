@@ -1,12 +1,14 @@
-import { z } from 'zod'
+import { z } from "zod"
 
 const envSchema = z.object({
   PORT: z.coerce.number().default(3030),
-  BASE_URL: z.string().url().default('http://localhost:3030'),
-  CORS_ORIGIN: z.string().default('*'),
-  LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
-  NODE_ENV: z.enum(['development', 'staging', 'production', 'test']).default('development'),
-  FRONTEND_BASE_URL: z.string().default('http://localhost:5173'),
+  BASE_URL: z.string().url().default("http://localhost:3030"),
+  CORS_ORIGIN: z.string().default("*"),
+  LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
+  NODE_ENV: z
+    .enum(["development", "staging", "production", "test"])
+    .default("development"),
+  FRONTEND_BASE_URL: z.string().default("http://localhost:5173"),
 })
 
 const env = envSchema.parse(process.env)

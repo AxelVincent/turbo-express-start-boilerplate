@@ -1,15 +1,12 @@
-import { type Request, type Response, Router } from 'express'
-import asyncHandler from 'express-async-handler'
+import { type Request, type Response, Router } from "express"
+import asyncHandler from "express-async-handler"
 
 /**
  * Signature for a test handler.
  * Handler completes without throwing -> 200 (test passed)
  * Handler throws -> 500 with error details (test failed)
  */
-export type TestHandler = (
-  _req: Request,
-  _res: Response,
-) => Promise<void>
+export type TestHandler = (_req: Request, _res: Response) => Promise<void>
 
 /**
  * Creates a router from a map of { '/path': handlerFn }.

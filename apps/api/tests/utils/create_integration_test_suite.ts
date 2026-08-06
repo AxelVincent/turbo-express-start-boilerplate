@@ -1,9 +1,9 @@
-import { jest, describe, it, expect, afterAll } from '@jest/globals'
-import { randomUUID as uuid } from 'crypto'
-import axios from 'axios'
-import { API_TESTS_URL, HEADERS_AUTH } from './constants'
-import { enrichHeaders } from './headers'
-import { testMessage, describeMessage } from './helpers'
+import { jest, describe, it, expect, afterAll } from "@jest/globals"
+import { randomUUID as uuid } from "crypto"
+import axios from "axios"
+import { API_TESTS_URL, HEADERS_AUTH } from "./constants"
+import { enrichHeaders } from "./headers"
+import { testMessage, describeMessage } from "./helpers"
 
 // ------- Types -------
 
@@ -17,7 +17,7 @@ export type TestCase = {
   /** Skip auth headers (for public endpoints) */
   noAuth?: boolean
   /** Control execution: 'skip' | 'only' */
-  modifier?: 'skip' | 'only'
+  modifier?: "skip" | "only"
   /** Run concurrently. Default: true */
   concurrent?: boolean
   /** Custom timeout in ms */
@@ -38,7 +38,7 @@ class TestError extends Error {
   constructor(message: string, cause: Error) {
     super(message)
     this.stack = cause.stack
-      ? `${this.message}\n${cause.stack.split('\n').slice(1).join('\n')}`
+      ? `${this.message}\n${cause.stack.split("\n").slice(1).join("\n")}`
       : this.message
   }
 }
@@ -53,20 +53,20 @@ function resolveHttpMethod(
 
   if (body) {
     return async (path: string) => {
-      const url = `${API_TESTS_URL}${path}`.replace(/(?<!:)\/+/g, '/')
+      const url = `${API_TESTS_URL}${path}`.replace(/(?<!:)\/+/g, "/")
       return axios.request({
-        method: 'POST',
+        method: "POST",
         url,
         data: body,
-        headers: { 'Content-Type': 'application/json', ...allHeaders },
+        headers: { "Content-Type": "application/json", ...allHeaders },
       })
     }
   }
 
   return async (path: string) => {
-    const url = `${API_TESTS_URL}${path}`.replace(/(?<!:)\/+/g, '/')
+    const url = `${API_TESTS_URL}${path}`.replace(/(?<!:)\/+/g, "/")
     return axios.request({
-      method: 'GET',
+      method: "GET",
       url,
       headers: allHeaders,
     })
@@ -74,13 +74,15 @@ function resolveHttpMethod(
 }
 
 async function unlockAllUsers(headers: Record<string, string>) {
-  await axios.post(
-    `${API_TESTS_URL}/unlock_users`,
-    {},
-    { headers: { ...HEADERS_AUTH, ...headers } },
-  ).catch(() => {
-    // Ignore errors during cleanup
-  })
+  await axios
+    .post(
+      `${API_TESTS_URL}/unlock_users`,
+      {},
+      { headers: { ...HEADERS_AUTH, ...headers } },
+    )
+    .catch(() => {
+      // Ignore errors during cleanup
+    })
 }
 
 // ------- Main Factory -------
@@ -91,7 +93,7 @@ export function createIntegrationTestSuite(
 ) {
   // Each suite gets a unique key for user isolation
   const userSeedKey = uuid()
-  const headers = { 'x-test-user-seed': userSeedKey }
+  const headers = { "x-test-user-seed": userSeedKey }
 
   // Release all locked users after this suite finishes
   afterAll(async () => {
@@ -105,7 +107,7 @@ export function createIntegrationTestSuite(
     }
 
     if (testCases.length === 0 && allowEmpty) {
-      it.todo('Empty test suite placeholder')
+      it.todo("Empty test suite placeholder")
       return
     }
 
@@ -121,9 +123,9 @@ export function createIntegrationTestSuite(
     } of testCases) {
       // Select it / it.skip / it.only / it.concurrent
       const itFunc =
-        modifier === 'skip'
+        modifier === "skip"
           ? it.skip
-          : modifier === 'only'
+          : modifier === "only"
             ? it.only
             : (concurrent ?? true)
               ? it.concurrent
@@ -134,9 +136,9 @@ export function createIntegrationTestSuite(
         async () => {
           expect.hasAssertions()
           const handle = resolveHttpMethod(headers, noAuth, body)
-          const fullRoute = `${routePrefix ?? ''}/${route}`.replace(
+          const fullRoute = `${routePrefix ?? ""}/${route}`.replace(
             /\/{2,}/g,
-            '/',
+            "/",
           )
 
           try {
@@ -144,13 +146,17 @@ export function createIntegrationTestSuite(
             expect(response.status).toBe(200)
           } catch (error: any) {
             const errData = error.response?.data
-            const details = errData?.message ? String(errData.message).trim() : ''
+            const details = errData?.message
+              ? String(errData.message).trim()
+              : ""
             const serverStack = errData?.stack
 
             if (details || serverStack) {
               throw new TestError(
                 `Test failed: ${details || error.message}`,
-                serverStack ? { message: details, stack: serverStack } as Error : error,
+                serverStack
+                  ? ({ message: details, stack: serverStack } as Error)
+                  : error,
               )
             }
 

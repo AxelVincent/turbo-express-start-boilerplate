@@ -2,10 +2,10 @@
  * @fileoverview Tests for one-query-per-file rule.
  */
 
-"use strict";
+"use strict"
 
-const { RuleTester } = require("eslint");
-const rule = require("./one-query-per-file");
+const { RuleTester } = require("eslint")
+const rule = require("./one-query-per-file")
 
 const ruleTester = new RuleTester({
   parser: require.resolve("@typescript-eslint/parser"),
@@ -13,7 +13,7 @@ const ruleTester = new RuleTester({
     ecmaVersion: "latest",
     sourceType: "module",
   },
-});
+})
 
 ruleTester.run("one-query-per-file", rule, {
   valid: [
@@ -126,6 +126,6 @@ ruleTester.run("one-query-per-file", rule, {
       ],
     },
   ],
-});
+})
 
-console.log("All tests passed!");
+console.log("All tests passed!")

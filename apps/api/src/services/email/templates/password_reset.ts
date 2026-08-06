@@ -1,4 +1,4 @@
-import { baseTemplate } from './base_template'
+import { baseTemplate } from "./base_template"
 
 interface PasswordResetParams {
   resetLink: string
@@ -10,7 +10,10 @@ interface EmailTemplate {
   html: string
 }
 
-export function passwordResetTemplate({ resetLink, userName }: PasswordResetParams): EmailTemplate {
+export function passwordResetTemplate({
+  resetLink,
+  userName,
+}: PasswordResetParams): EmailTemplate {
   const content = `
 <h1 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#0f172a;letter-spacing:-0.02em;">Reset your password</h1>
 <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#64748b;">
@@ -31,7 +34,7 @@ export function passwordResetTemplate({ resetLink, userName }: PasswordResetPara
 </p>`
 
   return {
-    subject: 'Reset your password',
+    subject: "Reset your password",
     html: baseTemplate(content),
   }
 }

@@ -1,10 +1,10 @@
-const { RuleTester } = require("eslint");
-const rule = require("./no-raw-http-in-test-cases");
+const { RuleTester } = require("eslint")
+const rule = require("./no-raw-http-in-test-cases")
 
 const ruleTester = new RuleTester({
   parser: require.resolve("@typescript-eslint/parser"),
   parserOptions: { ecmaVersion: 2020, sourceType: "module" },
-});
+})
 
 ruleTester.run("no-raw-http-in-test-cases", rule, {
   valid: [
@@ -77,4 +77,4 @@ ruleTester.run("no-raw-http-in-test-cases", rule, {
       ],
     },
   ],
-});
+})

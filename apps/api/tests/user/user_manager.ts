@@ -1,11 +1,11 @@
-import { getDatabase } from '../../src/db/database'
-import { User } from './user'
+import { getDatabase } from "../../src/db/database"
+import { User } from "./user"
 
 type UserFactory = () => Promise<User>
 
 export class UserManager {
   /** Map of groupKey -> locked user IDs */
-  private readonly lockedUsers = new Map<string, string[]>([['any', []]])
+  private readonly lockedUsers = new Map<string, string[]>([["any", []]])
   /** Map of userId -> User object */
   private readonly users = new Map<string, User>()
   private newUsersCount = 0
@@ -29,7 +29,7 @@ export class UserManager {
         }),
       ),
     )
-    const succeeded = results.filter((r) => r.status === 'fulfilled').length
+    const succeeded = results.filter((r) => r.status === "fulfilled").length
     console.log(`${succeeded} test users were seeded.`)
   }
 
@@ -40,7 +40,7 @@ export class UserManager {
    * @param groupKey - Unique key per test suite (from x-test-user-seed header)
    * @param createNew - Force creation of a new user even if pool has available ones
    */
-  async getUser(groupKey = 'any', createNew = false): Promise<User> {
+  async getUser(groupKey = "any", createNew = false): Promise<User> {
     const allLockedIds = [...this.lockedUsers.values()].flat()
     const unlockedIds = [...this.users.keys()].filter(
       (id) => !allLockedIds.includes(id),
@@ -55,8 +55,7 @@ export class UserManager {
     }
 
     // Pick a random unlocked user
-    const randomId =
-      unlockedIds[Math.floor(Math.random() * unlockedIds.length)]
+    const randomId = unlockedIds[Math.floor(Math.random() * unlockedIds.length)]
     this.lockUser(groupKey, randomId)
     return this.users.get(randomId)!
   }
@@ -75,7 +74,11 @@ export class UserManager {
       if (!user) continue
 
       for (const orgId of user.createdOrgIds) {
-        await db.deleteFrom('organization').where('id', '=', orgId).execute().catch(() => {})
+        await db
+          .deleteFrom("organization")
+          .where("id", "=", orgId)
+          .execute()
+          .catch(() => {})
       }
       user.createdOrgIds.length = 0
     }

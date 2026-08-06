@@ -9,7 +9,7 @@
  * These should be refactored to unit tests or merged with more complex cases.
  */
 
-"use strict";
+"use strict"
 
 const ASSERTION_NAMES = new Set([
   "isDefined",
@@ -26,7 +26,7 @@ const ASSERTION_NAMES = new Set([
   "doesNotThrow",
   "arrayHasLength",
   "objectHasKeys",
-]);
+])
 
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
@@ -47,57 +47,61 @@ module.exports = {
     return {
       // Look for exported async functions (test handlers)
       "ExportNamedDeclaration > FunctionDeclaration"(node) {
-        checkHandler(context, node);
+        checkHandler(context, node)
       },
       "ExportNamedDeclaration > VariableDeclaration > VariableDeclarator > ArrowFunctionExpression"(
-        node
+        node,
       ) {
-        checkHandler(context, node);
+        checkHandler(context, node)
       },
-    };
+    }
   },
-};
+}
 
 function checkHandler(context, node) {
-  const filename = context.getFilename().replace(/\\/g, "/");
+  const filename = context.getFilename().replace(/\\/g, "/")
 
   // Only check files inside __tests__/cases/ directories
-  if (!/__tests__\/cases\//.test(filename)) return;
+  if (!/__tests__\/cases\//.test(filename)) return
   // Skip index files
-  if (/\/index\.[tj]sx?$/.test(filename)) return;
+  if (/\/index\.[tj]sx?$/.test(filename)) return
 
-  let makeUserCount = 0;
-  let meaningfulCallCount = 0;
+  let makeUserCount = 0
+  let meaningfulCallCount = 0
 
-  visitNode(node);
+  visitNode(node)
 
   function visitNode(n) {
-    if (!n || typeof n !== "object") return;
+    if (!n || typeof n !== "object") return
 
     if (n.type === "CallExpression") {
-      const calleeName = getCalleeName(n);
-      if (calleeName === "makeUser" || calleeName === "makeUserWithOrg" || calleeName === "makeNewUser") {
-        makeUserCount++;
+      const calleeName = getCalleeName(n)
+      if (
+        calleeName === "makeUser" ||
+        calleeName === "makeUserWithOrg" ||
+        calleeName === "makeNewUser"
+      ) {
+        makeUserCount++
       } else if (calleeName && !ASSERTION_NAMES.has(calleeName)) {
-        meaningfulCallCount++;
+        meaningfulCallCount++
       } else if (!calleeName) {
         // Method calls like user.todos.create()
-        meaningfulCallCount++;
+        meaningfulCallCount++
       }
     }
 
     // Recurse into child nodes
     for (const key of Object.keys(n)) {
-      if (key === "parent") continue;
-      const child = n[key];
+      if (key === "parent") continue
+      const child = n[key]
       if (Array.isArray(child)) {
         for (const item of child) {
           if (item && typeof item === "object" && item.type) {
-            visitNode(item);
+            visitNode(item)
           }
         }
       } else if (child && typeof child === "object" && child.type) {
-        visitNode(child);
+        visitNode(child)
       }
     }
   }
@@ -105,22 +109,22 @@ function checkHandler(context, node) {
   // Too simple: <=1 user AND <=1 meaningful call
   if (makeUserCount <= 1 && meaningfulCallCount <= 1) {
     context.report({
-      node:
-        node.type === "FunctionDeclaration"
-          ? node
-          : node.parent || node,
+      node: node.type === "FunctionDeclaration" ? node : node.parent || node,
       messageId: "tooSimple",
-    });
+    })
   }
 }
 
 function getCalleeName(callExpr) {
-  const callee = callExpr.callee;
+  const callee = callExpr.callee
   if (callee.type === "Identifier") {
-    return callee.name;
+    return callee.name
   }
-  if (callee.type === "MemberExpression" && callee.property.type === "Identifier") {
-    return callee.property.name;
+  if (
+    callee.type === "MemberExpression" &&
+    callee.property.type === "Identifier"
+  ) {
+    return callee.property.name
   }
-  return null;
+  return null
 }

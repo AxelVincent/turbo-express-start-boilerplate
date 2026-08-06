@@ -1,5 +1,5 @@
-import { Link } from '@tanstack/react-router'
-import { APP_NAME } from '@/lib/constants'
+import { Link } from "@tanstack/react-router"
+import { APP_NAME } from "@/lib/constants"
 
 export function AuthHeader() {
   return (

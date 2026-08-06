@@ -1,4 +1,4 @@
-import { ShieldCheck, Building } from 'lucide-react'
+import { ShieldCheck, Building } from "lucide-react"
 
 export interface NavItem {
   title: string
@@ -15,21 +15,21 @@ export interface NavGroup {
 
 export const sidebarNavGroups: NavGroup[] = [
   {
-    label: 'Main',
+    label: "Main",
     items: [
       {
-        title: 'Organizations',
-        url: '/orgs',
+        title: "Organizations",
+        url: "/orgs",
         icon: Building,
       },
     ],
   },
   {
-    label: 'Administration',
+    label: "Administration",
     items: [
       {
-        title: 'Backoffice',
-        url: '/admin',
+        title: "Backoffice",
+        url: "/admin",
         icon: ShieldCheck,
         adminOnly: true,
       },

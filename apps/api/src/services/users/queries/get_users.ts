@@ -1,29 +1,29 @@
-import { getDatabase } from '../../../db/database'
-import type { User, UserQuery } from '../types'
-import { mapDbUserToUser } from '../mapper'
+import { getDatabase } from "../../../db/database"
+import type { User, UserQuery } from "../types"
+import { mapDbUserToUser } from "../mapper"
 
 export async function getUsersQuery(
-  query: UserQuery
+  query: UserQuery,
 ): Promise<{ users: User[]; total: number }> {
   const db = getDatabase()
   const { page, pageSize, search } = query
 
   // Build base query
-  let baseQuery = db.selectFrom('user')
+  let baseQuery = db.selectFrom("user")
 
   // Apply search filter if provided
   if (search) {
     baseQuery = baseQuery.where((eb) =>
       eb.or([
-        eb('name', 'ilike', `%${search}%`),
-        eb('email', 'ilike', `%${search}%`),
-      ])
+        eb("name", "ilike", `%${search}%`),
+        eb("email", "ilike", `%${search}%`),
+      ]),
     )
   }
 
   // Get total count
   const countResult = await baseQuery
-    .select((eb) => eb.fn.countAll<number>().as('count'))
+    .select((eb) => eb.fn.countAll<number>().as("count"))
     .executeTakeFirst()
   const total = Number(countResult?.count ?? 0)
 
@@ -31,7 +31,7 @@ export async function getUsersQuery(
   const offset = (page - 1) * pageSize
   const users = await baseQuery
     .selectAll()
-    .orderBy('created_at', 'desc')
+    .orderBy("created_at", "desc")
     .limit(pageSize)
     .offset(offset)
     .execute()

@@ -1,19 +1,19 @@
-import { LayoutDashboard, ArrowLeft, Users } from 'lucide-react'
+import { LayoutDashboard, ArrowLeft, Users } from "lucide-react"
 
-import type { NavItem, NavGroup } from '../sidebar/sidebar-nav'
+import type { NavItem, NavGroup } from "../sidebar/sidebar-nav"
 
 export const adminSidebarNavGroups: NavGroup[] = [
   {
-    label: 'Overview',
+    label: "Overview",
     items: [
       {
-        title: 'Dashboard',
-        url: '/admin',
+        title: "Dashboard",
+        url: "/admin",
         icon: LayoutDashboard,
       },
       {
-        title: 'Users',
-        url: '/admin/users',
+        title: "Users",
+        url: "/admin/users",
         icon: Users,
       },
     ],
@@ -21,7 +21,7 @@ export const adminSidebarNavGroups: NavGroup[] = [
 ]
 
 export const backToAppItem: NavItem = {
-  title: 'Back to App',
-  url: '/orgs',
+  title: "Back to App",
+  url: "/orgs",
   icon: ArrowLeft,
 }

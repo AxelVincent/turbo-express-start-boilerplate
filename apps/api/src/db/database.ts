@@ -1,12 +1,12 @@
-import { Kysely, PostgresDialect } from "kysely";
-import { Pool } from "pg";
-import type { DB as Database } from "./types";
+import { Kysely, PostgresDialect } from "kysely"
+import { Pool } from "pg"
+import type { DB as Database } from "./types"
 
-let db: Kysely<Database> | null = null;
+let db: Kysely<Database> | null = null
 
 export const createDatabase = (): Kysely<Database> => {
   if (db) {
-    return db;
+    return db
   }
 
   const dialect = new PostgresDialect({
@@ -18,35 +18,35 @@ export const createDatabase = (): Kysely<Database> => {
       database: process.env.PGDATABASE,
       max: 10,
     }),
-  });
+  })
 
   db = new Kysely<Database>({
     dialect,
-  });
+  })
 
-  return db;
-};
+  return db
+}
 
 export const getDatabase = (): Kysely<Database> => {
   if (!db) {
-    throw new Error("Database not initialized. Call createDatabase() first.");
+    throw new Error("Database not initialized. Call createDatabase() first.")
   }
-  return db;
-};
+  return db
+}
 
 export const closeDatabase = async (): Promise<void> => {
   if (db) {
-    await db.destroy();
-    db = null;
+    await db.destroy()
+    db = null
   }
-};
+}
 
 export const checkDatabaseHealth = async (): Promise<boolean> => {
   try {
-    const database = getDatabase();
-    await database.selectFrom("user").select("id").limit(1).execute();
-    return true;
+    const database = getDatabase()
+    await database.selectFrom("user").select("id").limit(1).execute()
+    return true
   } catch (error) {
-    return false;
+    return false
   }
-};
+}

@@ -1,10 +1,10 @@
-const { RuleTester } = require("eslint");
-const rule = require("./require-given-when-then");
+const { RuleTester } = require("eslint")
+const rule = require("./require-given-when-then")
 
 const ruleTester = new RuleTester({
   parser: require.resolve("@typescript-eslint/parser"),
   parserOptions: { ecmaVersion: 2020, sourceType: "module" },
-});
+})
 
 ruleTester.run("require-given-when-then", rule, {
   valid: [
@@ -71,4 +71,4 @@ ruleTester.run("require-given-when-then", rule, {
       errors: [{ messageId: "missingComments" }],
     },
   ],
-});
+})

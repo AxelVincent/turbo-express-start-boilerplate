@@ -11,7 +11,7 @@
  * Forbidden: user.get_auth(), user.post_auth(), user.put_auth(), user.del_auth(), user.patch_auth()
  */
 
-"use strict";
+"use strict"
 
 const RAW_HTTP_METHODS = new Set([
   "get_auth",
@@ -20,7 +20,7 @@ const RAW_HTTP_METHODS = new Set([
   "patch_auth",
   "del_auth",
   "post_auth_with_lock_retry",
-]);
+])
 
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
@@ -49,16 +49,18 @@ module.exports = {
   },
 
   create(context) {
-    const filename = context.getFilename().replace(/\\/g, "/");
+    const filename = context.getFilename().replace(/\\/g, "/")
 
     // Only enforce in __tests__/cases/ files (not index files)
-    if (!/__tests__\/cases\//.test(filename)) return {};
-    if (/\/index\.[tj]sx?$/.test(filename)) return {};
+    if (!/__tests__\/cases\//.test(filename)) return {}
+    if (/\/index\.[tj]sx?$/.test(filename)) return {}
     // Skip helper files (e.g. _helpers.ts)
-    if (/\/_[^/]+\.[tj]sx?$/.test(filename)) return {};
+    if (/\/_[^/]+\.[tj]sx?$/.test(filename)) return {}
 
-    const extra = (context.options[0] && context.options[0].additionalForbiddenMethods) || [];
-    const forbidden = new Set([...RAW_HTTP_METHODS, ...extra]);
+    const extra =
+      (context.options[0] && context.options[0].additionalForbiddenMethods) ||
+      []
+    const forbidden = new Set([...RAW_HTTP_METHODS, ...extra])
 
     return {
       "CallExpression > MemberExpression"(node) {
@@ -70,9 +72,9 @@ module.exports = {
             node: node.parent,
             messageId: "noRawHttp",
             data: { method: node.property.name },
-          });
+          })
         }
       },
-    };
+    }
   },
-};
+}

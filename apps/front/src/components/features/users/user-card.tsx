@@ -1,14 +1,14 @@
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import type { User } from '@repo/api/routes_web/users/add_user/contract'
+} from "@/components/ui/select"
+import type { User } from "@repo/api/routes_web/users/add_user/contract"
 
 interface UserCardProps {
   user: User
@@ -18,18 +18,23 @@ interface UserCardProps {
 }
 
 const ROLES = [
-  { value: 'user', label: 'User' },
-  { value: 'admin', label: 'Admin' },
-  { value: 'super_admin', label: 'Super Admin' },
+  { value: "user", label: "User" },
+  { value: "admin", label: "Admin" },
+  { value: "super_admin", label: "Super Admin" },
 ]
 
 function roleBadgeVariant(role: string) {
-  if (role === 'super_admin') return 'default' as const
-  if (role === 'admin') return 'secondary' as const
-  return 'outline' as const
+  if (role === "super_admin") return "default" as const
+  if (role === "admin") return "secondary" as const
+  return "outline" as const
 }
 
-export function UserCard({ user, onDelete, isDeleting, onRoleChange }: UserCardProps) {
+export function UserCard({
+  user,
+  onDelete,
+  isDeleting,
+  onRoleChange,
+}: UserCardProps) {
   return (
     <Card>
       <CardHeader>

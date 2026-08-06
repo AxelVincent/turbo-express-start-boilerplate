@@ -1,5 +1,5 @@
-import { type RequestHandler } from 'express'
-import { logger } from '@repo/logger'
+import { type RequestHandler } from "express"
+import { logger } from "@repo/logger"
 
 /**
  * Middleware to require authentication
@@ -9,8 +9,8 @@ import { logger } from '@repo/logger'
 export const requireAuth: RequestHandler = (req, res, next) => {
   if (!req.auth || !req.auth.userId) {
     logger.warn({
-      msg: 'Unauthorized access attempt',
-      event: 'auth.unauthorized',
+      msg: "Unauthorized access attempt",
+      event: "auth.unauthorized",
       metadata: {
         path: req.path,
         method: req.method,
@@ -18,8 +18,8 @@ export const requireAuth: RequestHandler = (req, res, next) => {
     })
 
     return res.status(401).json({
-      error: 'Unauthorized',
-      message: 'Authentication required',
+      error: "Unauthorized",
+      message: "Authentication required",
     })
   }
 

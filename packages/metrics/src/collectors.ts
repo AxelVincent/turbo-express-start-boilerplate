@@ -1,4 +1,4 @@
-import { Counter, Gauge, Histogram, type Registry, Summary } from 'prom-client'
+import { Counter, Gauge, Histogram, type Registry, Summary } from "prom-client"
 
 /**
  * Creates a counter metric
@@ -77,13 +77,13 @@ export const createSummary = (
  */
 export const createHttpDurationHistogram = (
   registry: Registry,
-  name = 'http_request_duration_seconds',
-  labelNames: string[] = ['method', 'route', 'status_code'],
+  name = "http_request_duration_seconds",
+  labelNames: string[] = ["method", "route", "status_code"],
 ) => {
   return createHistogram(
     registry,
     name,
-    'Duration of HTTP requests in seconds',
+    "Duration of HTTP requests in seconds",
     labelNames,
     [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 2, 5, 10],
   )
@@ -94,13 +94,13 @@ export const createHttpDurationHistogram = (
  */
 export const createHttpRequestCounter = (
   registry: Registry,
-  name = 'http_requests_total',
-  labelNames: string[] = ['method', 'route', 'status_code'],
+  name = "http_requests_total",
+  labelNames: string[] = ["method", "route", "status_code"],
 ) => {
   return createCounter(
     registry,
     name,
-    'Total number of HTTP requests',
+    "Total number of HTTP requests",
     labelNames,
   )
 }
@@ -110,17 +110,17 @@ export const createHttpRequestCounter = (
  */
 export const createHttpSizeHistogram = (
   registry: Registry,
-  name = 'http_request_size_bytes',
-  labelNames: string[] = ['method', 'route'],
+  name = "http_request_size_bytes",
+  labelNames: string[] = ["method", "route"],
   isResponse = false,
 ) => {
   return createHistogram(
     registry,
-    isResponse ? name.replace('request', 'response') : name,
+    isResponse ? name.replace("request", "response") : name,
     isResponse
-      ? 'Size of HTTP responses in bytes'
-      : 'Size of HTTP requests in bytes',
-    isResponse ? [...labelNames, 'status_code'] : labelNames,
+      ? "Size of HTTP responses in bytes"
+      : "Size of HTTP requests in bytes",
+    isResponse ? [...labelNames, "status_code"] : labelNames,
     [100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000],
   )
 }

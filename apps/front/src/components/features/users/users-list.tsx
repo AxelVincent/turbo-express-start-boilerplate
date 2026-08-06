@@ -1,7 +1,7 @@
-import { Card, CardContent } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
-import type { User } from '@repo/api/routes_web/users/add_user/contract'
-import { UserCard } from './user-card'
+import { Card, CardContent } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
+import type { User } from "@repo/api/routes_web/users/add_user/contract"
+import { UserCard } from "./user-card"
 
 interface UsersListProps {
   users?: User[]
@@ -55,7 +55,7 @@ export function UsersList({
     return (
       <Card>
         <CardContent className="p-8 text-center text-muted-foreground">
-          No users found. {hasSearch && 'Try a different search term.'}
+          No users found. {hasSearch && "Try a different search term."}
         </CardContent>
       </Card>
     )

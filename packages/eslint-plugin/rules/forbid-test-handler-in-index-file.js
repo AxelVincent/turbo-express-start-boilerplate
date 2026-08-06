@@ -3,7 +3,7 @@
  * Handlers must be in separate files and imported.
  */
 
-"use strict";
+"use strict"
 
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
@@ -21,20 +21,20 @@ module.exports = {
   },
 
   create(context) {
-    const filename = context.getFilename().replace(/\\/g, "/");
+    const filename = context.getFilename().replace(/\\/g, "/")
 
     // Only check index files inside __tests__/cases/ directories
     if (!/__tests__\/cases\/index\.[tj]sx?$/.test(filename)) {
-      return {};
+      return {}
     }
 
     return {
       'CallExpression[callee.name="createTestRouter"]'(node) {
-        const arg = node.arguments[0];
-        if (!arg || arg.type !== "ObjectExpression") return;
+        const arg = node.arguments[0]
+        if (!arg || arg.type !== "ObjectExpression") return
 
         for (const prop of arg.properties) {
-          if (prop.type !== "Property") continue;
+          if (prop.type !== "Property") continue
 
           if (
             prop.value.type === "ArrowFunctionExpression" ||
@@ -43,10 +43,10 @@ module.exports = {
             context.report({
               node: prop.value,
               messageId: "noInlineHandler",
-            });
+            })
           }
         }
       },
-    };
+    }
   },
-};
+}

@@ -6,18 +6,17 @@
  * block comments or consecutive line comments.
  */
 
-"use strict";
+"use strict"
 
-const TEST_PROPERTIES = ["when", "then", "route"];
-const MIN_MATCHES = 3;
+const TEST_PROPERTIES = ["when", "then", "route"]
+const MIN_MATCHES = 3
 
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
   meta: {
     type: "problem",
     docs: {
-      description:
-        "Prevent commented-out test cases in integration test files",
+      description: "Prevent commented-out test cases in integration test files",
     },
     messages: {
       noCommentedTests:
@@ -27,67 +26,70 @@ module.exports = {
   },
 
   create(context) {
-    const filename = context.getFilename().replace(/\\/g, "/");
+    const filename = context.getFilename().replace(/\\/g, "/")
 
     // Only check integration test files
     if (!filename.endsWith(".integration.test.ts")) {
-      return {};
+      return {}
     }
 
     return {
       Program() {
-        const sourceCode = context.getSourceCode();
-        const comments = sourceCode.getAllComments();
+        const sourceCode = context.getSourceCode()
+        const comments = sourceCode.getAllComments()
 
         // Check block comments
         for (const comment of comments) {
           if (comment.type === "Block") {
-            const text = comment.value;
+            const text = comment.value
             const matchCount = TEST_PROPERTIES.filter((prop) =>
-              new RegExp(prop + "\\s*:").test(text)
-            ).length;
+              new RegExp(prop + "\\s*:").test(text),
+            ).length
 
             if (matchCount >= MIN_MATCHES) {
               context.report({
                 loc: comment.loc,
                 messageId: "noCommentedTests",
-              });
+              })
             }
           }
         }
 
         // Check consecutive line comments
-        const lineComments = comments.filter((c) => c.type === "Line");
+        const lineComments = comments.filter((c) => c.type === "Line")
         for (let i = 0; i < lineComments.length; i++) {
           // Collect consecutive line comments
-          let combinedText = lineComments[i].value;
-          let endIndex = i;
+          let combinedText = lineComments[i].value
+          let endIndex = i
 
           for (let j = i + 1; j < lineComments.length; j++) {
-            if (lineComments[j].loc.start.line === lineComments[j - 1].loc.start.line + 1) {
-              combinedText += "\n" + lineComments[j].value;
-              endIndex = j;
+            if (
+              lineComments[j].loc.start.line ===
+              lineComments[j - 1].loc.start.line + 1
+            ) {
+              combinedText += "\n" + lineComments[j].value
+              endIndex = j
             } else {
-              break;
+              break
             }
           }
 
           if (endIndex > i) {
             const matchCount = TEST_PROPERTIES.filter((prop) =>
-              new RegExp(prop + "\\s*:").test(combinedText)
-            ).length;
+              new RegExp(prop + "\\s*:").test(combinedText),
+            ).length
 
             if (matchCount >= MIN_MATCHES) {
               context.report({
                 loc: lineComments[i].loc,
                 messageId: "noCommentedTests",
-              });
+              })
             }
 
-            i = endIndex; // Skip already-processed comments
+            i = endIndex // Skip already-processed comments
           }
         }
       },
-    };
+    }
   },
-};
+}

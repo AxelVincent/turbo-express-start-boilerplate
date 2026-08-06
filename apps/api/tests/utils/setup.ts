@@ -1,4 +1,4 @@
-import { jest } from '@jest/globals'
+import { jest } from "@jest/globals"
 
 // Retry flaky tests in CI
 if (process.env.CI_RUN_ID) {

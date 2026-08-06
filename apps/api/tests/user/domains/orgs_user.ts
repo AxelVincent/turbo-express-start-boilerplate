@@ -1,6 +1,6 @@
-import { randomUUID as uuid } from 'crypto'
-import { getDatabase } from '../../../src/db/database'
-import type { BaseUser } from '../base_user'
+import { randomUUID as uuid } from "crypto"
+import { getDatabase } from "../../../src/db/database"
+import type { BaseUser } from "../base_user"
 
 /**
  * Domain user for organization operations.
@@ -16,12 +16,14 @@ export class OrgsUser {
    * Create an organization and make the user an owner.
    * Sets it as the active org on the user's session.
    */
-  async createOrg(overrides: { name?: string; slug?: string } = {}): Promise<string> {
+  async createOrg(
+    overrides: { name?: string; slug?: string } = {},
+  ): Promise<string> {
     const db = getDatabase()
     const orgId = uuid()
 
     await db
-      .insertInto('organization')
+      .insertInto("organization")
       .values({
         id: orgId,
         name: overrides.name ?? `Test Org ${orgId.substring(0, 8)}`,
@@ -31,21 +33,21 @@ export class OrgsUser {
       .execute()
 
     await db
-      .insertInto('member')
+      .insertInto("member")
       .values({
         id: uuid(),
         organization_id: orgId,
         user_id: this.user.id,
-        role: 'owner',
+        role: "owner",
         created_at: new Date(),
       })
       .execute()
 
     // Set as active org on the user's session
     await db
-      .updateTable('session')
+      .updateTable("session")
       .set({ active_organization_id: orgId })
-      .where('user_id', '=', this.user.id)
+      .where("user_id", "=", this.user.id)
       .execute()
 
     this.user.orgId = orgId
@@ -61,16 +63,16 @@ export class OrgsUser {
     orgId: string,
     email: string,
     inviterId: string,
-    status: 'pending' | 'accepted' = 'pending',
+    status: "pending" | "accepted" = "pending",
   ): Promise<void> {
     const db = getDatabase()
     await db
-      .insertInto('invitation')
+      .insertInto("invitation")
       .values({
         id: uuid(),
         organization_id: orgId,
         email,
-        role: 'member',
+        role: "member",
         status,
         expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         inviter_id: inviterId,
@@ -89,12 +91,24 @@ export class OrgsUser {
   ): Promise<void> {
     const db = getDatabase()
     if (signedUpUserId) {
-      await db.deleteFrom('session').where('user_id', '=', signedUpUserId).execute()
-      await db.deleteFrom('account').where('user_id', '=', signedUpUserId).execute()
-      await db.deleteFrom('user').where('id', '=', signedUpUserId).execute()
+      await db
+        .deleteFrom("session")
+        .where("user_id", "=", signedUpUserId)
+        .execute()
+      await db
+        .deleteFrom("account")
+        .where("user_id", "=", signedUpUserId)
+        .execute()
+      await db.deleteFrom("user").where("id", "=", signedUpUserId).execute()
     }
-    await db.deleteFrom('invitation').where('organization_id', '=', orgId).execute()
-    await db.deleteFrom('verification').where('identifier', '=', email).execute()
+    await db
+      .deleteFrom("invitation")
+      .where("organization_id", "=", orgId)
+      .execute()
+    await db
+      .deleteFrom("verification")
+      .where("identifier", "=", email)
+      .execute()
   }
 
   /**
@@ -103,6 +117,6 @@ export class OrgsUser {
    */
   async deleteOrg(orgId: string): Promise<void> {
     const db = getDatabase()
-    await db.deleteFrom('organization').where('id', '=', orgId).execute()
+    await db.deleteFrom("organization").where("id", "=", orgId).execute()
   }
 }

@@ -1,5 +1,5 @@
-import { type RequestHandler } from 'express'
-import { logger } from '@repo/logger'
+import { type RequestHandler } from "express"
+import { logger } from "@repo/logger"
 
 /**
  * Middleware to require an active organization
@@ -9,8 +9,8 @@ import { logger } from '@repo/logger'
 export const requireOrg: RequestHandler = (req, res, next) => {
   if (!req.auth?.orgId) {
     logger.warn({
-      msg: 'Organization required but not present',
-      event: 'auth.org_required',
+      msg: "Organization required but not present",
+      event: "auth.org_required",
       metadata: {
         path: req.path,
         method: req.method,
@@ -19,8 +19,8 @@ export const requireOrg: RequestHandler = (req, res, next) => {
     })
 
     return res.status(403).json({
-      error: 'Organization required',
-      code: 'ORG_REQUIRED',
+      error: "Organization required",
+      code: "ORG_REQUIRED",
     })
   }
 

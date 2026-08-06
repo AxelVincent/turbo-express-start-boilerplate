@@ -3,5 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "main": "index.js",
-  "files": ["index.js", "rules/"]
+  "files": [
+    "index.js",
+    "rules/"
+  ]
 }

@@ -1,19 +1,24 @@
-import { createFileRoute, Outlet, redirect, useNavigate } from '@tanstack/react-router'
-import { useEffect } from 'react'
+import {
+  createFileRoute,
+  Outlet,
+  redirect,
+  useNavigate,
+} from "@tanstack/react-router"
+import { useEffect } from "react"
 
-import { authClient } from '@/lib/auth-client'
-import { SidebarProvider } from '@/components/ui/sidebar'
-import { AppSidebar } from '@/components/layout/sidebar/AppSidebar'
+import { authClient } from "@/lib/auth-client"
+import { SidebarProvider } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/layout/sidebar/AppSidebar"
 
 /**
  * Admin layout route
  * All routes under /_admin require authentication + admin role
  */
-export const Route = createFileRoute('/_admin')({
+export const Route = createFileRoute("/_admin")({
   beforeLoad: ({ context, location }) => {
     if (context.auth?.isAuthenticated === false) {
       throw redirect({
-        to: '/signin',
+        to: "/signin",
         search: {
           redirect: location.href,
         },
@@ -28,17 +33,17 @@ function AdminLayout() {
   const navigate = useNavigate()
 
   const user = session?.user
-  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin'
+  const isAdmin = user?.role === "admin" || user?.role === "super_admin"
 
   useEffect(() => {
     if (!isPending && !user) {
-      navigate({ to: '/signin' })
+      navigate({ to: "/signin" })
     }
   }, [isPending, user, navigate])
 
   useEffect(() => {
     if (!isPending && user && !isAdmin) {
-      navigate({ to: '/' })
+      navigate({ to: "/" })
     }
   }, [isPending, user, isAdmin, navigate])
 

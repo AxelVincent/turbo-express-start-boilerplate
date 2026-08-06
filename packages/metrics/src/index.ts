@@ -6,7 +6,7 @@ export {
   Gauge,
   Histogram,
   Summary,
-} from './registry'
+} from "./registry"
 
 // Collectors
 export {
@@ -17,7 +17,7 @@ export {
   createHttpDurationHistogram,
   createHttpRequestCounter,
   createHttpSizeHistogram,
-} from './collectors'
+} from "./collectors"
 
 // Middleware
 export {
@@ -25,7 +25,7 @@ export {
   createMetricsHandler,
   startDurationTimer,
   startTimer,
-} from './middleware'
+} from "./middleware"
 
 // Types
 export type {
@@ -33,4 +33,4 @@ export type {
   HttpMetricOptions,
   MetricsRegistryOptions,
   DurationTimer,
-} from './types'
+} from "./types"

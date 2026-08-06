@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -6,10 +6,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import type { CreateUserInput } from '@repo/api/routes_web/users/add_user/contract'
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import type { CreateUserInput } from "@repo/api/routes_web/users/add_user/contract"
 
 interface CreateUserDialogProps {
   open: boolean
@@ -28,8 +28,8 @@ export function CreateUserDialog({
     event.preventDefault()
     const formData = new FormData(event.currentTarget)
     const input: CreateUserInput = {
-      name: formData.get('name') as string,
-      email: formData.get('email') as string,
+      name: formData.get("name") as string,
+      email: formData.get("email") as string,
     }
 
     await onSubmit(input)
@@ -71,9 +71,13 @@ export function CreateUserDialog({
           </div>
           <div className="flex gap-2">
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Creating...' : 'Create User'}
+              {isSubmitting ? "Creating..." : "Create User"}
             </Button>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               Cancel
             </Button>
           </div>

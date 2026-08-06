@@ -1,6 +1,12 @@
-import { Link } from '@tanstack/react-router'
-import { Button } from './ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
+import { Link } from "@tanstack/react-router"
+import { Button } from "./ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card"
 
 export function NotFound() {
   return (

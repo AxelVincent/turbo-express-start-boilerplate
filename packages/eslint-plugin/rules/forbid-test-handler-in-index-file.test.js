@@ -1,12 +1,12 @@
-"use strict";
+"use strict"
 
-const { RuleTester } = require("eslint");
-const rule = require("./forbid-test-handler-in-index-file");
+const { RuleTester } = require("eslint")
+const rule = require("./forbid-test-handler-in-index-file")
 
 const ruleTester = new RuleTester({
   parser: require.resolve("@typescript-eslint/parser"),
   parserOptions: { ecmaVersion: "latest", sourceType: "module" },
-});
+})
 
 ruleTester.run("forbid-test-handler-in-index-file", rule, {
   valid: [
@@ -46,6 +46,6 @@ ruleTester.run("forbid-test-handler-in-index-file", rule, {
       errors: [{ messageId: "noInlineHandler" }],
     },
   ],
-});
+})
 
-console.log("All tests passed!");
+console.log("All tests passed!")

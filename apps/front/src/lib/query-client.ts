@@ -1,11 +1,15 @@
-import { QueryClient, type QueryKey, type EnsureQueryDataOptions } from '@tanstack/react-query'
+import {
+  QueryClient,
+  type QueryKey,
+  type EnsureQueryDataOptions,
+} from "@tanstack/react-query"
 
 /**
  * Whether we're running on the server (SSR).
  * During SSR the API client can't reach the backend (VITE_API_URL is client-only),
  * so we skip data prefetching and let the client hydrate with loading states.
  */
-const isServer = typeof window === 'undefined'
+const isServer = typeof window === "undefined"
 
 /**
  * Prefetch query data in route loaders. Skips SSR (API client can't reach
@@ -28,7 +32,7 @@ export function createQueryClient() {
         gcTime: 5 * 60 * 1000, // 5 minutes
         retry: (failureCount, error) => {
           // Don't retry on 4xx errors (user errors)
-          if (error instanceof Error && 'status' in error) {
+          if (error instanceof Error && "status" in error) {
             const status = (error as any).status
             if (status >= 400 && status < 500) {
               return false

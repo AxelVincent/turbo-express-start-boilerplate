@@ -10,7 +10,7 @@
  * This implementation compares multiple exported handlers within the same file.
  */
 
-"use strict";
+"use strict"
 
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
@@ -36,34 +36,35 @@ module.exports = {
   },
 
   create(context) {
-    const threshold = (context.options[0] && context.options[0].threshold) || 0.95;
-    const exportedHandlers = [];
+    const threshold =
+      (context.options[0] && context.options[0].threshold) || 0.95
+    const exportedHandlers = []
 
     return {
       "ExportNamedDeclaration > FunctionDeclaration"(node) {
-        const filename = context.getFilename().replace(/\\/g, "/");
-        if (!/__tests__\/cases\//.test(filename)) return;
-        if (/\/index\.[tj]sx?$/.test(filename)) return;
+        const filename = context.getFilename().replace(/\\/g, "/")
+        if (!/__tests__\/cases\//.test(filename)) return
+        if (/\/index\.[tj]sx?$/.test(filename)) return
 
         exportedHandlers.push({
           name: node.id ? node.id.name : "anonymous",
           node,
           body: node.body,
-        });
+        })
       },
 
       "Program:exit"() {
-        if (exportedHandlers.length < 2) return;
+        if (exportedHandlers.length < 2) return
 
         for (let i = 0; i < exportedHandlers.length; i++) {
-          const similar = [];
+          const similar = []
           for (let j = i + 1; j < exportedHandlers.length; j++) {
             const sim = computeSimilarity(
               exportedHandlers[i].body,
-              exportedHandlers[j].body
-            );
+              exportedHandlers[j].body,
+            )
             if (sim >= threshold) {
-              similar.push(exportedHandlers[j].name);
+              similar.push(exportedHandlers[j].name)
             }
           }
           if (similar.length > 0) {
@@ -71,37 +72,37 @@ module.exports = {
               node: exportedHandlers[i].node,
               messageId: "tooSimilar",
               data: { testCases: similar.join(", ") },
-            });
+            })
           }
         }
       },
-    };
+    }
   },
-};
+}
 
 /**
  * Compute structural similarity between two AST nodes.
  * Returns a value between 0 (completely different) and 1 (identical structure).
  */
 function computeSimilarity(nodeA, nodeB) {
-  const tokensA = flattenAST(nodeA);
-  const tokensB = flattenAST(nodeB);
+  const tokensA = flattenAST(nodeA)
+  const tokensB = flattenAST(nodeB)
 
-  if (tokensA.length === 0 && tokensB.length === 0) return 1;
-  if (tokensA.length === 0 || tokensB.length === 0) return 0;
+  if (tokensA.length === 0 && tokensB.length === 0) return 1
+  if (tokensA.length === 0 || tokensB.length === 0) return 0
 
-  const maxLen = Math.max(tokensA.length, tokensB.length);
-  let matches = 0;
+  const maxLen = Math.max(tokensA.length, tokensB.length)
+  let matches = 0
 
   // Simple token-level comparison
-  const minLen = Math.min(tokensA.length, tokensB.length);
+  const minLen = Math.min(tokensA.length, tokensB.length)
   for (let i = 0; i < minLen; i++) {
     if (tokensA[i] === tokensB[i]) {
-      matches++;
+      matches++
     }
   }
 
-  return matches / maxLen;
+  return matches / maxLen
 }
 
 /**
@@ -109,28 +110,35 @@ function computeSimilarity(nodeA, nodeB) {
  * Ignores literal values and identifiers to focus on structure.
  */
 function flattenAST(node) {
-  const tokens = [];
+  const tokens = []
 
   function visit(n) {
-    if (!n || typeof n !== "object") return;
+    if (!n || typeof n !== "object") return
     if (n.type) {
-      tokens.push(n.type);
+      tokens.push(n.type)
     }
     for (const key of Object.keys(n)) {
-      if (key === "parent" || key === "loc" || key === "range" || key === "start" || key === "end") continue;
-      const child = n[key];
+      if (
+        key === "parent" ||
+        key === "loc" ||
+        key === "range" ||
+        key === "start" ||
+        key === "end"
+      )
+        continue
+      const child = n[key]
       if (Array.isArray(child)) {
         for (const item of child) {
           if (item && typeof item === "object" && item.type) {
-            visit(item);
+            visit(item)
           }
         }
       } else if (child && typeof child === "object" && child.type) {
-        visit(child);
+        visit(child)
       }
     }
   }
 
-  visit(node);
-  return tokens;
+  visit(node)
+  return tokens
 }

@@ -1,10 +1,6 @@
-import { throwAssertionFailedError } from './error'
+import { throwAssertionFailedError } from "./error"
 
-export const isIncluded = <T>(
-  label: string,
-  array: T[],
-  element: T,
-) => {
+export const isIncluded = <T>(label: string, array: T[], element: T) => {
   if (!array.includes(element)) {
     throwAssertionFailedError(
       `${label}: ${JSON.stringify(element)} not found in array`,
@@ -13,11 +9,7 @@ export const isIncluded = <T>(
   }
 }
 
-export const isNotIncluded = <T>(
-  label: string,
-  array: T[],
-  element: T,
-) => {
+export const isNotIncluded = <T>(label: string, array: T[], element: T) => {
   if (array.includes(element)) {
     throwAssertionFailedError(
       `${label}: ${JSON.stringify(element)} should not be in array`,
@@ -51,10 +43,7 @@ export const hasLength = (
 
 export const isNotEmpty = (label: string, array: unknown[]) => {
   if (array.length === 0) {
-    throwAssertionFailedError(
-      `${label}: expected non-empty array`,
-      isNotEmpty,
-    )
+    throwAssertionFailedError(`${label}: expected non-empty array`, isNotEmpty)
   }
 }
 

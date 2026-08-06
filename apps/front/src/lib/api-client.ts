@@ -5,10 +5,10 @@
  * Cookies are sent automatically with credentials: 'include'.
  */
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3030'
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3030"
 
 interface ApiClientOptions {
-  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE"
   body?: unknown
   headers?: Record<string, string>
 }
@@ -22,17 +22,17 @@ interface ApiClientOptions {
  */
 export async function apiClient<T>(
   path: string,
-  options: ApiClientOptions = {}
+  options: ApiClientOptions = {},
 ): Promise<T> {
-  const { method = 'GET', body, headers = {} } = options
+  const { method = "GET", body, headers = {} } = options
 
   const url = `${API_URL}${path}`
 
   const fetchOptions: RequestInit = {
     method,
-    credentials: 'include',
+    credentials: "include",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...headers,
     },
   }
@@ -45,11 +45,13 @@ export async function apiClient<T>(
 
   if (!response.ok) {
     if (response.status === 401) {
-      throw new Error('Authentication required. Please sign in.')
+      throw new Error("Authentication required. Please sign in.")
     }
 
     if (response.status === 403) {
-      throw new Error('Access denied. You do not have permission to perform this action.')
+      throw new Error(
+        "Access denied. You do not have permission to perform this action.",
+      )
     }
 
     // Try to extract a meaningful error message from the response
@@ -66,8 +68,8 @@ export async function apiClient<T>(
   }
 
   // Handle empty responses (e.g., 204 No Content)
-  const contentType = response.headers.get('content-type')
-  if (!contentType || !contentType.includes('application/json')) {
+  const contentType = response.headers.get("content-type")
+  if (!contentType || !contentType.includes("application/json")) {
     return undefined as T
   }
 
@@ -77,7 +79,9 @@ export async function apiClient<T>(
 /**
  * Helper function to build query strings from objects
  */
-export function buildQuery(params: Record<string, string | number | boolean | undefined>): string {
+export function buildQuery(
+  params: Record<string, string | number | boolean | undefined>,
+): string {
   const searchParams = new URLSearchParams()
 
   Object.entries(params).forEach(([key, value]) => {
@@ -87,5 +91,5 @@ export function buildQuery(params: Record<string, string | number | boolean | un
   })
 
   const queryString = searchParams.toString()
-  return queryString ? `?${queryString}` : ''
+  return queryString ? `?${queryString}` : ""
 }

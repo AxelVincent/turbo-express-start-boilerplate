@@ -1,4 +1,4 @@
-import type { DbUser, User } from './types'
+import type { DbUser, User } from "./types"
 
 // Convert database Users to API User format
 export function mapDbUserToUser(dbUser: DbUser): User {

@@ -1,6 +1,6 @@
-import { createContext, useContext, useRef } from 'react'
-import { authClient } from './auth-client'
-import type { RouterContext } from '../routes/__root'
+import { createContext, useContext, useRef } from "react"
+import { authClient } from "./auth-client"
+import type { RouterContext } from "../routes/__root"
 
 export interface AuthState {
   isLoading: boolean
@@ -10,7 +10,9 @@ export interface AuthState {
   orgSlug: string | undefined
   orgRole: string | undefined
   role: string | undefined
-  user: { id: string; name: string; email: string; image: string | null } | undefined
+  user:
+    | { id: string; name: string; email: string; image: string | null }
+    | undefined
 }
 
 const LOADING_AUTH: AuthState = {
@@ -44,7 +46,9 @@ function AuthProviderInner({ children }: { children: React.ReactNode }) {
     auth = prevRef.current
   } else {
     // Settled — build from session
-    const sessionRecord = session?.session as Record<string, unknown> | undefined
+    const sessionRecord = session?.session as
+      | Record<string, unknown>
+      | undefined
     const userRecord = session?.user as Record<string, unknown> | undefined
     auth = {
       isLoading: false,
@@ -83,12 +87,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuth(): AuthState {
   const ctx = useContext(AuthContext)
   if (!ctx) {
-    throw new Error('useAuth must be used within an AuthProvider')
+    throw new Error("useAuth must be used within an AuthProvider")
   }
   return ctx
 }
 
-export function toRouterAuth(auth: AuthState): RouterContext['auth'] {
+export function toRouterAuth(auth: AuthState): RouterContext["auth"] {
   if (auth.isLoading) return undefined
   return {
     isAuthenticated: auth.isAuthenticated,
@@ -101,5 +105,5 @@ export function toRouterAuth(auth: AuthState): RouterContext['auth'] {
 }
 
 export function isSuperAdmin(role: string | undefined): boolean {
-  return role === 'super_admin'
+  return role === "super_admin"
 }

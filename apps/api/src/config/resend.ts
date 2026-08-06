@@ -1,8 +1,8 @@
-import { z } from 'zod'
+import { z } from "zod"
 
 const envSchema = z.object({
   RESEND_API_KEY: z.string().optional(),
-  EMAIL_FROM: z.string().default('noreply@example.com'),
+  EMAIL_FROM: z.string().default("noreply@example.com"),
 })
 
 const env = envSchema.parse(process.env)

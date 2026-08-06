@@ -3,7 +3,7 @@
  * If a suite grows beyond the limit, split it into multiple files.
  */
 
-"use strict";
+"use strict"
 
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
@@ -27,20 +27,20 @@ module.exports = {
   },
 
   create(context) {
-    const max = (context.options[0] && context.options[0].max) || 10;
+    const max = (context.options[0] && context.options[0].max) || 10
 
     return {
       'CallExpression[callee.name="createIntegrationTestSuite"]'(node) {
         // First argument is the options object, rest are test cases
-        const testCaseCount = node.arguments.length - 1;
+        const testCaseCount = node.arguments.length - 1
         if (testCaseCount > max) {
           context.report({
             node,
             messageId: "tooManyCases",
             data: { max: String(max) },
-          });
+          })
         }
       },
-    };
+    }
   },
-};
+}

@@ -7,13 +7,18 @@
     "clean": "turbo run clean",
     "dev": "turbo run dev",
     "db:migrate": "turbo run db:migrate",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "db:types": "turbo run db:types",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md}\"",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "knip": "knip",
+    "knip:production": "knip --production --strict"
   },
   "dependencies": {},
   "devDependencies": {
+    "knip": "6.16.1",
     "prettier": "^3.2.5",
     "turbo": "^2.6.1"
   },

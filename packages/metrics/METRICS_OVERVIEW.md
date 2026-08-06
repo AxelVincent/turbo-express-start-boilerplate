@@ -53,22 +53,23 @@ Dashboard visualization
 
 **Automatically tracked via Express middleware**
 
-| Metric | Type | Labels | Purpose |
-|--------|------|--------|---------|
-| `boilerplate_http_requests_total` | Counter | method, route, status_code | Total request count |
+| Metric                                      | Type      | Labels                     | Purpose                       |
+| ------------------------------------------- | --------- | -------------------------- | ----------------------------- |
+| `boilerplate_http_requests_total`           | Counter   | method, route, status_code | Total request count           |
 | `boilerplate_http_request_duration_seconds` | Histogram | method, route, status_code | Request latency (P50/P95/P99) |
-| `boilerplate_http_request_size_bytes` | Histogram | method, route | Request payload size |
-| `boilerplate_http_response_size_bytes` | Histogram | method, route, status_code | Response payload size |
+| `boilerplate_http_request_size_bytes`       | Histogram | method, route              | Request payload size          |
+| `boilerplate_http_response_size_bytes`      | Histogram | method, route, status_code | Response payload size         |
 
 **Implementation**:
+
 ```typescript
 // In apps/api/src/index.ts
 app.use(
   createHttpMetricsMiddleware(metricsRegistry, {
-    prefix: 'boilerplate_',
+    prefix: "boilerplate_",
     routeExtractor: (req) => req.route?.path || req.path,
-    shouldTrack: (req) => req.method !== 'OPTIONS',
-  })
+    shouldTrack: (req) => req.method !== "OPTIONS",
+  }),
 )
 ```
 
@@ -78,19 +79,21 @@ app.use(
 
 **Tracks the core business logic of enriching company/website data**
 
-| Metric | Type | Labels | Purpose |
-|--------|------|--------|---------|
-| `boilerplate_enrichment_requests_total` | Counter | enrichment_type, status, cached | Success/failure count |
-| `boilerplate_enrichment_duration_seconds` | Histogram | enrichment_type, subprocess, cached | Duration tracking with sub-steps |
-| `boilerplate_enrichment_errors_total` | Counter | enrichment_type, error_type | Error categorization |
-| `boilerplate_enrichment_active` | Gauge | status | Active enrichments (processing/completed/failed) |
+| Metric                                    | Type      | Labels                              | Purpose                                          |
+| ----------------------------------------- | --------- | ----------------------------------- | ------------------------------------------------ |
+| `boilerplate_enrichment_requests_total`   | Counter   | enrichment_type, status, cached     | Success/failure count                            |
+| `boilerplate_enrichment_duration_seconds` | Histogram | enrichment_type, subprocess, cached | Duration tracking with sub-steps                 |
+| `boilerplate_enrichment_errors_total`     | Counter   | enrichment_type, error_type         | Error categorization                             |
+| `boilerplate_enrichment_active`           | Gauge     | status                              | Active enrichments (processing/completed/failed) |
 
 **Enrichment Types**:
+
 - `website` - Website data enrichment
 - `governmental` - Government database lookups
 - `social_media` - Social media data enrichment
 
 **Sub-processes tracked**:
+
 - `overall` - Complete enrichment operation
 - `scrape_homepage` - Initial homepage scraping
 - `scrape_subpages` - Additional pages scraping
@@ -104,19 +107,23 @@ app.use(
 - `calculate_score` - Enrichment quality scoring
 
 **Implementation Pattern**:
+
 ```typescript
-import { startEnrichmentTracking } from '@/metrics/enrichment'
+import { startEnrichmentTracking } from "@/metrics/enrichment"
 
 export const websiteEnrichmentManager = async ({ userPlaceId }) => {
-  const tracker = startEnrichmentTracking('website', false)
+  const tracker = startEnrichmentTracking("website", false)
 
   try {
     // Track individual sub-processes
-    const homepage = await tracker.trackSubprocess('scrape_homepage', async () => {
-      return await scrapeHomepage(url)
-    })
+    const homepage = await tracker.trackSubprocess(
+      "scrape_homepage",
+      async () => {
+        return await scrapeHomepage(url)
+      },
+    )
 
-    await tracker.trackSubprocess('governmental_data', async () => {
+    await tracker.trackSubprocess("governmental_data", async () => {
       return await enrichGovernmentalData({ place, enrichmentId })
     })
 
@@ -135,31 +142,36 @@ export const websiteEnrichmentManager = async ({ userPlaceId }) => {
 
 **Tracks asynchronous job processing**
 
-| Metric | Type | Labels | Purpose |
-|--------|------|--------|---------|
-| `boilerplate_queue_jobs_processed_total` | Counter | queue_name, job_type, status | Job completion tracking |
-| `boilerplate_queue_job_duration_seconds` | Histogram | queue_name, job_type | Job processing time |
-| `boilerplate_queue_jobs_failed_total` | Counter | queue_name, job_type, error_type | Failed job tracking |
-| `boilerplate_queue_active_jobs` | Gauge | queue_name | Currently processing jobs |
+| Metric                                   | Type      | Labels                           | Purpose                   |
+| ---------------------------------------- | --------- | -------------------------------- | ------------------------- |
+| `boilerplate_queue_jobs_processed_total` | Counter   | queue_name, job_type, status     | Job completion tracking   |
+| `boilerplate_queue_job_duration_seconds` | Histogram | queue_name, job_type             | Job processing time       |
+| `boilerplate_queue_jobs_failed_total`    | Counter   | queue_name, job_type, error_type | Failed job tracking       |
+| `boilerplate_queue_active_jobs`          | Gauge     | queue_name                       | Currently processing jobs |
 
 **Implementation Pattern**:
+
 ```typescript
-import { setupQueueMetrics, trackJobDuration } from '@/metrics/queue'
+import { setupQueueMetrics, trackJobDuration } from "@/metrics/queue"
 
 // Automatic worker instrumentation
-const worker = new Worker(queueName, async (job) => {
-  const timer = trackJobDuration('scraper', 'website_scrape')
+const worker = new Worker(
+  queueName,
+  async (job) => {
+    const timer = trackJobDuration("scraper", "website_scrape")
 
-  try {
-    await processJob(job)
-    timer.stop()
-  } catch (error) {
-    timer.stop()
-    throw error
-  }
-}, config)
+    try {
+      await processJob(job)
+      timer.stop()
+    } catch (error) {
+      timer.stop()
+      throw error
+    }
+  },
+  config,
+)
 
-setupQueueMetrics(worker, 'scraper', 'website_scrape')
+setupQueueMetrics(worker, "scraper", "website_scrape")
 ```
 
 ---
@@ -168,14 +180,15 @@ setupQueueMetrics(worker, 'scraper', 'website_scrape')
 
 **Tracks PostgreSQL query performance - FULLY AUTOMATIC**
 
-| Metric | Type | Labels | Purpose |
-|--------|------|--------|---------|
-| `boilerplate_database_queries_total` | Counter | operation, table | Query count by operation type |
-| `boilerplate_database_query_duration_seconds` | Histogram | operation, table | Query latency (P50/P95/P99) |
+| Metric                                        | Type      | Labels           | Purpose                       |
+| --------------------------------------------- | --------- | ---------------- | ----------------------------- |
+| `boilerplate_database_queries_total`          | Counter   | operation, table | Query count by operation type |
+| `boilerplate_database_query_duration_seconds` | Histogram | operation, table | Query latency (P50/P95/P99)   |
 
 **Operations tracked**: `select`, `insert`, `update`, `delete`, `transaction`
 
 **✨ Automatic Monitoring - No Code Changes Needed**:
+
 ```typescript
 // Every query is automatically tracked via postgres client hook!
 
@@ -200,6 +213,7 @@ await db.execute(sql`SELECT * FROM places WHERE active = true`)
 **Implementation**: `apps/api/src/db/db-monitoring.ts` + `apps/api/src/db/db.ts`
 
 **Benefits**:
+
 - ✅ 100% query coverage
 - ✅ Zero code changes required
 - ✅ Accurate timing at driver level
@@ -207,6 +221,7 @@ await db.execute(sql`SELECT * FROM places WHERE active = true`)
 - ✅ Works with Drizzle, raw SQL, transactions
 
 **Optional Helpers** (for better visibility):
+
 ```typescript
 import { monitoredTransaction, monitoredBatchOperation } from '@/db/db'
 
@@ -227,19 +242,20 @@ await monitoredBatchOperation('places', 'insert', items.length, async () => {
 
 **Tracks third-party service calls**
 
-| Metric | Type | Labels | Purpose |
-|--------|------|--------|---------|
-| `boilerplate_external_api_requests_total` | Counter | service, endpoint, status_code | API call tracking |
-| `boilerplate_external_api_duration_seconds` | Histogram | service, endpoint | API latency |
+| Metric                                      | Type      | Labels                         | Purpose           |
+| ------------------------------------------- | --------- | ------------------------------ | ----------------- |
+| `boilerplate_external_api_requests_total`   | Counter   | service, endpoint, status_code | API call tracking |
+| `boilerplate_external_api_duration_seconds` | Histogram | service, endpoint              | API latency       |
 
 **Services tracked**: Google Maps, Pappers, Icypeas, ContactOut, Firecrawl, Forager, Million Verifier, BrightData, WhoIs, etc.
 
 **Implementation Pattern**:
+
 ```typescript
-import { trackExternalApiCall } from '@/metrics/external-api'
+import { trackExternalApiCall } from "@/metrics/external-api"
 
 export const searchGooglePlace = async (query: string) => {
-  return trackExternalApiCall('google_maps', 'text_search', async () => {
+  return trackExternalApiCall("google_maps", "text_search", async () => {
     return await googleMapsClient.textSearch({ query })
   })
 }
@@ -251,10 +267,10 @@ export const searchGooglePlace = async (query: string) => {
 
 **Tracks real-time connection metrics**
 
-| Metric | Type | Labels | Purpose |
-|--------|------|--------|---------|
-| `boilerplate_websocket_connections` | Gauge | namespace | Active WebSocket connections |
-| `boilerplate_websocket_messages_total` | Counter | namespace, event_type, direction | Message throughput |
+| Metric                                 | Type    | Labels                           | Purpose                      |
+| -------------------------------------- | ------- | -------------------------------- | ---------------------------- |
+| `boilerplate_websocket_connections`    | Gauge   | namespace                        | Active WebSocket connections |
+| `boilerplate_websocket_messages_total` | Counter | namespace, event_type, direction | Message throughput           |
 
 **Directions**: `inbound`, `outbound`
 
@@ -264,22 +280,23 @@ export const searchGooglePlace = async (query: string) => {
 
 **Automatically collected by `prom-client`**
 
-| Metric | Type | Labels | Purpose |
-|--------|------|--------|---------|
-| `boilerplate_nodejs_process_cpu_seconds_total` | Counter | - | CPU time consumed |
-| `boilerplate_nodejs_process_resident_memory_bytes` | Gauge | - | Resident memory size |
-| `boilerplate_nodejs_heap_size_total_bytes` | Gauge | - | Total heap size |
-| `boilerplate_nodejs_heap_size_used_bytes` | Gauge | - | Used heap size |
-| `boilerplate_nodejs_eventloop_lag_seconds` | Gauge | - | Event loop lag |
-| `boilerplate_nodejs_gc_duration_seconds` | Histogram | kind | Garbage collection duration |
+| Metric                                             | Type      | Labels | Purpose                     |
+| -------------------------------------------------- | --------- | ------ | --------------------------- |
+| `boilerplate_nodejs_process_cpu_seconds_total`     | Counter   | -      | CPU time consumed           |
+| `boilerplate_nodejs_process_resident_memory_bytes` | Gauge     | -      | Resident memory size        |
+| `boilerplate_nodejs_heap_size_total_bytes`         | Gauge     | -      | Total heap size             |
+| `boilerplate_nodejs_heap_size_used_bytes`          | Gauge     | -      | Used heap size              |
+| `boilerplate_nodejs_eventloop_lag_seconds`         | Gauge     | -      | Event loop lag              |
+| `boilerplate_nodejs_gc_duration_seconds`           | Histogram | kind   | Garbage collection duration |
 
 **Auto-collected via**:
+
 ```typescript
 export const metricsRegistry = createMetricsRegistry({
-  prefix: 'boilerplate_',
+  prefix: "boilerplate_",
   defaultLabels: {
-    app: 'boilerplate',
-    environment: process.env.NODE_ENV || 'development',
+    app: "boilerplate",
+    environment: process.env.NODE_ENV || "development",
   },
   collectDefaultMetrics: true, // ← Enables Node.js metrics
 })
@@ -292,6 +309,7 @@ export const metricsRegistry = createMetricsRegistry({
 ### Overview Dashboard Sections
 
 #### 1. System Health Overview (6 KPI Cards)
+
 - **CPU Usage** - Real-time CPU utilization percentage
 - **Memory Usage** - Heap memory usage percentage
 - **Error Rate (5xx)** - HTTP 5xx error rate
@@ -302,34 +320,40 @@ export const metricsRegistry = createMetricsRegistry({
 **Visual**: Stat panels with color thresholds (green/yellow/red)
 
 #### 2. HTTP Traffic (4 Panels)
+
 - **Request Rate by Endpoint** - Line graph of RPS per route
 - **Request Duration (P95 & P99)** - Latency percentiles by route
 - **Requests by Status Code** - Stacked area chart (2xx/4xx/5xx)
 - **Average Request/Response Size** - Bandwidth monitoring
 
 #### 3. Enrichment Processing (4 Panels)
+
 - **Active Enrichments by Status** - Processing/completed/failed gauge
 - **Enrichment Request Rate** - Requests by type and status
 - **Enrichment Duration (P95)** - Overall enrichment performance
 - **Enrichment Errors by Type** - Error categorization
 
 #### 4. Queue Processing (4 Panels)
+
 - **Active Queue Jobs** - Current job count by queue
 - **Job Processing Rate** - Jobs/second by status
 - **Job Duration (P95)** - Processing time percentiles
 - **Job Failures by Error Type** - Failure categorization
 
 #### 5. Database Performance (2 Panels)
+
 - **Database Query Rate** - Queries/second by operation and table
 - **Database Query Duration (P95)** - Query latency by operation
 
 #### 6. External APIs & WebSockets (4 Panels)
+
 - **External API Request Rate** - Requests by service and status
 - **External API Duration (P95)** - API latency by service
 - **WebSocket Connections** - Active connections by namespace
 - **WebSocket Message Rate** - Messages/second by direction
 
 #### 7. Node.js Runtime (2 Panels)
+
 - **Memory Usage Breakdown** - Resident/heap total/heap used
 - **Event Loop Lag & GC Duration** - Runtime health indicators
 
@@ -356,7 +380,7 @@ app.use(createHttpMetricsMiddleware(metricsRegistry, options))
 
 ```typescript
 // Wraps the operation and tracks metrics
-const result = await trackExternalApiCall('service', 'endpoint', async () => {
+const result = await trackExternalApiCall("service", "endpoint", async () => {
   return await externalService.doSomething()
 })
 ```
@@ -374,9 +398,9 @@ const timer = startDurationTimer(myHistogram)
 
 try {
   await doComplexOperation()
-  timer.stop({ status: 'success' })
+  timer.stop({ status: "success" })
 } catch (error) {
-  timer.stop({ status: 'failed' })
+  timer.stop({ status: "failed" })
   throw error
 }
 ```
@@ -390,15 +414,15 @@ try {
 **Use for**: Multi-step workflows, enrichment pipelines
 
 ```typescript
-const tracker = startEnrichmentTracking('website', false)
+const tracker = startEnrichmentTracking("website", false)
 
 try {
   // Track individual steps
-  await tracker.trackSubprocess('scrape_homepage', async () => {
+  await tracker.trackSubprocess("scrape_homepage", async () => {
     return await scrapeHomepage(url)
   })
 
-  await tracker.trackSubprocess('governmental_data', async () => {
+  await tracker.trackSubprocess("governmental_data", async () => {
     return await enrichGovernmentalData(data)
   })
 
@@ -419,13 +443,13 @@ try {
 
 ```typescript
 // Attach to worker events
-worker.on('active', (job) => {
+worker.on("active", (job) => {
   queueActiveJobsGauge.inc({ queue_name: queueName })
 })
 
-worker.on('completed', (job) => {
+worker.on("completed", (job) => {
   queueActiveJobsGauge.dec({ queue_name: queueName })
-  queueJobsProcessedCounter.inc({ queue_name, status: 'success' })
+  queueJobsProcessedCounter.inc({ queue_name, status: "success" })
 })
 ```
 
@@ -437,12 +461,12 @@ worker.on('completed', (job) => {
 
 ### Metric Types
 
-| Type | Description | Use Case | Aggregations |
-|------|-------------|----------|--------------|
-| **Counter** | Monotonically increasing value | Request counts, errors, events | rate(), increase() |
-| **Gauge** | Value that can go up or down | Active connections, memory, queue depth | N/A (absolute values) |
-| **Histogram** | Distribution of values in buckets | Latency, request size, duration | histogram_quantile(), avg(), sum() |
-| **Summary** | Similar to histogram with quantiles | Alternative to histogram | quantile() |
+| Type          | Description                         | Use Case                                | Aggregations                       |
+| ------------- | ----------------------------------- | --------------------------------------- | ---------------------------------- |
+| **Counter**   | Monotonically increasing value      | Request counts, errors, events          | rate(), increase()                 |
+| **Gauge**     | Value that can go up or down        | Active connections, memory, queue depth | N/A (absolute values)              |
+| **Histogram** | Distribution of values in buckets   | Latency, request size, duration         | histogram_quantile(), avg(), sum() |
+| **Summary**   | Similar to histogram with quantiles | Alternative to histogram                | quantile()                         |
 
 ### Common PromQL Patterns
 
@@ -487,12 +511,14 @@ topk(10,
 ### 2. Label Usage
 
 **Good labels** (low cardinality):
+
 - `status` (success/failed)
 - `operation` (select/insert/update/delete)
 - `enrichment_type` (website/governmental/social_media)
 - `queue_name` (scraper/enrichment/notification)
 
 **Bad labels** (high cardinality):
+
 - `user_id` (thousands of unique values)
 - `timestamp` (infinite unique values)
 - `url` (too many variations)
@@ -518,10 +544,10 @@ const timer = startDurationTimer(histogram)
 
 try {
   const result = await operation()
-  timer.stop({ status: 'success' })
+  timer.stop({ status: "success" })
   return result
 } catch (error) {
-  timer.stop({ status: 'failed', error_type: error.name })
+  timer.stop({ status: "failed", error_type: error.name })
   throw error
 }
 ```
@@ -584,16 +610,16 @@ sum(boilerplate_queue_active_jobs) > 100
 
 ## 📊 Metrics Summary
 
-| Category | Metrics Count | Key Focus |
-|----------|---------------|-----------|
-| HTTP | 4 | Request rate, latency, errors |
-| Enrichment | 4 | Processing time, success rate, errors |
-| Queue | 4 | Job throughput, duration, failures |
-| Database | 2 | Query rate, latency |
-| External APIs | 2 | Request rate, latency |
-| WebSocket | 2 | Connections, message throughput |
-| Node.js Runtime | 6+ | CPU, memory, GC, event loop |
-| **Total** | **24+** | **Full-stack observability** |
+| Category        | Metrics Count | Key Focus                             |
+| --------------- | ------------- | ------------------------------------- |
+| HTTP            | 4             | Request rate, latency, errors         |
+| Enrichment      | 4             | Processing time, success rate, errors |
+| Queue           | 4             | Job throughput, duration, failures    |
+| Database        | 2             | Query rate, latency                   |
+| External APIs   | 2             | Request rate, latency                 |
+| WebSocket       | 2             | Connections, message throughput       |
+| Node.js Runtime | 6+            | CPU, memory, GC, event loop           |
+| **Total**       | **24+**       | **Full-stack observability**          |
 
 ---
 

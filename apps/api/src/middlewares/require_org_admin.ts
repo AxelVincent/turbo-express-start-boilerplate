@@ -1,5 +1,5 @@
-import { type RequestHandler } from 'express'
-import { logger } from '@repo/logger'
+import { type RequestHandler } from "express"
+import { logger } from "@repo/logger"
 
 /**
  * Middleware to require org admin role
@@ -7,10 +7,10 @@ import { logger } from '@repo/logger'
  * Must be used after betterAuthMiddleware and requireAuth
  */
 export const requireOrgAdmin: RequestHandler = (req, res, next) => {
-  if (req.auth?.orgRole !== 'admin' && req.auth?.orgRole !== 'owner') {
+  if (req.auth?.orgRole !== "admin" && req.auth?.orgRole !== "owner") {
     logger.warn({
-      msg: 'Org admin required but user is not admin',
-      event: 'auth.org_admin_required',
+      msg: "Org admin required but user is not admin",
+      event: "auth.org_admin_required",
       metadata: {
         path: req.path,
         method: req.method,
@@ -21,8 +21,8 @@ export const requireOrgAdmin: RequestHandler = (req, res, next) => {
     })
 
     return res.status(403).json({
-      error: 'Admin access required',
-      code: 'ORG_ADMIN_REQUIRED',
+      error: "Admin access required",
+      code: "ORG_ADMIN_REQUIRED",
     })
   }
 

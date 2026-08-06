@@ -1,9 +1,9 @@
-import { createRouter } from '@tanstack/react-router'
-import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query'
+import { createRouter } from "@tanstack/react-router"
+import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query"
 
 // Import the generated route tree
-import { routeTree } from './routeTree.gen'
-import { createQueryClient } from './lib/query-client'
+import { routeTree } from "./routeTree.gen"
+import { createQueryClient } from "./lib/query-client"
 
 // Create a new router instance
 export function getRouter() {
@@ -29,7 +29,7 @@ export function getRouter() {
 }
 
 // Register the router instance for type-safe usage
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface Register {
     router: ReturnType<typeof getRouter>
   }

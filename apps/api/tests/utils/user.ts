@@ -1,7 +1,7 @@
-import axios from 'axios'
-import { User } from '../user/user'
-import { UserManager } from '../user/user_manager'
-import { API_URL } from './constants'
+import axios from "axios"
+import { User } from "../user/user"
+import { UserManager } from "../user/user_manager"
+import { API_URL } from "./constants"
 
 /**
  * Sign up a user via Better Auth's email/password endpoint.
@@ -18,8 +18,8 @@ async function signupUser(user: User): Promise<void> {
     },
     {
       headers: {
-        'Content-Type': 'application/json',
-        'user-agent': user.userAgent,
+        "Content-Type": "application/json",
+        "user-agent": user.userAgent,
       },
     },
   )
@@ -35,7 +35,7 @@ async function signupUser(user: User): Promise<void> {
   }
 
   // Extract session token from set-cookie header
-  const setCookie = signupResponse.headers['set-cookie']
+  const setCookie = signupResponse.headers["set-cookie"]
   if (setCookie) {
     for (const cookie of setCookie) {
       const match = cookie.match(/better-auth\.session_token=([^;]+)/)

@@ -1,11 +1,11 @@
-import { getDatabase } from '../../../db/database'
-import type { User, CreateUserInput } from '../types'
-import { mapDbUserToUser } from '../mapper'
+import { getDatabase } from "../../../db/database"
+import type { User, CreateUserInput } from "../types"
+import { mapDbUserToUser } from "../mapper"
 
 export async function createUserQuery(input: CreateUserInput): Promise<User> {
   const db = getDatabase()
   const newUser = await db
-    .insertInto('user')
+    .insertInto("user")
     .values({
       id: crypto.randomUUID(),
       name: input.name,

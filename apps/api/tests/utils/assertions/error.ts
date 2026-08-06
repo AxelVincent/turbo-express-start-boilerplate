@@ -1,9 +1,6 @@
-import createHttpError from 'http-errors'
+import createHttpError from "http-errors"
 
-export function throwAssertionFailedError(
-  message: string,
-  caller?: Function,
-) {
+export function throwAssertionFailedError(message: string, caller?: Function) {
   const error = createHttpError(500, message)
   Error.captureStackTrace(error, caller || throwAssertionFailedError)
   throw error
@@ -18,7 +15,7 @@ export async function expectToThrow(
     await fn()
   } catch (error) {
     errorThrown = true
-    if (typeof expectedError === 'string') {
+    if (typeof expectedError === "string") {
       if ((error as Error).message !== expectedError) {
         throwAssertionFailedError(
           `Expected error message "${expectedError}", got "${(error as Error).message}"`,
@@ -35,6 +32,9 @@ export async function expectToThrow(
     }
   }
   if (!errorThrown) {
-    throwAssertionFailedError('Expected function to throw, but it did not', expectToThrow)
+    throwAssertionFailedError(
+      "Expected function to throw, but it did not",
+      expectToThrow,
+    )
   }
 }

@@ -1,7 +1,7 @@
-import { BaseUser, type BaseUserConstructorArgs } from './base_user'
-import { OrgsUser } from './domains/orgs_user'
-import { AuthUser } from './domains/auth_user'
-import { MeUser } from './domains/me_user'
+import { BaseUser, type BaseUserConstructorArgs } from "./base_user"
+import { OrgsUser } from "./domains/orgs_user"
+import { AuthUser } from "./domains/auth_user"
+import { MeUser } from "./domains/me_user"
 
 export class User extends BaseUser {
   private readonly _orgs: OrgsUser
@@ -15,9 +15,15 @@ export class User extends BaseUser {
     this._me = new MeUser(this)
   }
 
-  get orgs(): OrgsUser { return this._orgs }
-  get auth(): AuthUser { return this._auth }
-  get me(): MeUser { return this._me }
+  get orgs(): OrgsUser {
+    return this._orgs
+  }
+  get auth(): AuthUser {
+    return this._auth
+  }
+  get me(): MeUser {
+    return this._me
+  }
 
   copy(overrides: Partial<BaseUserConstructorArgs>): User {
     const copy = Object.create(this)

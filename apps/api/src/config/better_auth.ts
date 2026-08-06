@@ -1,5 +1,5 @@
-import { z } from 'zod'
-import { SERVER_CONFIG } from './server'
+import { z } from "zod"
+import { SERVER_CONFIG } from "./server"
 
 const envSchema = z.object({
   BETTER_AUTH_SECRET: z.string().min(32),
@@ -15,7 +15,7 @@ const betterAuthBaseURL = new URL(SERVER_CONFIG.baseURL).origin
 export const BETTER_AUTH_CONFIG = {
   secret: env.BETTER_AUTH_SECRET,
   baseURL: betterAuthBaseURL,
-  trustedOrigins: SERVER_CONFIG.frontendBaseURL.split(','),
+  trustedOrigins: SERVER_CONFIG.frontendBaseURL.split(","),
   oauth: {
     google:
       env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET
