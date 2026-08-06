@@ -23,6 +23,13 @@ A production-ready, full-stack monorepo boilerplate for building modern web appl
 
 ## Quick Start
 
+### Guides
+
+- [`SETUP.md`](./SETUP.md) — scaffold a new project from this boilerplate:
+  rename it and move every port off the defaults so several can run side by side
+- [`DEPLOY.md`](./DEPLOY.md) — deploy to Railway, and turn a working project
+  into a reusable Railway template
+
 ### Prerequisites
 
 - Node.js >= 20.0.0

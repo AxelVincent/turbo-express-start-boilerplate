@@ -1,0 +1,127 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.7.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+
+  # Integration tests need a live API and database, so they run separately from
+  # the unit suite above.
+  integration:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: boilerplate
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      NODE_ENV: test
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: boilerplate
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
+      BETTER_AUTH_SECRET: ci-secret-at-least-32-characters-long
+      HEALTH_AUTH_TOKEN: test-secret
+      PORT: 3030
+      BASE_URL: http://localhost:3030
+      FRONTEND_BASE_URL: http://localhost:3005
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.7.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm --filter @repo/api db:migrate
+      - run: pnpm --filter @repo/api db:types
+
+      - name: Start API
+        run: |
+          pnpm --filter @repo/api dev &
+          for i in $(seq 1 60); do
+            curl -sf http://localhost:3030/health && break
+            sleep 2
+          done
+          curl -sf http://localhost:3030/health
+
+      - run: pnpm --filter @repo/api test:integration
+
+  deploy:
+    # The gate: nothing reaches Railway unless both suites are green, and only
+    # from master. Remove `needs` at your peril.
+    needs: [verify, integration]
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: production
+    strategy:
+      # Services deploy one at a time so the API (which runs migrations in its
+      # preDeployCommand) lands before the frontend that talks to it.
+      max-parallel: 1
+      matrix:
+        service: [api, front]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli
+
+      # --ci streams build logs and exits when the build finishes, returning 1
+      # if it failed — so a broken build fails the workflow instead of being
+      # fired and forgotten the way --detach would.
+      - name: Deploy ${{ matrix.service }}
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up --service ${{ matrix.service }} --ci --yes
