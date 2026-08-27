@@ -57,3 +57,35 @@ export async function sendEmail(
   })
   return { id: data!.id }
 }
+
+export function verifyInboundWebhook({
+  webhookSecret,
+  payload,
+  headers,
+}: {
+  webhookSecret: string
+  payload: string
+  headers: { id: string; timestamp: string; signature: string }
+}) {
+  return new Resend(RESEND_CONFIG.resendApiKey).webhooks.verify({
+    payload,
+    headers,
+    webhookSecret,
+  })
+}
+
+export function forwardInboundEmail({
+  emailId,
+  to,
+  from,
+}: {
+  emailId: string
+  to: string
+  from: string
+}) {
+  return new Resend(RESEND_CONFIG.resendApiKey).emails.receiving.forward({
+    emailId,
+    to,
+    from,
+  })
+}

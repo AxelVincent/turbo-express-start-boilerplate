@@ -24,7 +24,6 @@ export const RESEND_CONFIG = {
 } as const
 
 export interface InboundEmailConfig {
-  apiKey: string
   webhookSecret: string
   address: string
   forwardTo: string
@@ -61,7 +60,6 @@ export function getInboundEmailConfig(): InboundEmailConfig | null {
   }
 
   return {
-    apiKey: resendApiKey,
     webhookSecret: inboundWebhookSecret,
     address: inboundAddress,
     forwardTo: inboundForwardTo,

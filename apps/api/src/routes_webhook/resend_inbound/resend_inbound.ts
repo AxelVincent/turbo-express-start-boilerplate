@@ -1,6 +1,9 @@
 import express, { type Router } from "express"
-import { Resend } from "resend"
 import { logger } from "@repo/logger"
+import {
+  verifyInboundWebhook,
+  forwardInboundEmail,
+} from "@external/email/client"
 import { withLogger } from "../../middlewares/with_logger"
 import { getInboundEmailConfig } from "../../config/resend"
 
@@ -30,20 +33,18 @@ router.post(
       return
     }
 
-    const resend = new Resend(config.apiKey)
-
     let event
     try {
       // Verified against the raw bytes captured by the body-parser `verify`
       // hook — a re-serialized body would fail an otherwise valid signature.
-      event = resend.webhooks.verify({
+      event = verifyInboundWebhook({
+        webhookSecret: config.webhookSecret,
         payload: req.rawBody?.toString("utf8") ?? "",
         headers: {
           id: req.header("svix-id") ?? "",
           timestamp: req.header("svix-timestamp") ?? "",
           signature: req.header("svix-signature") ?? "",
         },
-        webhookSecret: config.webhookSecret,
       })
     } catch (err) {
       logger.warn({
@@ -77,7 +78,7 @@ router.post(
       return
     }
 
-    const { data, error } = await resend.emails.receiving.forward({
+    const { data, error } = await forwardInboundEmail({
       emailId: email_id,
       to: config.forwardTo,
       from: config.forwardFrom,

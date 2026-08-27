@@ -5,10 +5,10 @@ import { BETTER_AUTH_CONFIG } from "../config/better_auth"
 import { SERVER_CONFIG } from "../config/server"
 import { logger } from "@repo/logger"
 import { USER_ROLES } from "./user_roles"
-import { sendEmail } from "../services/email/email_service"
-import { passwordResetTemplate } from "../services/email/templates/password_reset"
-import { emailVerificationTemplate } from "../services/email/templates/email_verification"
-import { orgInvitationTemplate } from "../services/email/templates/org_invitation"
+import { sendEmail } from "@external/email/client"
+import { passwordResetTemplate } from "./emails/password_reset"
+import { emailVerificationTemplate } from "./emails/email_verification"
+import { orgInvitationTemplate } from "./emails/org_invitation"
 
 export const auth = betterAuth({
   database: new Pool({

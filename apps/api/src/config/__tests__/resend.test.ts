@@ -54,7 +54,6 @@ describe("getInboundEmailConfig", () => {
   it("returns the config when every required var is set", async () => {
     setEnv(COMPLETE)
     expect(await loadConfig()).toEqual({
-      apiKey: "re_test",
       webhookSecret: "whsec_test",
       address: "contact@example.com",
       forwardTo: "team@example.com",
