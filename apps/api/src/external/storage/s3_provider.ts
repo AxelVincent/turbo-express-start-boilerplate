@@ -8,7 +8,7 @@ import {
 import { getSignedUrl as awsGetSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { logger } from "@repo/logger"
 import { requireS3Config } from "../../config/storage"
-import type { StorageProvider } from "./storage"
+import type { StorageProvider } from "./index"
 
 const DEFAULT_SIGNED_URL_TTL_SECONDS = 60 * 60
 // GET presigns are pinned to a coarse time bucket so re-signing the same key

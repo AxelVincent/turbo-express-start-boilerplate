@@ -1,6 +1,6 @@
 import { mkdir, writeFile, unlink, readFile, stat } from "node:fs/promises"
 import { dirname, join, resolve, sep } from "node:path"
-import type { StorageProvider } from "./storage"
+import type { StorageProvider } from "./index"
 
 /**
  * Filesystem-backed provider for local development. Files live under

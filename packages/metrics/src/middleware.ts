@@ -98,7 +98,7 @@ export const createHttpMetricsMiddleware = (
         if (responseSize > 0) {
           responseSizeHistogram.observe(baseLabels, responseSize)
         }
-      } catch (_error) {
+      } catch {
         // Silently ignore metrics errors to prevent breaking the application
         // Metrics collection should never crash the app
       }
@@ -150,7 +150,7 @@ export const createMetricsHandler = (
           res.status(401).end("Invalid credentials")
           return
         }
-      } catch (_error) {
+      } catch {
         res.set("WWW-Authenticate", 'Basic realm="Metrics"')
         res.status(401).end("Invalid authorization header")
         return
@@ -162,7 +162,7 @@ export const createMetricsHandler = (
       res.set("Content-Type", registry.contentType)
       const metrics = await registry.metrics()
       res.end(metrics)
-    } catch (_error) {
+    } catch {
       res.status(500).end("Error collecting metrics")
     }
   }

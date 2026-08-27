@@ -1,3 +1,8 @@
+// Vendor SDKs are wrapped once under external/; everything else imports the
+// adapter, so swapping a provider stays a one-folder change.
+const SDK_MESSAGE =
+  "Vendor SDKs are wrapped in an adapter under src/external/ — import that instead."
+
 module.exports = {
   extends: ["eslint:recommended", "prettier"],
   parser: "@typescript-eslint/parser",
@@ -11,7 +16,11 @@ module.exports = {
     sourceType: "module",
   },
   rules: {
-    "no-unused-vars": [
+    // The TS-aware variant: the base rule flags parameters in declaration-only
+    // signatures (interface methods, overloads), which forced eslint-disable
+    // pragmas on every provider interface.
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
       "error",
       { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
     ],
@@ -26,6 +35,15 @@ module.exports = {
     // contract.ts, so the frontend can import the same inferred types.
     "@repo/routes-must-use-contract": "error",
     "@repo/one-route-per-file": "error",
+    "no-restricted-imports": [
+      "error",
+      {
+        paths: [{ name: "resend", message: SDK_MESSAGE }],
+        // Patterns with a slash are anchored; a bare "resend" pattern would
+        // use gitignore semantics and also match "../../config/resend".
+        patterns: [{ group: ["resend/*", "@aws-sdk/*"], message: SDK_MESSAGE }],
+      },
+    ],
   },
   overrides: [
     {
@@ -33,6 +51,12 @@ module.exports = {
       env: {
         jest: true,
       },
+    },
+    {
+      // Adapters (and tests) are the one place vendor SDKs are imported
+      // directly.
+      files: ["**/external/**", "**/__tests__/**/*", "**/*.test.*"],
+      rules: { "no-restricted-imports": "off" },
     },
     {
       // Every request-handling surface runs inside a logger context, so

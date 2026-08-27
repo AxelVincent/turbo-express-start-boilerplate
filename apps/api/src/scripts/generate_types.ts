@@ -40,7 +40,7 @@ try {
     stdio: "inherit",
   })
   console.log("Types generated successfully!")
-} catch (error) {
+} catch {
   console.error("Failed to generate types")
   process.exit(1)
 }

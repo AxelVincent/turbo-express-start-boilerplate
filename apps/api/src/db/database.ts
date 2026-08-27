@@ -47,7 +47,7 @@ export const checkDatabaseHealth = async (): Promise<boolean> => {
     const database = getDatabase()
     await database.selectFrom("user").select("id").limit(1).execute()
     return true
-  } catch (error) {
+  } catch {
     return false
   }
 }

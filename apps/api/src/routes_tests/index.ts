@@ -38,7 +38,7 @@ router.get("/additional_users", async (_req: Request, res: Response) => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { userManager } = require("../../tests/utils/user")
     res.json({ count: userManager.newUsers ?? 0 })
-  } catch (error) {
+  } catch {
     res.json({ count: 0 })
   }
 })

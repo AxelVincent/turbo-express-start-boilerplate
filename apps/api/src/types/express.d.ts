@@ -1,7 +1,5 @@
 declare global {
-  /* eslint-disable no-unused-vars */
   namespace Express {
-    /* eslint-disable no-unused-vars */
     interface Request {
       auth: {
         userId: string
@@ -24,7 +22,6 @@ declare global {
     interface Response {
       responseTime?: number
     }
-    /* eslint-enable no-unused-vars */
   }
 }
 
