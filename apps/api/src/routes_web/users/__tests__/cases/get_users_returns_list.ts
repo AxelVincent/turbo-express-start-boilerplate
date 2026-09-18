@@ -5,9 +5,9 @@ import {
   isGreaterThanOrEqual,
 } from "../../../../../tests/utils/assertions"
 
-export async function getUsersReturnsList(_req: Request) {
+export async function getUsersReturnsList(req: Request) {
   // Given
-  const { user } = await makeUserWithOrg("users-list")
+  const { user } = await makeUserWithOrg(req)
 
   // When
   const data = await user.me.getUsers()

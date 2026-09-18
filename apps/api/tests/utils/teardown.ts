@@ -10,7 +10,7 @@ const HEADERS = {
 }
 
 export default async function globalTeardown() {
-  await Promise.allSettled([storeTestCoverage(), showAdditionalUsersCount()])
+  await Promise.allSettled([storeTestCoverage(), showUsersCreatedCount()])
 }
 
 async function storeTestCoverage() {
@@ -35,17 +35,15 @@ async function storeTestCoverage() {
   }
 }
 
-async function showAdditionalUsersCount() {
+async function showUsersCreatedCount() {
   try {
-    const { data } = await axios.get(`${API_URL}/apitests/additional_users`, {
+    const { data } = await axios.get(`${API_URL}/apitests/users_created`, {
       headers: HEADERS,
       timeout: 10000,
     })
     const count = data?.count || 0
     if (count > 0) {
-      console.log(
-        `${count} additional test user(s) were created beyond the seeded pool.`,
-      )
+      console.log(`${count} test user(s) were created during this run.`)
     }
   } catch {
     // Stats collection is optional

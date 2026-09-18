@@ -3,9 +3,9 @@ import { v4 as uuid } from "uuid"
 import { makeUserWithOrg } from "../../../../../tests/utils/user"
 import { isEqual } from "../../../../../tests/utils/assertions"
 
-export async function updateUserRole(_req: Request) {
+export async function updateUserRole(req: Request) {
   // Given
-  const { user } = await makeUserWithOrg("users-update")
+  const { user } = await makeUserWithOrg(req)
   const name = `UpdateTest ${uuid().substring(0, 8)}`
   const email = `update+${uuid().substring(0, 8)}@example.com`
   const created = await user.me.createUser({ name, email })

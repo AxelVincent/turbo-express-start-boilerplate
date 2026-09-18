@@ -3,9 +3,9 @@ import { v4 as uuid } from "uuid"
 import { makeUserWithOrg } from "../../../../../tests/utils/user"
 import { isEqual, isTruthy } from "../../../../../tests/utils/assertions"
 
-export async function getUserById(_req: Request) {
+export async function getUserById(req: Request) {
   // Given
-  const { user } = await makeUserWithOrg("users-get")
+  const { user } = await makeUserWithOrg(req)
   const name = `GetTest ${uuid().substring(0, 8)}`
   const email = `get+${uuid().substring(0, 8)}@example.com`
   const created = await user.me.createUser({ name, email })

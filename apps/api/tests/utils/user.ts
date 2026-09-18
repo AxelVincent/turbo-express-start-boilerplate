@@ -1,3 +1,4 @@
+import type { Request } from "express"
 import axios from "axios"
 import { User } from "../user/user"
 import { UserManager } from "../user/user_manager"
@@ -48,8 +49,7 @@ async function signupUser(user: User): Promise<void> {
 }
 
 /**
- * The main user manager instance.
- * Used by the seed endpoint and by test handlers via makeUser().
+ * The main user manager instance, used by test handlers via makeUser().
  */
 export const userManager = new UserManager(async () => {
   const user = new User()
@@ -58,20 +58,14 @@ export const userManager = new UserManager(async () => {
 })
 
 /**
- * Create a fully registered user ready for testing.
- * Uses the pool when possible, creates new users when needed.
+ * Create a fresh, fully registered user ready for testing.
+ * Every call signs up a real, brand-new account — never reused.
  *
- * @param groupKey - Pass the x-test-user-seed header value for isolation
+ * @param req - The case handler's request, so cleanup can find this user later via its x-test-user-seed header
  */
-export async function makeUser(groupKey?: string): Promise<User> {
+export async function makeUser(req?: Request): Promise<User> {
+  const groupKey = req?.headers["x-test-user-seed"] as string | undefined
   return userManager.getUser(groupKey)
-}
-
-/**
- * Create a new user (always fresh, never from pool).
- */
-export async function makeNewUser(groupKey?: string): Promise<User> {
-  return userManager.getUser(groupKey, true)
 }
 
 /**
@@ -79,12 +73,9 @@ export async function makeNewUser(groupKey?: string): Promise<User> {
  * Returns both the user and the orgId.
  */
 export async function makeUserWithOrg(
-  groupKey?: string,
-  options: { newUser?: boolean } = {},
+  req?: Request,
 ): Promise<{ user: User; orgId: string }> {
-  const user = options.newUser
-    ? await makeNewUser(groupKey)
-    : await makeUser(groupKey)
+  const user = await makeUser(req)
   const orgId = await user.orgs.createOrg()
   return { user, orgId }
 }

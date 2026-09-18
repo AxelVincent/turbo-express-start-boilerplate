@@ -3,9 +3,9 @@ import { v4 as uuid } from "uuid"
 import { makeUserWithOrg } from "../../../../../tests/utils/user"
 import { isTruthy } from "../../../../../tests/utils/assertions"
 
-export async function deleteUserSucceeds(_req: Request) {
+export async function deleteUserSucceeds(req: Request) {
   // Given
-  const { user } = await makeUserWithOrg("users-delete")
+  const { user } = await makeUserWithOrg(req)
   const name = `DeleteTest ${uuid().substring(0, 8)}`
   const email = `delete+${uuid().substring(0, 8)}@example.com`
   const created = await user.me.createUser({ name, email })

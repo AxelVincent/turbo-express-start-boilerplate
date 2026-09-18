@@ -34,8 +34,8 @@ module.exports = {
   // Mocks applied before each test file
   setupFilesAfterEnv: ["<rootDir>/tests/utils/setup.ts"],
 
-  // Runs once before all test files — seeds users
-  globalSetup: "<rootDir>/tests/user/seed.ts",
+  // Runs once before all test files — checks the API server is reachable
+  globalSetup: "<rootDir>/tests/user/preflight.ts",
 
   // Runs once after all test files — collects coverage/metrics
   globalTeardown: "<rootDir>/tests/utils/teardown.ts",

@@ -73,12 +73,12 @@ function resolveHttpMethod(
   }
 }
 
-async function unlockAllUsers(headers: Record<string, string>) {
+async function cleanupUsers(groupName: string) {
   await axios
     .post(
-      `${API_TESTS_URL}/unlock_users`,
-      {},
-      { headers: { ...HEADERS_AUTH, ...headers } },
+      `${API_TESTS_URL}/cleanup_users`,
+      { groupName },
+      { headers: HEADERS_AUTH },
     )
     .catch(() => {
       // Ignore errors during cleanup
@@ -91,13 +91,13 @@ export function createIntegrationTestSuite(
   { name, routePrefix, allowEmpty }: SuiteOptions,
   ...testCases: TestCase[]
 ) {
-  // Each suite gets a unique key for user isolation
+  // Each suite gets a unique key so its users' cleanup can be scoped to it
   const userSeedKey = uuid()
   const headers = { "x-test-user-seed": userSeedKey }
 
-  // Release all locked users after this suite finishes
+  // Delete every org created by this suite's users once it finishes
   afterAll(async () => {
-    await unlockAllUsers(headers)
+    await cleanupUsers(userSeedKey)
   })
 
   describe(describeMessage(name), () => {
